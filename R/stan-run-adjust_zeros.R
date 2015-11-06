@@ -1,0 +1,21 @@
+#' Replace all zeros in a data frame with a small constant; possibly
+#'   renormalize by samples
+#'
+#' @param data The data frame to be adjusted; assumed to have rows for samples
+#' @param renorm Whether to renormalize the data after adjusting the zeros
+#' @param zero_adj The amount to use instead of zer.
+#' @inheritParams vec_has_string
+#' @inheritParams cat_v
+#'
+#' @export
+
+adjust_zeros <- function(data, renorm=TRUE, zero_adj=0.0001, verbose=FALSE, num_level=0){
+   validation.utilities::cat_v("Begin adjust_zeros...", verbose, num_level=num_level)
+   data.adj <- data
+   data.adj[which(data.adj==0)] <- zero_adj
+   if (renorm) {
+       data.adj <- data.adj / rowSums(data.adj)
+   }
+   validation.utilities::cat_v("Done.\n", verbose)
+   return(data.adj)
+}
