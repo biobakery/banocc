@@ -121,6 +121,11 @@ get_LKJ_prior_plots <- function(n, eta, alpha_vec,
                                                           mu.sample,
                                                           verbose,
                                                           num_level=num_level+1)
+    ln_mean_max <- Reduce(max, lapply(ln.prior.sample$ln_mean, max, na.rm=TRUE))
+    ln_mean_min <- Reduce(min, lapply(ln.prior.sample$ln_mean, min, na.rm=TRUE))
+    
+    ln_corr_max <- Reduce(max, lapply(ln.prior.sample$ln_corr, max, na.rm=TRUE))
+    ln_corr_min <- Reduce(min, lapply(ln.prior.sample$ln_corr, min, na.rm=TRUE))
     
     banocc::cat_v("Getting summary statistics...", verbose,
                   num_level=num_level+1)
@@ -128,10 +133,14 @@ get_LKJ_prior_plots <- function(n, eta, alpha_vec,
     ln_corr.stats  <- banocc::get_prior_stats_to_print(ln.prior.sample$ln_corr)
     ln_sigma.stats <- banocc::get_prior_stats_to_print(ln.prior.sample$ln_sd)
     banocc::cat_v("Done.\n", verbose)
-    
+     
     to_return <- list(mu.stats    = ln_mean.stats,
                       R.stats     = ln_corr.stats,
-                      sigma.stats = ln_sigma.stats)
+                      sigma.stats = ln_sigma.stats,
+                      R.max       = ln_corr_max,
+                      R.min       = ln_corr_min,
+                      mu.max      = ln_mean_max,
+                      mu.min      = ln_mean_min)
     ## if (verbose){
     ##     cat("LN_MEAN median (IQR)\n")
     ##     cat(paste0(ln_mean.stats$median, "(", ln_mean.stats$IQR, ")\n"))
@@ -150,19 +159,19 @@ get_LKJ_prior_plots <- function(n, eta, alpha_vec,
                                                    verbose=verbose,
                                                    num_level=num_level+1)
     }
-    if (verbose) cat("R.plot\n")
+#    if (verbose) cat("R.plot\n")
     R.plot.stuff <- banocc::plot_R_prior(ln.prior.sample$ln_corr,
                                          add.stats=add.stats,
                                          center.stat=center.stat, digits=digits,
                                          verbose=verbose,
                                          num_level=num_level+1)
-    if (verbose) cat("sigma plot\n")
+#    if (verbose) cat("sigma plot\n")
     sigma.plot.stuff <- banocc::plot_sigma_prior(ln.prior.sample$ln_sd,
                                                  add.stats=add.stats,
                                                  center.stat=center.stat,
                                                  digits=digits, verbose=verbose,
                                                  num_level=num_level+1)
-    if (verbose) cat("mu plot\n")
+#    if (verbose) cat("mu plot\n")
     mu.plot.stuff    <- banocc::plot_mu_prior(ln.prior.sample$ln_mean,
                                               add.stats=add.stats,
                                               center.stat=center.stat,
