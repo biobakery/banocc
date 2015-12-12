@@ -81,23 +81,35 @@ plot_stan_acf <- function(samples.list, NumChains, p, param.name, thin,
             }
             for (j in j.vals){
                 for (k in seq_len(NumChains)){
-                    acf(samples.list[[param.name]][, k, (j - 1) * p + i],
-                        main="")
-                    title(main=paste0(param.name, "[", i, ", ", j, "]\n",
-                              "Chain = ", k, "; ",
-                              "Thin = ", thin),
-                          line=-1)
+                    chain_values <-
+                        samples.list[[param.name]][, k, (j - 1) * p + i]
+                    if (length(unique(chain_values)) > 1){
+                        acf(chain_values, main="")
+                        title(main=paste0(param.name, "[", i, ", ", j, "]\n",
+                                  "Chain = ", k, "; ",
+                                  "Thin = ", thin),
+                              line=-1)
+                    } else {
+                        plot(1, 1, axes=FALSE, xlab="", ylab="", col="white")
+                        text(1, 1,
+                             paste0("ERROR: Only 1 unique value in chain ", k))
+                    }
                 }
             }
         }
     } else {
         for (i in seq_len(p)){
             for (k in seq_len(NumChains)){
-                acf(samples.list[[param.name]][, k, i],
-                    main="")
-                title(main=paste0(param.name, "[", i, "]\n", "Chain = ", k, "; ",
-                        "Thin = ", thin),
-                      line=-1)
+                chain_values <- samples.list[[param.name]][, k, i]
+                if (length(unique(chain_values)) > 1){
+                    acf(chain_values, main="")
+                    title(main=paste0(param.name, "[", i, "]\n", "Chain = ", k, "; ",
+                              "Thin = ", thin),
+                          line=-1)
+                } else {
+                    plot(1, 1, axes=FALSE, xlab="", ylab="", col="white")
+                    text(1, 1, paste0("ERROR: Only 1 unique value in chain ", k))
+                }
             }
         }
     }
