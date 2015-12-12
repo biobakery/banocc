@@ -25,24 +25,32 @@ plot_stan_acf_set <- function(Fit, NumChains, p, ln.params=FALSE, thin=1,
     samples.list <-
         banocc::make_samples_list(rstan::extract(Fit, permuted=FALSE), thin=thin,
                                   verbose=verbose, num_level=num_level+1)
+    stan_args <- attr(Fit, "stan_args")
+    stan_thin <- stan_args[[1]]$thin
     if (ln.params){
         banocc::plot_stan_acf(samples.list, NumChains, p, "ln_L",
                              is.matrix = TRUE, plot.lower=TRUE, plot.diag=FALSE,
-                             thin=thin, verbose=verbose, num_level=num_level+1)
+                             thin=thin * stan_thin, verbose=verbose,
+                              num_level=num_level+1)
         banocc::plot_stan_acf(samples.list, NumChains, p, "ln_mu",
-                             is.matrix=FALSE, thin=thin, verbose=verbose,
+                             is.matrix=FALSE, thin=thin * stan_thin,
+                              verbose=verbose,
                               num_level=num_level+1)
         banocc::plot_stan_acf(samples.list, NumChains, p, "ln_sigma",
-                             is.matrix=FALSE, thin=thin, verbose=verbose,
+                             is.matrix=FALSE, thin=thin * stan_thin,
+                              verbose=verbose,
                               num_level=num_level+1)
     } else {
         banocc::plot_stan_acf(samples.list, NumChains, p, "L", is.matrix = TRUE,
-                             plot.lower=TRUE, plot.diag=FALSE, thin=thin,
+                             plot.lower=TRUE, plot.diag=FALSE,
+                              thin=thin * stan_thin,
                               verbose=verbose, num_level=num_level+1)
         banocc::plot_stan_acf(samples.list, NumChains, p, "mu", is.matrix=FALSE,
-                             thin=thin, verbose=verbose, num_level=num_level+1)
+                             thin=thin * stan_thin, verbose=verbose,
+                              num_level=num_level+1)
         banocc::plot_stan_acf(samples.list, NumChains, p, "sigma",
-                             is.matrix=FALSE, thin=thin, verbose=verbose,
+                             is.matrix=FALSE, thin=thin * stan_thin,
+                              verbose=verbose,
                               num_level=num_level+1)
     }
     banocc::cat_v("End plot_stan_acf_set.\n", verbose, num_level=num_level)
