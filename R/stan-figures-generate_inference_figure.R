@@ -30,7 +30,7 @@ function(stanfit, Rho.true, type="marginal.hpd", conf=0.95, ylimits=NULL,
     banocc::cat_v("Begin generate_inference_figure_MCMC\n", verbose, num_level)
     CI.df <- banocc::get_inference_MCMC_df(stanfit, Rho.true, type=type,
                                            conf=conf,
-                                   Sigma.comp=Rho.comp,
+                                   Rho.comp=Rho.comp,
                                    ln.Rho=ln.Rho, thin=thin,
                                    verbose=verbose, num_level=num_level + 1)
     CI.plot <- banocc::corr_inference_figure(CI.df, type=type, conf=conf,
@@ -46,7 +46,8 @@ function(stanfit, Rho.true, type="marginal.hpd", conf=0.95, ylimits=NULL,
     print(CI.plot)
     banocc::cat_v("Done.\n", verbose)
     
-    banocc::cat_v("End generate_inference_figure_MCMC\n", verbose,)
+    banocc::cat_v("End generate_inference_figure_MCMC\n", verbose,
+                  num_level=num_level)
 }
 
 #' @rdname generate_inference_figure
@@ -128,7 +129,8 @@ get_inference_MCMC_df <- function(stanfit, Rho.true, type="marginal.hpd",
                                         permuted= FALSE)
     post.samples.list <- banocc::make_samples_list(posterior.samples, thin=thin,
                                                    concatenate.chains=TRUE,
-                                                   verbose)
+                                                   verbose,
+                                                   num_level=num_level+2)
     banocc::cat_v("End getting posterior samples.\n", verbose, num_level + 1)
 
     banocc::cat_v("Getting median estimate...", verbose, num_level + 1)
@@ -381,6 +383,6 @@ function(inference.df,
       banocc::cat_v("Done.\n", verbose)
   }
 
-  banocc::cat_v("End corr_inference_figure", verbose, num_level)
+  banocc::cat_v("End corr_inference_figure.\n", verbose, num_level)
   return(gg)
 }

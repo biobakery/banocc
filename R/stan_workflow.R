@@ -117,16 +117,20 @@ stan_workflow <- function(bayes_model, C, nu, Lambda, alpha, beta,
     cat("\n")
 
     if (!is.null(workflow.name)){
-        banocc::cat_v("Outputting traceplots and act plots...", verbose,
+        banocc::cat_v("Begin outputting trace and acf plots.\n", verbose,
                       num_level=num_level + 1)
-        jpeg(paste0(workflow.name, "_traceplot.jpeg"))
-        rstan::traceplot(Fit)
+
+        traceplot.name <- paste0(workflow.name, "_traceplot_%04d.jpeg")
+        jpeg(traceplot.name)
+        rstan::traceplot(Fit, pars=attr(Fit, "model_pars"))
         dev.off()
 
         pdf(paste0(workflow.name, "_acf.pdf"))
-        banocc::plot_stan_acf(Fit)
+        banocc::plot_stan_acf_set(Fit, NumChains=chains, p=Data$P,
+                                  verbose=verbose, num_level=num_level+2)
         dev.off()
-        banocc::cat_v("Done.\n", verbose)
+        banocc::cat_v("End outputting trace and acf plots.\n", verbose,
+                      num_level=num_level+1)
     }
 
     post.samples.list <- rstan::extract(Fit)
@@ -152,7 +156,7 @@ stan_workflow <- function(bayes_model, C, nu, Lambda, alpha, beta,
     workflow_return <- list(Data=Data, Fit=Fit, Fit.print=Fit.all$print.output,
                             CI.hpd=CI, Estimates.median=Estimates)
 
-    if (!is.null(workflow.name)){
+    if (!is.null(workflow.name) && !is.null(n.prior) && n.prior > 0){
         workflow_return$prior.plots.normal    <- prior.plots.normal
         workflow_return$prior.plots.lognormal <- prior.plots.lognormal
     }
@@ -181,7 +185,9 @@ stan_workflow_sim <- function(bayes_model, C, nu, Lambda, alpha, beta,
     if (!is.null(workflow.name)) {
         pdf(paste0(workflow.name, "_inference.pdf"))
         banocc::generate_inference_figure_MCMC(stan_workflow_return$Fit,
-                                               Rho.true, ylim=c(-1, 1))
+                                               Rho.true, ylim=c(-1, 1),
+                                               verbose=verbose,
+                                               num_level=num_level+1)
         dev.off()
     }
 
