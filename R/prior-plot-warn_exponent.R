@@ -23,10 +23,10 @@ function(sample, verbose=FALSE){
                                   function(s) any((s > 709) + (s < -745))))
     if (any(large.sample)){
         warning(paste0(sum(large.sample), warning.text))
-        if (verbose){
-            print(which(large.sample))
-            print(sample[large.sample])
-        }
+        ## if (verbose){
+        ##     print(which(large.sample))
+        ##     print(sample[large.sample])
+        ## }
     }
 }
 
@@ -39,9 +39,9 @@ function(sample, verbose=FALSE){
                                                   (s > -5e-8) * (s <= 0))))
     if(any(small.sample)){
         warning(paste0(sum(small.sample), warning.text))
-        if (verbose){
-            print(which(small.sample))
-            print(sample[small.sample])
-        }
+        ## if (verbose){
+        ##     print(which(small.sample))
+        ##     print(sample[small.sample])
+        ## }
     }
 }
