@@ -9,7 +9,7 @@
 #'   evaluated at \code{x} (if \code{sampled=FALSE})
 #' @param xlim Optional limits on the domain values of plot
 #' @inheritParams add_vec_text
-#' @inheritParams cat)v
+#' @inheritParams cat_v
 #' @param mat_plot Boolean: Make a matrix of plots with \code{facet_grid} or
 #'   wrap the plots with \code{facet_wrap}?
 #' @param sampled Boolean: is this an estimated density based on sample, or an
@@ -36,7 +36,7 @@ function(Matrix_to_plot, xlim = NULL, Matrix_text=NULL, verbose=FALSE,
   add_stats <- !is.null(Matrix_text)
   p <- max(Matrix_to_plot$i)
 
-  if (verbose) print(head(Matrix_to_plot))
+#  if (verbose) print(head(Matrix_to_plot))
   
   banocc::cat_v("Generating plot...", verbose, num_level=num_level+1)
   Matrix_plot <- ggplot2::ggplot(aes(x=x), data=Matrix_to_plot) + 

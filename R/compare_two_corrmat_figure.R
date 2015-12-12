@@ -2,6 +2,7 @@
 #'
 #' @inheritParams melt_two_corr_mat
 #' @inheritParams get_two_corrmat_df
+#' @inheritParams make_two_corrmat_figure
 #' @inheritParams sample_mu_prior
 #' @inheritParams cat_v
 #' 
@@ -26,7 +27,7 @@ compare_two_corrmat_figure <-
   function(Rho.lower, Rho.upper, title=NA, truestatus_mat=NA, verbose=FALSE, 
            categories=c("Truth", "Estimate"),
            corr_label=expression(rho["jj\'"]),
-           include_text=TRUE, text.size=20,
+           include_text=TRUE, text.size=20, corr.text.size=6,
            legend.position="horizontal", num_level=0)
 {
     banocc::cat_v("Begin compare_two_corrmat_figure.\n", verbose, num_level)
@@ -42,6 +43,7 @@ compare_two_corrmat_figure <-
                                                 corr_label=corr_label,
                                                 include_text=include_text,
                                                 text.size=text.size,
+                                                corr.text.size=corr.text.size,
                                                 legend.position=legend.position,
                                                 num_level=num_level + 1)
     
