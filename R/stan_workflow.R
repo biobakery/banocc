@@ -23,6 +23,8 @@
 #'   file.
 #' @param n.prior The number of prior samples to use in plotting the prior
 #'   densities.  If \code{NULL} or \code{0}, no priors are plotted.
+#' @param get_min_width A boolean value: should the minimum CI width that
+#'   includes zero be calculated?
 #' @inheritParams cat_v
 #' @name stan_workflow
 #'
@@ -38,7 +40,7 @@ stan_workflow <- function(bayes_model, C, nu, Lambda, alpha, beta,
                           thin = 1, init = 'random',
                           sd_mean=NULL, sd_var=NULL, n.prior=NULL,
                           workflow.name=NULL, verbose=FALSE, num_level=0,
-                          conf_alpha=0.05){
+                          conf_alpha=0.05, get_min_width=FALSE){
     banocc::cat_v("Begin stan_workflow\n", verbose, num_level=num_level)
     Data <- list(C=C, N=nrow(C), P=ncol(C))
     
@@ -145,6 +147,17 @@ stan_workflow <- function(bayes_model, C, nu, Lambda, alpha, beta,
     dimnames(CI$ln_Rho$upper) <- list(colnames(Data$C), colnames(Data$C))
     CI <- CI$ln_Rho
 
+    if (get_min_width){
+        min_width <- banocc::get_min_width(posterior_sample=post.samples.list,
+                                           parameter.names=c("ln_Rho"),
+                                           null_value=0, type="marginal.hpd",
+                                           precision=0.01, verbose=verbose,
+                                           num_level=num_level + 1)
+    } else {
+        min_width <- list(ln_Rho=NULL)
+    }
+    min_width <- min_width$ln_Rho
+
     Estimates <-
         banocc::get_posterior_estimates(posterior_samples=post.samples.list,
                                         estimate_method="median",
@@ -154,7 +167,8 @@ stan_workflow <- function(bayes_model, C, nu, Lambda, alpha, beta,
 
     
     workflow_return <- list(Data=Data, Fit=Fit, Fit.print=Fit.all$print.output,
-                            CI.hpd=CI, Estimates.median=Estimates)
+                            CI.hpd=CI, Estimates.median=Estimates,
+                            Min.width=min_width)
 
     if (!is.null(workflow.name) && !is.null(n.prior) && n.prior > 0){
         workflow_return$prior.plots.normal    <- prior.plots.normal

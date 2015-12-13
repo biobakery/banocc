@@ -9,7 +9,7 @@ stan_workflow(bayes_model, C, nu, Lambda, alpha, beta, eta,
   cores = getOption("mc.cores", 1L), chains = 4, iter = 2000,
   warmup = floor(iter/2), thin = 1, init = "random", sd_mean = NULL,
   sd_var = NULL, n.prior = NULL, workflow.name = NULL, verbose = FALSE,
-  num_level = 0, conf_alpha = 0.05)
+  num_level = 0, conf_alpha = 0.05, get_min_width = FALSE)
 
 stan_workflow_sim(bayes_model, C, nu, Lambda, alpha, beta, eta, Rho.true,
   cores = getOption("mc.cores", 1L), chains = 4, iter = 2000,
@@ -83,6 +83,9 @@ file.}
      be helpful for model debugging.}
 
 \item{num_level}{The number of the level (will determine the number of spaces to add)}
+
+\item{get_min_width}{A boolean value: should the minimum CI width that
+includes zero be calculated?}
 
 \item{Rho.true}{The true correlation matrix}
 }
