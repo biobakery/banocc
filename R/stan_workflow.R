@@ -37,7 +37,7 @@ stan_workflow <- function(bayes_model, C, nu, Lambda, alpha, beta,
                           eta,
                           cores = getOption("mc.cores", 1L),
                           chains = 4, iter = 2000, warmup = floor(iter/2),
-                          thin = 1, init = 'random',
+                          thin = 1, init = 'random', control=NULL,
                           sd_mean=NULL, sd_var=NULL, n.prior=NULL,
                           workflow.name=NULL, verbose=FALSE, num_level=0,
                           conf_alpha=0.05, get_min_width=FALSE){
@@ -112,9 +112,12 @@ stan_workflow <- function(bayes_model, C, nu, Lambda, alpha, beta,
     Fit.all <- banocc::mycapture(rstan::sampling(bayes_model, data=Data,
                                                  chains=chains, iter=iter,
                                                  warmup=warmup, thin=thin,
-                                                 init=init, cores=cores))
+                                                 init=init, cores=cores,
+                                                 control=control))
     Fit <- Fit.all$output
     banocc::cat_v("End fitting the model\n", verbose, num_level=num_level+1)
+    lapply(rstan::get_sampler_params(Fit, inc_warmup = TRUE), summary,
+           digits = 2)
     banocc::show_mcmc_time(Fit.all)
     cat("\n")
 
@@ -184,7 +187,7 @@ stan_workflow_sim <- function(bayes_model, C, nu, Lambda, alpha, beta,
                               eta, Rho.true,
                               cores = getOption("mc.cores", 1L),
                               chains = 4, iter = 2000, warmup = floor(iter/2),
-                              thin = 1, init = 'random',
+                              thin = 1, init = 'random', control=NULL,
                               sd_mean=NULL, sd_var=NULL, n.prior=NULL,
                               workflow.name=NULL, verbose=FALSE, num_level=0){
     banocc::cat_v("Begin stan_workflow_sim\n", verbose, num_level=num_level)
@@ -193,8 +196,9 @@ stan_workflow_sim <- function(bayes_model, C, nu, Lambda, alpha, beta,
                               nu=nu, Lambda=Lambda, alpha=alpha, beta=beta,
                               eta=eta, workflow.name=workflow.name, cores=cores,
                               chains=chains, iter=iter, warmup=warmup, thin=thin,
-                              init=init, sd_mean=sd_mean, sd_var=sd_var,
-                              verbose=verbose, num_level=num_level + 1)
+                              init=init, control=control, sd_mean=sd_mean,
+                              sd_var=sd_var, verbose=verbose,
+                              num_level=num_level + 1)
 
     if (!is.null(workflow.name)) {
         pdf(paste0(workflow.name, "_inference.pdf"))
