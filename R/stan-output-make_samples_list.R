@@ -6,7 +6,6 @@
 #' @inheritParams rstan::sampling
 #' @param concatenate.chains Boolean: should all the chains be concatenated
 #'   together, or left separately?
-#' @inheritParams sample_mu_prior
 #' @inheritParams cat_v
 #' @return A named list of each parameter from the \code{stanfit} object. The
 #'   elements are either an array with the first dimension the iteration, the

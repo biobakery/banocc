@@ -68,7 +68,6 @@ get_min_width <- function(posterior_samples, parameter.names="ln_Rho",
 #' @param width The current width of credible interval to evaluate
 #' @param null_value The null value of the ``hypothesis test''
 #' @inheritParams get_credible_intervals
-#' @inheritParams sample_mu_prior
 #' @inheritParams cat_v
 #' 
 eval_width <- function(min_width, missing_min_width, posterior_samples,

@@ -48,24 +48,6 @@ function(..., file=NULL){
   }
 
 
-#' Add a LaTeX page break to a \code{knitr} report if the evaluation condition is met.
-#'
-#' @param eval.spike Whether to evaluate the spiked-in dataset
-#' @param eval.spur Whether to evaluate the high spurious correlation dataset
-#' @name newpage
-
-#' @rdname newpage
-spike_newpage <-
-function(eval.spike){
-    if(eval.spike) cat("\\newpage\n")
-}
-
-#' @rdname newpage
-spur_newpage <-
-function(eval.spur){
-    if(eval.spur) cat("\\newpage\n")
-}
-
 #' Check if a square matrix is symmetric
 #'
 #' @param mat The square matrix to be checked

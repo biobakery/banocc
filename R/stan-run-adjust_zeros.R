@@ -3,8 +3,7 @@
 #'
 #' @param data The data frame to be adjusted; assumed to have rows for samples
 #' @param renorm Whether to renormalize the data after adjusting the zeros
-#' @param zero_adj The amount to use instead of zer.
-#' @inheritParams sample_mu_prior
+#' @param zero_adj The amount to use instead of zero.
 #' @inheritParams cat_v
 #'
 #' @export
