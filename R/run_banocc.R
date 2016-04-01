@@ -41,30 +41,16 @@ run_banocc <- function(bayes_model, C, nu, Lambda, alpha, beta,
     Data$nu     <- banocc::check_nu(nu, Data$P, verbose, num_level=num_level+1)
     Data$Lambda <- banocc::check_Lambda(Lambda, Data$P, verbose,
                                         num_level=num_level+1)
-    if (is.null(sd_mean) || is.null(sd_var)){
-        if (is.null(alpha) || is.null(beta)){
-            stop(paste0("Must provide both 'alpha' and 'beta' OR both 'sd_mean'",
-                        " and 'sd_var'"))
-        }
-        alpha_beta <- banocc::check_alpha_beta(alpha, beta, Data$P, verbose,
-                                               num_level=num_level+1)
-        Data$alpha <- alpha_beta$alpha
-        Data$beta  <- alpha_beta$beta
-    }
-    if (is.null(alpha) || is.null(beta)){
-        if (is.null(sd_var) || is.null(sd_mean)){
-            stop(paste0("Must provide both 'sd_mean' and 'sd_var' OR both ",
-                        "'alpha' and 'beta'"))
-        }
-        sd_mean_var <- banocc::check_sd_mean_var(sd_mean, sd_var, Data$P,
-                                                 num_level=num_level+1)
-        Data$beta  <- sd_mean_var$sd_mean / sd_mean_var$sd_var
-        Data$alpha <- sd_mean_var$sd_mean^2 / sd_mean_var$sd_var
-    }
     if (eta < 1){
         stop("'eta' must be >= 1")
     }
     Data$eta <- eta
+    alpha_beta <- banocc::get_alpha_beta(alpha=alpha, beta=beta,
+                                         sd_mean=sd_mean, sd_var=sd_var,
+                                         p=Data$P,
+                                         verbose=verbose, num_level=num_level+1)
+    Data$alpha <- alpha_beta$alpha
+    Data$beta <- alpha_beta$beta
 
     banocc::cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
     Fit.all <- banocc::mycapture(rstan::sampling(bayes_model, data=Data,
@@ -220,4 +206,33 @@ check_Lambda <- function(Lambda, p, verbose=FALSE, num_level=0){
     }
     banocc::cat_v("Done.\n", verbose)
     return(Lambda)
+}
+
+get_alpha_beta <- function(alpha, beta, p, sd_mean=NULL, sd_var=NULL,
+                           verbose=FALSE, num_level=0){
+    banocc::cat_v("Begin get_alpha_beta...", verbose=verbose,
+                  num_level=num_level)
+    if (!is.null(alpha) || !is.null(beta)){
+        if (is.null(alpha) || is.null(beta)){
+            stop(paste0("Must provide both 'alpha' and 'beta' OR both 'sd_mean'",
+                        " and 'sd_var'"))
+        }
+        alpha_beta <- banocc::check_alpha_beta(alpha, beta, p, verbose,
+                                               num_level=num_level+1)
+    } else if (!is.null(sd_var) || !is.null(sd_mean)){
+        if (is.null(sd_var) || is.null(sd_mean)){
+            stop(paste0("Must provide both 'sd_mean' and 'sd_var' OR both ",
+                        "'alpha' and 'beta'"))
+        }
+        alpha_beta <- list()
+        sd_mean_var <- banocc::check_sd_mean_var(sd_mean, sd_var, p,
+                                                 num_level=num_level+1)
+        alpha_beta$beta  <- sd_mean_var$sd_mean / sd_mean_var$sd_var
+        alpha_beta$alpha <- sd_mean_var$sd_mean^2 / sd_mean_var$sd_var
+    } else {
+        stop(paste0("Must provide both 'alpha' and 'beta' OR both 'sd_mean'",
+                    " and 'sd_var'"))
+    }
+    banocc::cat_v("Done.\n", verbose)
+    return(alpha_beta)
 }
