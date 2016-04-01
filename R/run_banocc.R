@@ -203,7 +203,7 @@ check_Lambda <- function(Lambda, p, verbose=FALSE, num_level=0){
         }
     } else if (is.vector(Lambda)){
         if ((length(Lambda) < p) && (length(Lambda) > 1)){
-            warn("'Lambda' is being recycled")
+            warning("'Lambda' is being recycled")
             num_rep <- ceiling(p / length(Lambda))
             Lambda <- diag(rep(Lambda, num_rep)[1:p])
         } else if (length(Lambda) == 1){
@@ -211,7 +211,9 @@ check_Lambda <- function(Lambda, p, verbose=FALSE, num_level=0){
         } else if (length(Lambda) > p){
             warning("'Lambda' has length > p; only first p elements will be ",
                     "used.")
-            Lambda <- Lambda[1:p]
+            Lambda <- diag(Lambda[1:p])
+        } else {
+            Lambda <- diag(Lambda)
         }
     } else {
         stop("'Lambda' must be either a matrix or a vector")
