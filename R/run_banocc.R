@@ -25,6 +25,8 @@
 #'
 #' @importFrom rstan sampling
 #' @importFrom rstan extract
+#'
+#' @export
 
 #' @rdname run_banocc
 run_banocc <- function(bayes_model, C, nu, Lambda, alpha, beta,

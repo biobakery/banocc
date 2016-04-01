@@ -3,7 +3,6 @@
 #' @param verbose Print informative statements as the function executes?xo
 #' @param num_level The number of the level (will determine the number of spaces to add)
 #'
-#' @export
 #' @importFrom stringr str_c
 #' @importFrom stringr str_dup
 
