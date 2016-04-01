@@ -41,16 +41,13 @@ run_banocc <- function(bayes_model, C, nu, Lambda, alpha, beta,
     Data$nu     <- banocc::check_nu(nu, Data$P, verbose, num_level=num_level+1)
     Data$Lambda <- banocc::check_Lambda(Lambda, Data$P, verbose,
                                         num_level=num_level+1)
-    if (eta < 1){
-        stop("'eta' must be >= 1")
-    }
-    Data$eta <- eta
     alpha_beta <- banocc::get_alpha_beta(alpha=alpha, beta=beta,
                                          sd_mean=sd_mean, sd_var=sd_var,
                                          p=Data$P,
                                          verbose=verbose, num_level=num_level+1)
     Data$alpha <- alpha_beta$alpha
     Data$beta <- alpha_beta$beta
+    Data$eta <- banocc::get_eta(eta)
 
     banocc::cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
     Fit.all <- banocc::mycapture(rstan::sampling(bayes_model, data=Data,
@@ -235,4 +232,13 @@ get_alpha_beta <- function(alpha, beta, p, sd_mean=NULL, sd_var=NULL,
     }
     banocc::cat_v("Done.\n", verbose)
     return(alpha_beta)
+}
+
+get_eta <- function(eta){
+    if (eta < 1){
+        stop("'eta' must be >= 1")
+    } else {
+        return(eta)
+    }
+
 }
