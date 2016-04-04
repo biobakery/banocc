@@ -19,6 +19,9 @@
 
 get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
     banocc::cat_v("Begin get_IVs...", verbose, num_level=num_level)
+    if (chains <= 0){
+        stop("'chains' must be > 0")
+    }
     IVs <- lapply(1:chains,
                   function(i) {
                       list(mu = as.vector(mvtnorm::rmvnorm(1, data$nu,
