@@ -52,16 +52,20 @@ function(posterior_samples, probs, list=FALSE,
     names(parameter.names) <- parameter.names
     posterior_quantiles <- lapply(parameter.names, function(name){
         is.mat <- length(dim(posterior_samples[[name]])) == 3
+        is.vec <- length(dim(posterior_samples[[name]])) == 2
         if(is.mat){
             apply(posterior_samples[[name]], c(2, 3), quantile, probs=probs)
-        } else {
+        } else if (is.vec) {
             apply(posterior_samples[[name]], 2, quantile, probs=probs)
+        } else {
+            matrix(quantile(posterior_samples[[name]], probs=probs),
+                   ncol=1)
         }
     })
 
     if(!list){
         return(posterior_quantiles)
-    } else {
+    } else if (length(probs) > 1){
         posterior_quantiles.list <-
             lapply(parameter.names,
                    function(name) vector("list", length=length(probs))
@@ -79,5 +83,9 @@ function(posterior_samples, probs, list=FALSE,
             }
         }
         return(posterior_quantiles.list)
+    } else {
+        posterior_quantiles.list <-
+            lapply(parameter.names,
+                   function(name) posterior_quantiles[[name]])
     }
 }
