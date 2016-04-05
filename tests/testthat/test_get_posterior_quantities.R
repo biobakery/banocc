@@ -121,3 +121,110 @@ test_that("get_posterior_quantiles matches eltwise calcn for scalars when list=T
         expect_equal(pq$lp__[[i]], q[i])
     }
 })
+
+context("Step 3 - test get_posterior_estimates")
+
+test_that("get_posterior_estimates returns a list", {
+  test_is_list <- function(m, p.names){
+      get_posterior_estimates(posterior_samples=posterior_samples,
+                              estimate_method=m,
+                              parameter.names=p.names)
+  }
+  expect_is(test_is_list("mean", "mu"),                       "list")
+  expect_is(test_is_list("mean", "lp__"),                     "list")
+  expect_is(test_is_list("mean", "Sigma"),                    "list")
+  expect_is(test_is_list("mean", c("mu", "lp__", "Sigma")),   "list")
+  expect_is(test_is_list("median", "mu"),                     "list")
+  expect_is(test_is_list("median", "lp__"),                   "list")
+  expect_is(test_is_list("median", "Sigma"),                  "list")
+  expect_is(test_is_list("median", c("mu", "lp__", "Sigma")), "list")
+})
+
+test_that("get_posterior_estimates returns error if estimate_method not right", {
+    test_error <- function(m){
+        get_posterior_estimates(posterior_samples=posterior_samples,
+                                estimate_method=m,
+                                parameter.names=c("mu", "Sigma", "lp__"))
+    }
+    err_string <- "[Ii]nvalid estimate_method"
+    expect_error(test_error("Mean"),   err_string)
+    expect_error(test_error("Median"), err_string)
+    expect_error(test_error("gobble"), err_string)
+    expect_error(test_error(""),       err_string)
+})
+
+test_that("get_parameter_estimates names are parameter names", {
+    test_names <- function(m, idx){
+        sort(names(get_posterior_estimates(
+            posterior_samples=posterior_samples,
+            estimate_method=m,
+            parameter.names=sort(names(posterior_samples))[idx])))
+    }
+    expected_names <- sort(names(posterior_samples))
+    idx <- seq_along(posterior_samples)
+    expect_equal(test_names("mean", 1),     expected_names[1])
+    expect_equal(test_names("median", 1),   expected_names[1])
+    expect_equal(test_names("mean", idx),   expected_names)
+    expect_equal(test_names("median", idx), expected_names)
+})
+
+test_that("get_parameter_estimates median elts have dims matching parms", {
+    pe <- get_posterior_estimates(posterior_samples=posterior_samples,
+                                  estimate_method="median",
+                                  parameter.names=c("lp__", "mu", "Sigma"))
+    expect_equal(dim(pe$lp__), NULL)
+    expect_equal(length(pe$lp__), 1)
+    expect_equal(dim(pe$mu), NULL)
+    expect_equal(length(pe$mu), Data$P)
+    expect_equal(dim(pe$Sigma), c(Data$P, Data$P))
+})
+
+test_that("get_parameter_estimates mean elts have dims matching parms", {
+    pe <- get_posterior_estimates(posterior_samples=posterior_samples,
+                                  estimate_method="median",
+                                  parameter.names=c("lp__", "mu", "Sigma"))
+    expect_equal(dim(pe$lp__), NULL)
+    expect_equal(length(pe$lp__), 1)
+    expect_equal(dim(pe$mu), NULL)
+    expect_equal(length(pe$mu), Data$P)
+    expect_equal(dim(pe$Sigma), c(Data$P, Data$P))
+})
+
+pe <- get_posterior_estimates(posterior_samples=posterior_samples,
+                              estimate_method="median",
+                              parameter.names=c("lp__", "mu", "Sigma"))
+test_that("get_parameter_estimates medians match eltwise for scalars", {
+    expect_equal(pe$lp__, median(posterior_samples$lp__))
+})
+test_that("get_parameter_estimates medians match eltwise for vectors", {
+    for (i in seq_len(Data$P)){
+        expect_equal(pe$mu[i], median(posterior_samples$mu[, i]))
+    }
+})
+test_that("get_parameter_estimates medians match eltwise for matrices", {
+    for (i in seq_len(Data$P)){
+        for (k in seq_len(Data$P)){
+            expect_equal(pe$Sigma[i, k], median(posterior_samples$Sigma[, i, k]))
+        }
+    }
+})
+
+pe <- get_posterior_estimates(posterior_samples=posterior_samples,
+                              estimate_method="mean",
+                              parameter.names=c("lp__", "mu", "Sigma"))
+test_that("get_parameter_estimates means match eltwise for scalars", {
+    expect_equal(pe$lp__, mean(posterior_samples$lp__))
+})
+test_that("get_parameter_estimates means match eltwise for vectors", {
+
+    for (i in seq_len(Data$P)){
+        expect_equal(pe$mu[i], mean(posterior_samples$mu[, i]))
+    }
+})
+test_that("get_parameter_estimates means match eltwise for matrices", {
+    for (i in seq_len(Data$P)){
+        for (k in seq_len(Data$P)){
+            expect_equal(pe$Sigma[i, k], mean(posterior_samples$Sigma[, i, k]))
+        }
+    }
+})
