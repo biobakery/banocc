@@ -1,4 +1,4 @@
-context("Step 3 - testing get_posterior_quantiles")
+context("Step 5 - testing get_posterior_quantiles")
 
 load("testthat_objects/sample_stan_data.RData")
 load("testthat_objects/sample_stan_fit.RData")
@@ -122,7 +122,7 @@ test_that("get_posterior_quantiles matches eltwise calcn for scalars when list=T
     }
 })
 
-context("Step 3 - test get_posterior_estimates")
+context("Step 5 - test get_posterior_estimates")
 
 test_that("get_posterior_estimates returns a list", {
   test_is_list <- function(m, p.names){

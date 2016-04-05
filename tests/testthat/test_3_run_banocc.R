@@ -1,4 +1,4 @@
-context("Running BAnOCC")
+context("Step 3 - running BAnOCC")
 
 test_that("get_alpha_beta gives error if alpha and beta not provided", {
     err_string <- "provide both 'alpha' and 'beta'"

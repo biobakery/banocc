@@ -1,4 +1,4 @@
-context("Checking input")
+context("Step 1 - checking input")
 
 test_that("check_vector of non-numeric vector gives error", {
     test_check_vector <- function(x){

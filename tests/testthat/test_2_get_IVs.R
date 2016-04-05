@@ -1,4 +1,4 @@
-context("Step 1 - obtain initial values")
+context("Step 2 - obtain initial values")
 
 load("testthat_objects/sample_stan_data.RData")
 
