@@ -1,13 +1,6 @@
 context("Step 1 - obtain initial values")
 
-
-C <- read.table("sample_data.txt", header=TRUE)
-Data <- list(C=C, N=nrow(C), P=ncol(C),
-             nu=rep(0, ncol(C)), Lambda=10 * diag(ncol(C)),
-             alpha=rep(1, ncol(C)),beta=rep(0.5, ncol(C)),
-             eta=1)
-
-save(Data, file="sample_stan_data.RData")
+load("testthat_objects/sample_stan_data.RData")
 
 test_that("get_IVs returns a list", {
     expect_is(get_IVs(chains=3, data=Data), "list")

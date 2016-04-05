@@ -1,13 +1,7 @@
 context("Step 3 - testing get_posterior_quantiles")
 
-load("sample_stan_data.RData")
-load("bayesModel_test.RData")
-library(rstan)
-Fit.all <- banocc::mycapture(rstan::sampling(bayes_model, data=Data, chains=2,
-                       iter=100, warmup=10, thin=2,
-                       init=get_IVs(chains=2, data=Data)))
-Fit <- Fit.all$output
-save(Fit, file="sample_stan_fit.RData")
+load("testthat_objects/sample_stan_data.RData")
+load("testthat_objects/sample_stan_fit.RData")
 posterior_samples <- rstan::extract(Fit)
 
 test_that("get_posterior_quantiles returns a list", {
