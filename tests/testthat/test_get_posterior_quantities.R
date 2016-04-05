@@ -69,35 +69,17 @@ test_that("get_posterior_quantiles quantile dimensions are correct when list=TRU
     expect_equal(dim(pq$Sigma[[1]]), c(Data$P, Data$P))
 })
 
+probs <- c(0, 0.5, 1)
+pq <- get_posterior_quantiles(posterior_samples=posterior_samples,
+                              probs=probs, list=FALSE,
+                              parameter.names=c("lp__", "mu", "Sigma"))
 test_that("get_posterior_quantiles matches eltwise calcn for vectors when list=FALSE",{
-    probs <- c(0, 0.5, 1)
-    pq <- get_posterior_quantiles(posterior_samples=posterior_samples,
-                                  probs=probs, list=FALSE,
-                                  parameter.names="mu")
     for (i in seq_len(Data$P)){
         expect_equal(pq$mu[, i],
                      quantile(posterior_samples$mu[, i], probs=probs))
     }
 })
-
-test_that("get_posterior_quantiles matches eltwise calcn for vectors when list=TRUE", {
-    probs <- c(0, 0.5, 1)
-    pq <- get_posterior_quantiles(posterior_samples=posterior_samples,
-                                  probs=probs, list=TRUE,
-                                  parameter.names="mu")
-    for (i in seq_len(Data$P)){
-        q <- unname(quantile(posterior_samples$mu[, i], probs=probs))
-        for (k in seq_along(probs)){
-            expect_equal(pq$mu[[k]][i], q[k])
-        }
-    }
-})
-
 test_that("get_posterior_quantiles matches eltwise calcn for matrices when list=FALSE", {
-    probs <- c(0, 0.5, 1)
-    pq <- get_posterior_quantiles(posterior_samples=posterior_samples,
-                                  probs=probs, list=FALSE,
-                                  parameter.names="Sigma")
     for (i in seq_len(Data$P)){
         for (k in seq_len(Data$P)){
             q <- quantile(posterior_samples$Sigma[, i, k], probs=probs)
@@ -111,11 +93,18 @@ test_that("get_posterior_quantiles matches eltwise calcn for scalars when list=F
 })
 
 
+pq <- get_posterior_quantiles(posterior_samples=posterior_samples,
+                              probs=probs, list=TRUE,
+                              parameter.names=c("lp__", "mu", "Sigma"))
+test_that("get_posterior_quantiles matches eltwise calcn for vectors when list=TRUE", {
+    for (i in seq_len(Data$P)){
+        q <- unname(quantile(posterior_samples$mu[, i], probs=probs))
+        for (k in seq_along(probs)){
+            expect_equal(pq$mu[[k]][i], q[k])
+        }
+    }
+})
 test_that("get_posterior_quantiles matches eltwise calcn for matrices when list=TRUE", {
-    probs <- c(0, 0.5, 1)
-    pq <- get_posterior_quantiles(posterior_samples=posterior_samples,
-                                  probs=probs, list=TRUE,
-                                  parameter.names="Sigma")
     for (i in seq_len(Data$P)){
         for (k in seq_len(Data$P)){
             q <- unname(quantile(posterior_samples$Sigma[, i, k],
