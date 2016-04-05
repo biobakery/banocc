@@ -58,8 +58,12 @@ function(posterior_samples, probs, list=FALSE,
         } else if (is.vec) {
             apply(posterior_samples[[name]], 2, quantile, probs=probs)
         } else {
-            matrix(quantile(posterior_samples[[name]], probs=probs),
-                   ncol=1)
+            q <- quantile(posterior_samples[[name]], probs=probs)
+            if (length(probs) > 1){
+                q
+            } else {
+                unname(q)
+            }
         }
     })
 
@@ -73,12 +77,16 @@ function(posterior_samples, probs, list=FALSE,
         for (i in seq_along(probs)){
             for(name in parameter.names){
                 is.mat <- length(dim(posterior_samples[[name]])) == 3
+                is.vec <- length(dim(posterior_samples[[name]])) == 2
                 if(is.mat){
                   posterior_quantiles.list[[name]][[i]] <-
                       posterior_quantiles[[name]][i, , ]
-                } else {
+                } else if (is.vec){
                     posterior_quantiles.list[[name]][[i]] <-
                         posterior_quantiles[[name]][i, ]
+                } else {
+                    posterior_quantiles.list[[name]][[i]] <-
+                        unname(posterior_quantiles[[name]][i])
                 }
             }
         }
