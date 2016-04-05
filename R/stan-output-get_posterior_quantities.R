@@ -28,10 +28,13 @@ function(posterior_samples,
     if(estimate_method=="mean"){
         posterior_estimates <- lapply(parameter.names, function(name){
             is.mat <- length(dim(posterior_samples[[name]])) == 3
+            is.vec <- length(dim(posterior_samples[[name]])) == 2
             if(is.mat){
                 apply(posterior_samples[[name]], c(2, 3), mean)
-            } else{
+            } else if (is.vec) {
                 apply(posterior_samples[[name]], 2, mean)
+            } else {
+                mean(posterior_samples[[name]])
             }
         })
     } else if (estimate_method=="median"){
