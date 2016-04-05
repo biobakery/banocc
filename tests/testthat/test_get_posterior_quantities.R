@@ -18,6 +18,8 @@ test_that("get_posterior_quantiles returns a list", {
     expect_is(test_is_list(0, TRUE, "mu"),                "list")
     expect_is(test_is_list(1, FALSE, "mu"),               "list")
     expect_is(test_is_list(1, TRUE, "mu"),                "list")
+    expect_is(test_is_list(0, FALSE, "lp__"),             "list")
+    expect_is(test_is_list(0, TRUE,  "lp__"),             "list")
     expect_is(test_is_list(c(0, 0.5, 1), FALSE, "mu"),    "list")
     expect_is(test_is_list(c(0, 0.5, 1), TRUE, "mu"),     "list")
 })
@@ -40,15 +42,18 @@ test_that("get_posterior_quantiles returns with list parameter names", {
 test_that("get_posterior_quantiles elt dimensions are correct when list=FALSE", {
     pq <- get_posterior_quantiles(posterior_samples=posterior_samples,
                                   probs=c(0, 0.5, 1), list=FALSE,
-                                  parameter.names=c("mu", "Sigma"))
-    expect_equal(dim(pq$mu),    c(3, Data$P))
-    expect_equal(dim(pq$Sigma), c(3, Data$P, Data$P))
+                                  parameter.names=c("mu", "Sigma", "lp__"))
+    expect_equal(dim(pq$lp__),     NULL)
+    expect_equal(length(pq$lp__),  3)
+    expect_equal(dim(pq$mu),       c(3, Data$P))
+    expect_equal(dim(pq$Sigma),    c(3, Data$P, Data$P))
 })
 
 test_that("get_posterior_quantiles elt lengths are correct when list=TRUE", {
     pq <- get_posterior_quantiles(posterior_samples=posterior_samples,
                                   probs=c(0, 0.5, 1), list=TRUE,
-                                  parameter.names=c("mu", "Sigma"))
+                                  parameter.names=c("mu", "Sigma", "lp__"))
+    expect_equal(length(pq$lp__), 3)
     expect_equal(length(pq$mu), 3)
     expect_equal(length(pq$Sigma), 3)
 })
@@ -56,7 +61,9 @@ test_that("get_posterior_quantiles elt lengths are correct when list=TRUE", {
 test_that("get_posterior_quantiles quantile dimensions are correct when list=TRUE", {
     pq <- get_posterior_quantiles(posterior_samples=posterior_samples,
                                   probs=c(0, 0.5, 1), list=TRUE,
-                                  parameter.names=c("mu", "Sigma"))
+                                  parameter.names=c("mu", "Sigma", "lp__"))
+    expect_equal(dim(pq$lp__[[1]]), NULL)
+    expect_equal(length(pq$lp__[[1]]), 1)
     expect_equal(dim(pq$mu[[1]]),    NULL)
     expect_equal(length(pq$mu[[1]]), Data$P)
     expect_equal(dim(pq$Sigma[[1]]), c(Data$P, Data$P))
@@ -98,6 +105,11 @@ test_that("get_posterior_quantiles matches eltwise calcn for matrices when list=
         }
     }
 })
+test_that("get_posterior_quantiles matches eltwise calcn for scalars when list=FALSE", {
+    q <- quantile(posterior_samples$lp__, probs=probs)
+    expect_equal(pq$lp__, q)
+})
+
 
 test_that("get_posterior_quantiles matches eltwise calcn for matrices when list=TRUE", {
     probs <- c(0, 0.5, 1)
@@ -112,5 +124,11 @@ test_that("get_posterior_quantiles matches eltwise calcn for matrices when list=
                 expect_equal(pq$Sigma[[l]][i, k], q[l])
             }
         }
+    }
+})
+test_that("get_posterior_quantiles matches eltwise calcn for scalars when list=TRUE", {
+    q <- unname(quantile(posterior_samples$lp__, probs=probs))
+    for (i in seq_along(probs)){
+        expect_equal(pq$lp__[[i]], q[i])
     }
 })
