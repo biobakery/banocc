@@ -35,7 +35,11 @@ get_credible_intervals <- function(posterior_samples, list=FALSE,
                                             parameter.names=parameter.names)
         if (!list){
             credible.intervals <- lapply(credible.intervals, function(param.ci){
-                dimnames(param.ci)[[1]] <- c("lower", "upper")
+                if (!is.null(dim(param.ci))){
+                    dimnames(param.ci)[[1]] <- c("lower", "upper")
+                } else {
+                    names(param.ci) <- c("lower", "upper")
+                }
                 return(param.ci)
             })
         } else {
@@ -48,20 +52,29 @@ get_credible_intervals <- function(posterior_samples, list=FALSE,
         names(parameter.names) <- parameter.names
         credible.intervals <- lapply(parameter.names, function(name){
             is.mat <- length(dim(posterior_samples[[name]])) == 3
+            is.vec <- length(dim(posterior_samples[[name]])) == 2
             if(is.mat){
                 apply(posterior_samples[[name]], c(2, 3),
                       function(param){
                           coda::HPDinterval(coda::as.mcmc(param), prob=conf)
                       })
-            } else {
+            } else if (is.vec){
                 apply(posterior_samples[[name]], 2,
                       function(param){
                           coda::HPDinterval(coda::as.mcmc(param), prob=conf)
                       })
+            } else {
+                as.vector(coda::HPDinterval(
+                    coda::as.mcmc(as.vector(posterior_samples[[name]])),
+                    prob=conf))
             }
         })
         credible.intervals <- lapply(credible.intervals, function(param.ci){
-            dimnames(param.ci)[[1]] <- c("lower", "upper")
+            if (!is.null(dim(param.ci))){
+                dimnames(param.ci)[[1]] <- c("lower", "upper")
+            } else {
+                names(param.ci) <- c("lower", "upper")
+            }
             return(param.ci)
         })
         if (list){
@@ -75,12 +88,16 @@ get_credible_intervals <- function(posterior_samples, list=FALSE,
             for (i in 1:2){
                 for(name in parameter.names){
                     is.mat <- length(dim(posterior_samples[[name]])) == 3
+                    is.vec <- length(dim(posterior_samples[[name]])) == 2
                     if(is.mat){
                         credible.intervals.list[[name]][[i]] <-
                             credible.intervals[[name]][i, , ]
-                    } else {
+                    } else if (is.vec){
                         credible.intervals.list[[name]][[i]] <-
                             credible.intervals[[name]][i, ]
+                    } else {
+                        credible.intervals.list[[name]][[i]] <-
+                            credible.intervals[[name]][i]
                     }
                 }
             }
