@@ -2,3 +2,6 @@ inst/doc
 *~
 \#*
 *.RData
+*.tex
+tests/testthat/testthat_objects/*
+cache/*
