@@ -7,12 +7,15 @@
 #' @inheritParams cat_v
 
 adjust_zeros <- function(data, renorm=TRUE, zero_adj=0.0001, verbose=FALSE, num_level=0){
-   validation.utilities::cat_v("Begin adjust_zeros...", verbose, num_level=num_level)
-   data.adj <- data
+   banocc::cat_v("Begin adjust_zeros...", verbose, num_level=num_level)
+   data.adj <- as.matrix(data)
    data.adj[which(data.adj==0)] <- zero_adj
    if (renorm) {
        data.adj <- data.adj / rowSums(data.adj)
    }
-   validation.utilities::cat_v("Done.\n", verbose)
+   if (is.data.frame(data)){
+       data.adj <- as.data.frame(data.adj)
+   }
+   banocc::cat_v("Done.\n", verbose)
    return(data.adj)
 }
