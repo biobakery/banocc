@@ -9,6 +9,12 @@
 #' @param cholesky Boolean: return the cholesky decomposition?
 
 rlkj <- function(d, eta = 1, cholesky = FALSE, permute = !cholesky) {
+    if (d < 2){
+        stop("Dimension of correlation matrix must be >= 2")
+    }
+    if (eta < 1){
+        stop("The value of eta must be >= 1")
+    }
     alpha <- eta + (d - 2) / 2
     L <- matrix(0, d, d)
     L[1,1] <- 1
