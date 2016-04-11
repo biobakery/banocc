@@ -29,8 +29,10 @@
 #' @export
 
 #' @rdname run_banocc
-run_banocc <- function(bayes_model, C, nu, Lambda, alpha, beta,
-                       eta, cores = getOption("mc.cores", 1L),
+run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
+                       Lambda = 10*diag(ncol(C)),
+                       alpha = rep(1, ncol(C)), beta = rep(0.5, ncol(C)),
+                       eta = 1, cores = getOption("mc.cores", 1L),
                        chains = 4, iter = 2000, warmup = floor(iter/2),
                        thin = 1, init = 'random', control=NULL,
                        sd_mean=NULL, sd_var=NULL, conf_alpha=0.05,
