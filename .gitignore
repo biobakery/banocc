@@ -5,3 +5,4 @@ inst/doc
 *.tex
 tests/testthat/testthat_objects/*
 cache/*
+*.back
