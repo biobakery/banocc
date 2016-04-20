@@ -3,8 +3,8 @@ Type: Package
 Title: Bayesian ANalysis Of Compositional Covariance
 Version: 0.1
 Date: 2015-04-14
-Authors@R: person("Emma", "Schwager", email="emh146@mail.harvard.edu", 
-                  role=c("aut", "cre"))
+Authors@R: person("Emma", "Schwager", email = "emh146@mail.harvard.edu",
+                  role = c("aut", "cre"))
 Description: Collection of functions for plotting priors, generating output,
     running, and generating a workflow using BANOCC.
 License: What license is it under?
