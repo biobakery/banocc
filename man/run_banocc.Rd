@@ -61,6 +61,10 @@ initial values are sampled from the priors.}
 the standard deviations. They must be of equal length. If a vector of length
 less than p is given, it will be recycled.}
 
+\item{conf_alpha}{The percentage of the posterior density outside the
+credible interval. That is, a \code{1-conf_alpha} * 100\% credible
+interval will be returned.}
+
 \item{get_min_width}{A boolean value: should the minimum CI width that
 includes zero be calculated?}
 
