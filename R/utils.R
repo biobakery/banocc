@@ -1,5 +1,6 @@
 #' Cat output only if verbose
 #'
+#' @param s_string The string to output if \code{verbose} is \code{TRUE}
 #' @param verbose Print informative statements as the function executes?xo
 #' @param num_level The number of the level (will determine the number of spaces to add)
 #'

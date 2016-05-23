@@ -7,6 +7,8 @@
 cat_v(s_string, verbose, num_level = 0)
 }
 \arguments{
+\item{s_string}{The string to output if \code{verbose} is \code{TRUE}}
+
 \item{verbose}{Print informative statements as the function executes?xo}
 
 \item{num_level}{The number of the level (will determine the number of spaces to add)}
