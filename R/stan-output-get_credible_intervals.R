@@ -3,6 +3,7 @@
 #' @param type One of \code{"marginal.centered"} or \code{"marginal.hpd"},
 #'   indicating whether centeral or highest posterior density intervals are
 #'   desired
+#' @param conf The width of the credible interval (conf * 100%).
 #' @inheritParams get_posterior_quantiles
 #' @inheritParams SPIn::SPIn
 #' @inheritParams cat_v

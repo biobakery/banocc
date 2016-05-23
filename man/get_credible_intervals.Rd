@@ -20,10 +20,7 @@ an array or list.}
 \item{parameter.names}{A list of parameters for which estimates or
 quantiles will be returned}
 
-\item{conf}{
-\%\%     ~~Describe \code{conf} here~~
-Scalar, the confidence level desired.
-}
+\item{conf}{The width of the credible interval (conf * 100%).}
 
 \item{type}{One of \code{"marginal.centered"} or \code{"marginal.hpd"},
 indicating whether centeral or highest posterior density intervals are
