@@ -7,7 +7,7 @@ Authors@R: person("Emma", "Schwager", email = "emh146@mail.harvard.edu",
                   role = c("aut", "cre"))
 Description: Collection of functions for plotting priors, generating output,
     running, and generating a workflow using BANOCC.
-License: What license is it under?
+License: MIT + file LICENSE
 Depends: 
     R (>= 3.1.0)
 Imports: 
