@@ -8,7 +8,7 @@
 #'   (eta=1 means the distribution is uniform over d by d correlation matrices)
 #' @param cholesky Boolean: return the cholesky decomposition?
 
-rlkj <- function(d, eta = 1, cholesky = FALSE, permute = !cholesky) {
+rlkj <- function(d, eta = 1, cholesky = FALSE) {
     if (d < 2){
         stop("Dimension of correlation matrix must be >= 2")
     }
@@ -42,10 +42,6 @@ rlkj <- function(d, eta = 1, cholesky = FALSE, permute = !cholesky) {
     L[d,d] <- exp(0.5 * W[d-1])
     if(cholesky) return(L)
     Sigma <- tcrossprod(L)
-    if(permute) {
-      ord <- sample(d)
-      Sigma <- Sigma[ord,ord]
-    }
     return(Sigma)      
   }
 

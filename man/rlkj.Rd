@@ -4,7 +4,7 @@
 \alias{rlkj}
 \title{Generate a random sample from the LKJ distribution}
 \usage{
-rlkj(d, eta = 1, cholesky = FALSE, permute = !cholesky)
+rlkj(d, eta = 1, cholesky = FALSE)
 }
 \arguments{
 \item{d}{The dimension of the correlation matrix}
