@@ -30,6 +30,8 @@
 #' @param num_level The number of the level (will determine the number of
 #'   spaces to add to verbose output)
 #'
+#' @importFrom rstan extract
+#' @importFrom rstan sampling
 #'
 #' @export
 

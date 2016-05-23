@@ -2,3 +2,5 @@
 
 export(bayesStanModel)
 export(run_banocc)
+importFrom(rstan,extract)
+importFrom(rstan,sampling)
