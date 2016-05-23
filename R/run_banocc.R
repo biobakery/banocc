@@ -40,7 +40,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
                        thin = 1, init = NULL, control=NULL,
                        sd_mean=NULL, sd_var=NULL, conf_alpha=0.05,
                        get_min_width=FALSE, verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin run_banocc\n", verbose, num_level=num_level)
+    cat_v("Begin run_banocc\n", verbose, num_level=num_level)
     Data <- list(C=C, N=nrow(C), P=ncol(C))
     
     Data$nu     <- banocc::check_nu(nu, Data$P, verbose, num_level=num_level+1)
@@ -54,19 +54,19 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     Data$beta <- alpha_beta$beta
     Data$eta <- banocc::get_eta(eta)
 
-    banocc::cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
     if (is.null(init)){
         init <- banocc::get_IVs(chains=chains, data=Data, verbose=verbose,
                                 num_level=num_level + 1)
     }
 
+    cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
     Fit.all <- banocc::mycapture(rstan::sampling(bayes_model, data=Data,
                                                  chains=chains, iter=iter,
                                                  warmup=warmup, thin=thin,
                                                  init=init, cores=cores,
                                                  control=control))
     Fit <- Fit.all$output
-    banocc::cat_v("End fitting the model\n", verbose, num_level=num_level+1)
+    cat_v("End fitting the model\n", verbose, num_level=num_level+1)
 
     post.samples.list <- rstan::extract(Fit)
     CI <- banocc::get_credible_intervals(posterior_samples=post.samples.list,
@@ -103,21 +103,21 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
                           CI.hpd=CI, Estimates.median=Estimates,
                           Min.width=min_width)
 
-    banocc::cat_v("End run_banocc\n", verbose, num_level=num_level)
+    cat_v("End run_banocc\n", verbose, num_level=num_level)
 
     return(return_object)
 }
 
 check_nu <- function(nu, p, verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin check_nu\n", verbose, num_level=num_level)
+    cat_v("Begin check_nu\n", verbose, num_level=num_level)
     nu <- as.numeric(nu)
     nu <- banocc::check_vector("nu", nu, p, verbose, num_level=num_level+1)
-    banocc::cat_v("End check_nu\n", verbose, num_level=num_level)
+    cat_v("End check_nu\n", verbose, num_level=num_level)
     return(nu)
 }
 
 check_alpha_beta <- function(alpha, beta, p, verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin check_alpha_beta\n", verbose, num_level=num_level)
+    cat_v("Begin check_alpha_beta\n", verbose, num_level=num_level)
     if (length(alpha) != length(beta)){
         stop("'alpha' and 'beta' must be of equal length")
     }
@@ -133,12 +133,12 @@ check_alpha_beta <- function(alpha, beta, p, verbose=FALSE, num_level=0){
     if (any(beta <= 0)){
         stop("'beta' values must be positive")
     }
-    banocc::cat_v("End check_alpha_beta\n", verbose, num_level=num_level)
+    cat_v("End check_alpha_beta\n", verbose, num_level=num_level)
     return(list(alpha=alpha, beta=beta))
 }
 
 check_sd_mean_var <- function(sd_mean, sd_var, p, verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin check_sd_mean_var\n", verbose, num_level=num_level)
+    cat_v("Begin check_sd_mean_var\n", verbose, num_level=num_level)
     if (length(sd_mean) != length(sd_var)){
         stop("'sd_mean' and 'sd_var' must be of equal length")
     }
@@ -154,12 +154,12 @@ check_sd_mean_var <- function(sd_mean, sd_var, p, verbose=FALSE, num_level=0){
     if (any(sd_var <= 0)){
         stop("'sd_var' values must be positive")
     }
-    banocc::cat_v("End check_sd_mean_var\n", verbose, num_level=num_level)
+    cat_v("End check_sd_mean_var\n", verbose, num_level=num_level)
     return(list(sd_mean=sd_mean, sd_var=sd_var))
 }
 
 check_vector <- function(parm.name, parm, p, verbose=TRUE, num_level=0){
-    banocc::cat_v("Begin check_vector...", verbose, num_level=num_level)
+    cat_v("Begin check_vector...", verbose, num_level=num_level)
     if (!is.vector(parm) || mode(parm)!="numeric"){
         stop(paste0("'", parm.name, "' must be a vector"))
     }
@@ -173,12 +173,12 @@ check_vector <- function(parm.name, parm, p, verbose=TRUE, num_level=0){
                 "' is > p; only using first p elements")
         parm <- parm[1:p]
     }
-    banocc::cat_v("Done.\n", verbose)
+    cat_v("Done.\n", verbose)
     return(parm)
 }
 
 check_Lambda <- function(Lambda, p, verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin check_Lambda...", verbose, num_level=num_level)
+    cat_v("Begin check_Lambda...", verbose, num_level=num_level)
     if (!is.numeric(Lambda)){
         stop("Lambda must be numeric")
     }
@@ -211,13 +211,13 @@ check_Lambda <- function(Lambda, p, verbose=FALSE, num_level=0){
     } else {
         stop("'Lambda' must be either a matrix or a vector")
     }
-    banocc::cat_v("Done.\n", verbose)
+    cat_v("Done.\n", verbose)
     return(Lambda)
 }
 
 get_alpha_beta <- function(alpha, beta, p, sd_mean=NULL, sd_var=NULL,
                            verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin get_alpha_beta...", verbose=verbose,
+    cat_v("Begin get_alpha_beta...", verbose=verbose,
                   num_level=num_level)
     if (!is.null(alpha) || !is.null(beta)){
         if (is.null(alpha) || is.null(beta)){
@@ -240,7 +240,7 @@ get_alpha_beta <- function(alpha, beta, p, sd_mean=NULL, sd_var=NULL,
         stop(paste0("Must provide both 'alpha' and 'beta' OR both 'sd_mean'",
                     " and 'sd_var'"))
     }
-    banocc::cat_v("Done.\n", verbose)
+    cat_v("Done.\n", verbose)
     return(alpha_beta)
 }
 

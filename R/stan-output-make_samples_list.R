@@ -16,8 +16,8 @@
 
 make_samples_list <- function(samples, thin=1, concatenate.chains=FALSE,
                               verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin make_samples_list.\n", verbose, num_level=num_level)
-    banocc::cat_v("Getting parameter names...", verbose, num_level=num_level+1)
+    cat_v("Begin make_samples_list.\n", verbose, num_level=num_level)
+    cat_v("Getting parameter names...", verbose, num_level=num_level+1)
     if (thin >= dim(samples)[1]){
         warning(paste0("thin is greater than number of samples; only the ",
                        "first sample from each chain will be used"))
@@ -33,11 +33,11 @@ make_samples_list <- function(samples, thin=1, concatenate.chains=FALSE,
 
     samples.list        <- vector(mode="list", length=length(unique.names))
     names(samples.list) <- unique.names
-    banocc::cat_v(paste0("Found ", length(unique.names), " unique names.\n"),
+    cat_v(paste0("Found ", length(unique.names), " unique names.\n"),
                   verbose)
     
     if (concatenate.chains){
-        banocc::cat_v("Concatenating chains ...", verbose,
+        cat_v("Concatenating chains ...", verbose,
                       num_level=num_level+1)
         samples.thin.conc <- samples.thin[, 1, ]
         if (dim(samples.thin)[2] > 1){
@@ -46,11 +46,11 @@ make_samples_list <- function(samples, thin=1, concatenate.chains=FALSE,
                                            samples.thin[, i, ])
             }
         }
-        banocc::cat_v("Done.\n", verbose)
+        cat_v("Done.\n", verbose)
     }
-    banocc::cat_v("Getting per parameter...", verbose, num_level=num_level+1)
+    cat_v("Getting per parameter...", verbose, num_level=num_level+1)
     for (param in unique.names){
-        banocc::cat_v(paste0(param, "..."), verbose)
+        cat_v(paste0(param, "..."), verbose)
         param.idx <- grep(paste0("^", param), samples.param.names)
         if (!concatenate.chains){
             if (length(dim(samples.thin)) == 3){
@@ -73,7 +73,7 @@ make_samples_list <- function(samples, thin=1, concatenate.chains=FALSE,
             }
         }
     }
-    banocc::cat_v("Done.\n", verbose)
-    banocc::cat_v("End make_samples_list.\n", verbose, num_level=num_level)
+    cat_v("Done.\n", verbose)
+    cat_v("End make_samples_list.\n", verbose, num_level=num_level)
     return(samples.list)
 }

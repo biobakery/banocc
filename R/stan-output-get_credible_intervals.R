@@ -25,7 +25,7 @@ get_credible_intervals <- function(posterior_samples, list=FALSE,
                                    conf=0.95,
                                    type="marginal.hpd",
                                    verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin get_credible_intervals\n", verbose,
+    cat_v("Begin get_credible_intervals\n", verbose,
                   num_level=num_level)
     if (type == "marginal.centered"){
         alpha <- 1 - conf
@@ -157,6 +157,6 @@ get_credible_intervals <- function(posterior_samples, list=FALSE,
     } else {
         stop("'type' must be one of \"marginal.centered\" or \"marginal.hpd\"")
     }
-    banocc::cat_v("End get_credible_intervals\n", verbose, num_level=num_level)
+    cat_v("End get_credible_intervals\n", verbose, num_level=num_level)
     return(credible.intervals)
 }

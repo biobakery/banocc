@@ -18,7 +18,7 @@
 #' @importFrom mvtnorm rmvnorm
 
 get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin get_IVs...", verbose, num_level=num_level)
+    cat_v("Begin get_IVs...", verbose, num_level=num_level)
     if (chains <= 0){
         stop("'chains' must be > 0")
     }
@@ -32,6 +32,6 @@ get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
                                },
                                data$alpha, data$beta))
                   })
-    banocc::cat_v("Done.\n", verbose)
+    cat_v("Done.\n", verbose)
     return(IVs)
 }

@@ -16,7 +16,7 @@
 get_min_width <- function(posterior_samples, parameter.names="ln_Rho",
                           null_value=0, type="marginal.hpd", precision=0.01,
                           verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin get_min_width\n", verbose,
+    cat_v("Begin get_min_width\n", verbose,
                   num_level=num_level)
 
     samples_dim <- lapply(posterior_samples, dim)
@@ -54,7 +54,7 @@ get_min_width <- function(posterior_samples, parameter.names="ln_Rho",
             width=1, verbose=verbose, num_level=num_level+1)
     }
 
-    banocc::cat_v("End get_min_width\n", verbose, num_level=num_level)
+    cat_v("End get_min_width\n", verbose, num_level=num_level)
     return(min_width)
 }
 
@@ -74,7 +74,7 @@ eval_width <- function(min_width, missing_min_width, posterior_samples,
                        parameter.names, width, type, null_value,
                        verbose=FALSE, num_level=0
                        ){
-    banocc::cat_v("Begin eval_width\n", verbose,
+    cat_v("Begin eval_width\n", verbose,
                   num_level=num_level)
     CI <- banocc::get_credible_intervals(posterior_samples=posterior_samples,
                                          list=FALSE,
@@ -113,7 +113,7 @@ eval_width <- function(min_width, missing_min_width, posterior_samples,
         updated_missing_min_width <- missing_min_width
     }
 
-    banocc::cat_v("End eval_width\n", verbose,
+    cat_v("End eval_width\n", verbose,
                   num_level=num_level)
     return(list(min_width=updated_min_width,
                 missing_min_width=updated_missing_min_width))
@@ -122,7 +122,7 @@ eval_width <- function(min_width, missing_min_width, posterior_samples,
 #' Update the min_width list. Replaces every element to update with width.
 update_min_width <- function(min_width, which_to_update, width,
                              verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin update_min_width.\n", verbose, num_level=num_level)
+    cat_v("Begin update_min_width.\n", verbose, num_level=num_level)
     updated_min_width <- lapply(names(min_width), function(name){
         new_width <- min_width[[name]]
         new_width[which_to_update[[name]]] <- width
@@ -134,7 +134,7 @@ update_min_width <- function(min_width, which_to_update, width,
         }
     })
     names(updated_min_width) <- names(min_width)
-    banocc::cat_v("End update_min_width.\n", verbose, num_level=num_level)
+    cat_v("End update_min_width.\n", verbose, num_level=num_level)
     return(updated_min_width)
 }
 
@@ -144,7 +144,7 @@ update_min_width <- function(min_width, which_to_update, width,
 update_missing_min_width <- function(missing_min_width, which_to_update,
                                      width,
                                      verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin update_missing_min_width.\n", verbose,
+    cat_v("Begin update_missing_min_width.\n", verbose,
                   num_level=num_level)
     updated_missing_min_width <- lapply(names(missing_min_width), function(name){
         new <- missing_min_width[[name]]
@@ -160,7 +160,7 @@ update_missing_min_width <- function(missing_min_width, which_to_update,
         }
     })
     names(updated_missing_min_width) <- names(missing_min_width)
-    banocc::cat_v("End update_missing_min_width.\n", verbose,
+    cat_v("End update_missing_min_width.\n", verbose,
                   num_level=num_level)
     return(updated_missing_min_width)
 }
@@ -170,7 +170,7 @@ update_missing_min_width <- function(missing_min_width, which_to_update,
 #'   been updated (missing_min_width)
 find_idx_to_update <- function(CI_include_null, missing_min_width,
                                verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin find_idx_to_update.\n", verbose, num_level=num_level)
+    cat_v("Begin find_idx_to_update.\n", verbose, num_level=num_level)
     which_to_update <- lapply(names(CI_include_null), function(name){
         update <- as.logical(CI_include_null[[name]] &
                              missing_min_width[[name]])
@@ -182,7 +182,7 @@ find_idx_to_update <- function(CI_include_null, missing_min_width,
         }
     })
     names(which_to_update) <- names(CI_include_null)
-    banocc::cat_v("End find_idx_to_update.\n", verbose, num_level=num_level)
+    cat_v("End find_idx_to_update.\n", verbose, num_level=num_level)
     return(which_to_update)
 }
 
@@ -191,7 +191,7 @@ find_idx_to_update <- function(CI_include_null, missing_min_width,
 #'   TRUE if the CI includes null_value, FALSE if it doesn't and NA
 #'   if the CI width is 0
 check_CI <- function(CI, null_value,  verbose=FALSE, num_level=0){
-    banocc::cat_v("Begin check_CI\n", verbose, num_level=num_level)
+    cat_v("Begin check_CI\n", verbose, num_level=num_level)
     CI_include_null <- lapply(names(CI), function(name){
         is.mat <- length(dim(CI[[name]])) == 3
         if (is.mat){
@@ -211,7 +211,7 @@ check_CI <- function(CI, null_value,  verbose=FALSE, num_level=0){
     })
     names(CI_include_null) <- names(CI)
 
-    banocc::cat_v("End check_CI\n", verbose, num_level=num_level)
+    cat_v("End check_CI\n", verbose, num_level=num_level)
     return(CI_include_null)
 }
 
@@ -221,7 +221,7 @@ check_CI <- function(CI, null_value,  verbose=FALSE, num_level=0){
 initialize_min_width <- function(parameter.names, samples_dim, value,
                                  verbose=verbose, num_level=0){
     
-    banocc::cat_v("Begin initialize_min_width...", verbose,
+    cat_v("Begin initialize_min_width...", verbose,
                   num_level=num_level)
     min_width_init <- lapply(parameter.names, function(name){
         if (length(samples_dim[[name]]) == 3){
@@ -232,6 +232,6 @@ initialize_min_width <- function(parameter.names, samples_dim, value,
         }
     })
     names(min_width_init) <- parameter.names
-    banocc::cat_v("Done.\n", verbose)
+    cat_v("Done.\n", verbose)
     return(min_width_init)
 }

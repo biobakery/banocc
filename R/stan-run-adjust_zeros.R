@@ -7,7 +7,7 @@
 #' @inheritParams cat_v
 
 adjust_zeros <- function(data, renorm=TRUE, zero_adj=0.0001, verbose=FALSE, num_level=0){
-   banocc::cat_v("Begin adjust_zeros...", verbose, num_level=num_level)
+   cat_v("Begin adjust_zeros...", verbose, num_level=num_level)
    data.adj <- as.matrix(data)
    data.adj[which(data.adj==0)] <- zero_adj
    if (renorm) {
@@ -16,6 +16,6 @@ adjust_zeros <- function(data, renorm=TRUE, zero_adj=0.0001, verbose=FALSE, num_
    if (is.data.frame(data)){
        data.adj <- as.data.frame(data.adj)
    }
-   banocc::cat_v("Done.\n", verbose)
+   cat_v("Done.\n", verbose)
    return(data.adj)
 }
