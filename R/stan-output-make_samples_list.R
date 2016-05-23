@@ -1,18 +1,18 @@
-#' Generate a list of samples when they have been extracted from a
-#'   \code{stanfit} object with \code{permuted=FALSE}.
-#'
-#' @param samples A set of samples extracted from a \code{stanfit} object with
-#'   \code{permuted=FALSE}
-#' @inheritParams rstan::sampling
-#' @param concatenate.chains Boolean: should all the chains be concatenated
-#'   together, or left separately?
-#' @inheritParams cat_v
-#' @return A named list of each parameter from the \code{stanfit} object. The
-#'   elements are either an array with the first dimension the iteration, the
-#'   second the chain, and the third the parameter index; or an array with the
-#'   first dimension the iteration (across all chains) and the remaining
-#'   dimensions the parameter index (as in \code{\link[rstan]{extract}} when
-#'   \code{permuted=TRUE}).
+# Generate a list of samples when they have been extracted from a
+#   \code{stanfit} object with \code{permuted=FALSE}.
+#
+# @param samples A set of samples extracted from a \code{stanfit} object with
+#   \code{permuted=FALSE}
+# @inheritParams rstan::sampling
+# @param concatenate.chains Boolean: should all the chains be concatenated
+#   together, or left separately?
+# @inheritParams cat_v
+# @return A named list of each parameter from the \code{stanfit} object. The
+#   elements are either an array with the first dimension the iteration, the
+#   second the chain, and the third the parameter index; or an array with the
+#   first dimension the iteration (across all chains) and the remaining
+#   dimensions the parameter index (as in \code{\link[rstan]{extract}} when
+#   \code{permuted=TRUE}).
 
 make_samples_list <- function(samples, thin=1, concatenate.chains=FALSE,
                               verbose=FALSE, num_level=0){

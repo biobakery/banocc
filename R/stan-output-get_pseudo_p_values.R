@@ -1,12 +1,12 @@
-#' A function to get pseudo p-values based on posterior credible intervals
-#'
-#' @inheritParams get_posterior_quantiles
-#' @param null.value The null value to which the credible interval is being
-#'   compared
-#' @param step.size The step size by which to increment the interval to
-#'   calculate the pseudo p-value.
-#' @return A list of pseudo p-values for each parameter in
-#'   \code{parameter.names}
+# A function to get pseudo p-values based on posterior credible intervals
+#
+# @inheritParams get_posterior_quantiles
+# @param null.value The null value to which the credible interval is being
+#   compared
+# @param step.size The step size by which to increment the interval to
+#   calculate the pseudo p-value.
+# @return A list of pseudo p-values for each parameter in
+#   \code{parameter.names}
 
 get_pseudo_p_values <- function(posterior_samples, parameter.names="ln_Rho",
                                 null.value=0, step.size=0.01, verbose=FALSE){

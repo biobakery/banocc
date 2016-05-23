@@ -23,8 +23,10 @@
 #' @inheritParams rstan::sampling
 #' @param get_min_width A boolean value: should the minimum CI width that
 #'   includes zero be calculated?
-#' @inheritParams cat_v
 #' @name run_banocc
+#' @param verbose Print informative statements as the function executes?
+#' @param num_level The number of the level (will determine the number of
+#'   spaces to add to verbose output)
 #'
 #'
 #' @export

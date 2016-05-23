@@ -1,12 +1,12 @@
-#' Generate a random sample from the LKJ distribution
-#'
-#' This function is based on code from
-#' \url{https://groups.google.com/forum/#!msg/stan-users/3gDvAs_qwN8/Xpgi2rPlx68J}.
-#' 
-#' @param d The dimension of the correlation matrix
-#' @param eta The scaling parameter of the LKJ distribution; must be > 1
-#'   (eta=1 means the distribution is uniform over d by d correlation matrices)
-#' @param cholesky Boolean: return the cholesky decomposition?
+# Generate a random sample from the LKJ distribution
+#
+# This function is based on code from
+# \url{https://groups.google.com/forum/#!msg/stan-users/3gDvAs_qwN8/Xpgi2rPlx68J}.
+# 
+# @param d The dimension of the correlation matrix
+# @param eta The scaling parameter of the LKJ distribution; must be > 1
+#   (eta=1 means the distribution is uniform over d by d correlation matrices)
+# @param cholesky Boolean: return the cholesky decomposition?
 
 rlkj <- function(d, eta = 1, cholesky = FALSE) {
     if (d < 2){

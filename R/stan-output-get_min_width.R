@@ -1,14 +1,14 @@
-#' Get credible intervals for the output according to different paradigms
-#'
-#' @param precision The precision used to estimate the minimum width.
-#' @param null_value The null value to which to compare the credible interval.
-#'   Must be the same for all parameters.
-#' @inheritParams get_posterior_quantiles
-#' @inheritParams get_credible_intervals
-#' @inheritParams cat_v
-#' @return Returns a list of the minimum CI widths that include
-#'   \code{null_value} for each parameter in \code{parameter.names}.
-#'
+# Get credible intervals for the output according to different paradigms
+#
+# @param precision The precision used to estimate the minimum width.
+# @param null_value The null value to which to compare the credible interval.
+#   Must be the same for all parameters.
+# @inheritParams get_posterior_quantiles
+# @inheritParams get_credible_intervals
+# @inheritParams cat_v
+# @return Returns a list of the minimum CI widths that include
+#   \code{null_value} for each parameter in \code{parameter.names}.
+#
 get_min_width <- function(posterior_samples, parameter.names="ln_Rho",
                           null_value=0, type="marginal.hpd", precision=0.01,
                           verbose=FALSE, num_level=0){
@@ -54,18 +54,18 @@ get_min_width <- function(posterior_samples, parameter.names="ln_Rho",
     return(min_width)
 }
 
-#' Evaluate everything for a particular width and update min_width and
-#'   missing_min_width lists accordingly.
-#' 
-#' @param min_width A list; each elt is a parameter. The values in an element
-#'   are the minimum widths.
-#' @param missing_min_width The same structure as min_width, but the values
-#'   in an element are indicators of whether the min_width has been achieved.
-#' @param width The current width of credible interval to evaluate
-#' @param null_value The null value of the ``hypothesis test''
-#' @inheritParams get_credible_intervals
-#' @inheritParams cat_v
-#' 
+# Evaluate everything for a particular width and update min_width and
+#   missing_min_width lists accordingly.
+# 
+# @param min_width A list; each elt is a parameter. The values in an element
+#   are the minimum widths.
+# @param missing_min_width The same structure as min_width, but the values
+#   in an element are indicators of whether the min_width has been achieved.
+# @param width The current width of credible interval to evaluate
+# @param null_value The null value of the ``hypothesis test''
+# @inheritParams get_credible_intervals
+# @inheritParams cat_v
+# 
 eval_width <- function(min_width, missing_min_width, posterior_samples,
                        parameter.names, width, type, null_value,
                        verbose=FALSE, num_level=0
@@ -115,7 +115,7 @@ eval_width <- function(min_width, missing_min_width, posterior_samples,
                 missing_min_width=updated_missing_min_width))
 }
 
-#' Update the min_width list. Replaces every element to update with width.
+# Update the min_width list. Replaces every element to update with width.
 update_min_width <- function(min_width, which_to_update, width,
                              verbose=FALSE, num_level=0){
     cat_v("Begin update_min_width.\n", verbose, num_level=num_level)
@@ -134,9 +134,9 @@ update_min_width <- function(min_width, which_to_update, width,
     return(updated_min_width)
 }
 
-#' Updated the missing_min_width list; elements are set to FALSE if (1)
-#'   they've just had a width added or (2) they have a missing width b/c
-#'   the CI width is always zero (eg., correlation diagonal elts.)
+# Updated the missing_min_width list; elements are set to FALSE if (1)
+#   they've just had a width added or (2) they have a missing width b/c
+#   the CI width is always zero (eg., correlation diagonal elts.)
 update_missing_min_width <- function(missing_min_width, which_to_update,
                                      width,
                                      verbose=FALSE, num_level=0){
@@ -161,9 +161,9 @@ update_missing_min_width <- function(missing_min_width, which_to_update,
     return(updated_missing_min_width)
 }
 
-#' Find which elements need to have the min_width updated. These are those
-#'   whose CIs include the null (CI_include_null) AND haven't yet
-#'   been updated (missing_min_width)
+# Find which elements need to have the min_width updated. These are those
+#   whose CIs include the null (CI_include_null) AND haven't yet
+#   been updated (missing_min_width)
 find_idx_to_update <- function(CI_include_null, missing_min_width,
                                verbose=FALSE, num_level=0){
     cat_v("Begin find_idx_to_update.\n", verbose, num_level=num_level)
@@ -182,10 +182,10 @@ find_idx_to_update <- function(CI_include_null, missing_min_width,
     return(which_to_update)
 }
 
-#' Checks a credible interval list (each elt is an array) against
-#'   a null value; returns a list. Each value in a list elt is
-#'   TRUE if the CI includes null_value, FALSE if it doesn't and NA
-#'   if the CI width is 0
+# Checks a credible interval list (each elt is an array) against
+#   a null value; returns a list. Each value in a list elt is
+#   TRUE if the CI includes null_value, FALSE if it doesn't and NA
+#   if the CI width is 0
 check_CI <- function(CI, null_value,  verbose=FALSE, num_level=0){
     cat_v("Begin check_CI\n", verbose, num_level=num_level)
     CI_include_null <- lapply(names(CI), function(name){
@@ -211,9 +211,9 @@ check_CI <- function(CI, null_value,  verbose=FALSE, num_level=0){
     return(CI_include_null)
 }
 
-#' Initializes a min_width list with names as parameter.names and
-#'   value in each entry of vector or matrix, as appropriate (determined by
-#'   samples_dim)
+# Initializes a min_width list with names as parameter.names and
+#   value in each entry of vector or matrix, as appropriate (determined by
+#   samples_dim)
 initialize_min_width <- function(parameter.names, samples_dim, value,
                                  verbose=verbose, num_level=0){
     

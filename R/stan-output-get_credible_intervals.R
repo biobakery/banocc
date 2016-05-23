@@ -1,18 +1,18 @@
-#' Get credible intervals for the output according to different paradigms
-#'
-#' @param type One of \code{"marginal.centered"} or \code{"marginal.hpd"},
-#'   indicating whether centeral or highest posterior density intervals are
-#'   desired
-#' @param conf The width of the credible interval (conf * 100%).
-#' @inheritParams get_posterior_quantiles
-#' @inheritParams cat_v
-#' @return Returns a list of the intervals for each parameter in
-#'   \code{parameter.names}.  If \code{list=TRUE}, then each parameter is a
-#'   list, with elements \code{lower} and \code{upper} being the lower and
-#'   upper bounds, respectively. If \code{list=FALSE}, then each parameter is
-#'   an array with the first dimension being the bounds and the remaining
-#'   dimensions being the parameter index or indices.
-#'
+# Get credible intervals for the output according to different paradigms
+#
+# @param type One of \code{"marginal.centered"} or \code{"marginal.hpd"},
+#   indicating whether centeral or highest posterior density intervals are
+#   desired
+# @param conf The width of the credible interval (conf * 100%).
+# @inheritParams get_posterior_quantiles
+# @inheritParams cat_v
+# @return Returns a list of the intervals for each parameter in
+#   \code{parameter.names}.  If \code{list=TRUE}, then each parameter is a
+#   list, with elements \code{lower} and \code{upper} being the lower and
+#   upper bounds, respectively. If \code{list=FALSE}, then each parameter is
+#   an array with the first dimension being the bounds and the remaining
+#   dimensions being the parameter index or indices.
+#
 
 get_credible_intervals <- function(posterior_samples, list=FALSE,
                                    parameter.names=c("mu", "Sigma"),

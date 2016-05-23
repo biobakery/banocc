@@ -64,11 +64,10 @@ less than p is given, it will be recycled.}
 \item{get_min_width}{A boolean value: should the minimum CI width that
 includes zero be calculated?}
 
-\item{verbose}{\code{TRUE} or \code{FALSE}: flag indicating whether 
-     to print intermediate output from Stan on the console, which might
-     be helpful for model debugging.}
+\item{verbose}{Print informative statements as the function executes?}
 
-\item{num_level}{The number of the level (will determine the number of spaces to add)}
+\item{num_level}{The number of the level (will determine the number of
+spaces to add to verbose output)}
 }
 \description{
 Runs BAnOCC to fit the model and generate appropriate convergence metrics
