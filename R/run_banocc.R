@@ -23,7 +23,6 @@
 #' @inheritParams rstan::sampling
 #' @param get_min_width A boolean value: should the minimum CI width that
 #'   includes zero be calculated?
-#' @name run_banocc
 #' @param verbose Print informative statements as the function executes?
 #' @param num_level The number of the level (will determine the number of
 #'   spaces to add to verbose output)
@@ -31,7 +30,6 @@
 #'
 #' @export
 
-#' @rdname run_banocc
 run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
                        Lambda = 10*diag(ncol(C)),
                        alpha = rep(1, ncol(C)), beta = rep(0.5, ncol(C)),
