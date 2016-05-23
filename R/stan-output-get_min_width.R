@@ -5,11 +5,7 @@
 #'   Must be the same for all parameters.
 #' @inheritParams get_posterior_quantiles
 #' @inheritParams get_credible_intervals
-# @inheritParams SPIn::SPIn
 #' @inheritParams cat_v
-# @param lb,ub Only used if \code{type="marginal.spin"}.  Scalars, the lower
-#   and upper bounds of the distribution. If specified, a pseudo-sample point
-#   equal to the corresponding bound will be added.
 #' @return Returns a list of the minimum CI widths that include
 #'   \code{null_value} for each parameter in \code{parameter.names}.
 #'
