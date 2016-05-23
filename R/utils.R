@@ -3,11 +3,10 @@
 #' @param verbose Print informative statements as the function executes?xo
 #' @param num_level The number of the level (will determine the number of spaces to add)
 #'
-#' @importFrom stringr str_c
-#' @importFrom stringr str_dup
 
 cat_v <- function(s_string, verbose, num_level=0){
-   if (num_level > 0) s_string <- stringr::str_c(stringr::str_dup("  ", num_level), s_string)
+   if (num_level > 0) s_string <- paste0(c(rep("  ", num_level), s_string),
+                                         collapse="")
    if(verbose) cat(s_string)
 }
 
