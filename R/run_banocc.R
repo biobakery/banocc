@@ -26,8 +26,6 @@
 #' @inheritParams cat_v
 #' @name run_banocc
 #'
-#' @importFrom rstan sampling
-#' @importFrom rstan extract
 #'
 #' @export
 
