@@ -8,7 +8,7 @@
 run_banocc(bayes_model, C, nu = rep(0, ncol(C)), Lambda = 10 *
   diag(ncol(C)), alpha = rep(1, ncol(C)), beta = rep(0.5, ncol(C)),
   eta = 1, cores = getOption("mc.cores", 1L), chains = 4, iter = 2000,
-  warmup = floor(iter/2), thin = 1, init = "random", control = NULL,
+  warmup = floor(iter/2), thin = 1, init = NULL, control = NULL,
   sd_mean = NULL, sd_var = NULL, conf_alpha = 0.05,
   get_min_width = FALSE, verbose = FALSE, num_level = 0)
 }
@@ -50,17 +50,9 @@ is given, it will be recycled.}
 
 \item{thin}{A positive integer specifying the period for saving samples; defaults to 1.}
 
-\item{init}{One of digit \code{0}, string \code{"0"} or \code{"random"}, 
-    a function that returns a list, or a list of initial parameter values with
-    which to indicate how the initial values of parameters are specified. 
-    \code{"0"}: initialize all to be zero on the unconstrained support; 
-    \code{"random"}: randomly generated;
-    \code{list}: a list of lists equal in length to the number of chains 
-     (parameter \code{chains}), where each list in the list of lists specifies the initial
-      values of parameters by name for the corresponding chain.
-    \code{function}: a function that returns a list for specifying 
-      the initial values of parameters for a chain. The function
-      can take an optional parameter \code{chain_id}. }
+\item{init}{The initial values as a list (see
+\code{\link[rstan]{sampling}}). Default value is NULL, which means that
+initial values are sampled from the priors.}
 
 \item{control}{See the argument \code{control} of function
     \code{\link{stan}}.}

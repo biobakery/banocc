@@ -17,6 +17,9 @@
 #'   the standard deviations. They must be of equal length. If a vector of length
 #'   less than p is given, it will be recycled.
 #' @param eta scale parameter of LKJ distribution; must be >= 1.
+#' @param init The initial values as a list (see
+#'   \code{\link[rstan]{sampling}}). Default value is NULL, which means that
+#'   initial values are sampled from the priors.
 #' @inheritParams rstan::sampling
 #' @param get_min_width A boolean value: should the minimum CI width that
 #'   includes zero be calculated?
@@ -34,7 +37,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
                        alpha = rep(1, ncol(C)), beta = rep(0.5, ncol(C)),
                        eta = 1, cores = getOption("mc.cores", 1L),
                        chains = 4, iter = 2000, warmup = floor(iter/2),
-                       thin = 1, init = 'random', control=NULL,
+                       thin = 1, init = NULL, control=NULL,
                        sd_mean=NULL, sd_var=NULL, conf_alpha=0.05,
                        get_min_width=FALSE, verbose=FALSE, num_level=0){
     banocc::cat_v("Begin run_banocc\n", verbose, num_level=num_level)
@@ -52,6 +55,11 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     Data$eta <- banocc::get_eta(eta)
 
     banocc::cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
+    if (is.null(init)){
+        init <- banocc::get_IVs(chains=chains, data=Data, verbose=verbose,
+                                num_level=num_level + 1)
+    }
+
     Fit.all <- banocc::mycapture(rstan::sampling(bayes_model, data=Data,
                                                  chains=chains, iter=iter,
                                                  warmup=warmup, thin=thin,
