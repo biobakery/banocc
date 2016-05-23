@@ -2,4 +2,3 @@
 
 export(bayesStanModel)
 export(run_banocc)
-importFrom(mvtnorm,rmvnorm)
