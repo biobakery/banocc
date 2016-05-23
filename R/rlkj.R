@@ -23,10 +23,6 @@ rlkj <- function(d, eta = 1, cholesky = FALSE) {
       L[2,2] <- sqrt(1 - L[2,1]^2)
       if(cholesky) return(L)
       Sigma <- tcrossprod(L)
-      if(permute) {
-        ord <- sample(d)
-        Sigma <- Sigma[ord,ord]
-      }
       return(Sigma)      
     }
     W <- log(1 - partials^2)
