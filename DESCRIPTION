@@ -9,16 +9,11 @@ Description: Collection of functions for plotting priors, generating output,
     running, and generating a workflow using BANOCC.
 License: MIT + file LICENSE
 Depends: 
-    R (>= 3.1.0)
+    R (>= 3.1.0),
+    rstan (>= 2.5.0)
 Imports: 
     coda (>= 0.18.1),
-    ggplot2 (>= 0.9.3.1),
-    MCMCpack (>= 1.3),
-    mvtnorm,
-    SPIn,
-    stringr,
-    reshape2 (>= 1.2.2),
-    rstan (>= 2.5.0)
+    mvtnorm
 Suggests: 
     knitr,
     rmarkdown,
