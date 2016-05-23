@@ -2,6 +2,4 @@
 
 export(bayesStanModel)
 export(run_banocc)
-importFrom(coda,HPDinterval)
-importFrom(coda,as.mcmc)
 importFrom(mvtnorm,rmvnorm)

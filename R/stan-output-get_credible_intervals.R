@@ -13,8 +13,6 @@
 #'   an array with the first dimension being the bounds and the remaining
 #'   dimensions being the parameter index or indices.
 #'
-#' @importFrom coda HPDinterval
-#' @importFrom coda as.mcmc
 
 get_credible_intervals <- function(posterior_samples, list=FALSE,
                                    parameter.names=c("mu", "Sigma"),
