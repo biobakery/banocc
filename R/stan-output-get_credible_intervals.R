@@ -97,6 +97,7 @@ get_credible_intervals <- function(posterior_samples, list=FALSE,
             }
             credible.intervals <- credible.intervals.list
         }
+    } else {
         stop("'type' must be one of \"marginal.centered\" or \"marginal.hpd\"")
     }
     cat_v("End get_credible_intervals\n", verbose, num_level=num_level)
