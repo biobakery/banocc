@@ -26,6 +26,8 @@
 #' @param conf_alpha The percentage of the posterior density outside the
 #'   credible interval. That is, a \code{1-conf_alpha} * 100\% credible
 #'   interval will be returned.
+#' @param calc_snc Boolean: should the scaled neighborhood criterion be
+#'   calculated?
 #' @param verbose Print informative statements as the function executes?
 #' @param num_level The number of the level (will determine the number of
 #'   spaces to add to verbose output)
@@ -42,7 +44,8 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
                        chains = 4, iter = 2000, warmup = floor(iter/2),
                        thin = 1, init = NULL, control=NULL,
                        sd_mean=NULL, sd_var=NULL, conf_alpha=0.05,
-                       get_min_width=FALSE, verbose=FALSE, num_level=0){
+                       get_min_width=FALSE, calc_snc=FALSE, verbose=FALSE,
+                       num_level=0){
     cat_v("Begin run_banocc\n", verbose, num_level=num_level)
     Data <- list(C=C, N=nrow(C), P=ncol(C))
     
@@ -94,6 +97,14 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     }
     min_width <- min_width$ln_Rho
 
+    if (calc_snc){
+        snc <- banocc::get_snc(posterior_samples=post.samples.list,
+                               parameter.names=c("ln_Rho"))
+    } else {
+        snc <- list(ln_Rho=NULL)
+    }
+    snc <- snc$ln_Rho
+
     Estimates <-
         banocc::get_posterior_estimates(posterior_samples=post.samples.list,
                                         estimate_method="median",
@@ -104,7 +115,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     
     return_object <- list(Data=Data, Fit=Fit, Fit.print=Fit.all$print.output,
                           CI.hpd=CI, Estimates.median=Estimates,
-                          Min.width=min_width)
+                          Min.width=min_width, SNC=snc)
 
     cat_v("End run_banocc\n", verbose, num_level=num_level)
 

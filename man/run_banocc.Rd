@@ -10,7 +10,8 @@ run_banocc(bayes_model, C, nu = rep(0, ncol(C)), Lambda = 10 *
   eta = 1, cores = getOption("mc.cores", 1L), chains = 4, iter = 2000,
   warmup = floor(iter/2), thin = 1, init = NULL, control = NULL,
   sd_mean = NULL, sd_var = NULL, conf_alpha = 0.05,
-  get_min_width = FALSE, verbose = FALSE, num_level = 0)
+  get_min_width = FALSE, calc_snc = FALSE, verbose = FALSE,
+  num_level = 0)
 }
 \arguments{
 \item{bayes_model}{The compiled stan model (as with
@@ -67,6 +68,9 @@ interval will be returned.}
 
 \item{get_min_width}{A boolean value: should the minimum CI width that
 includes zero be calculated?}
+
+\item{calc_snc}{Boolean: should the scaled neighborhood criterion be
+calculated?}
 
 \item{verbose}{Print informative statements as the function executes?}
 
