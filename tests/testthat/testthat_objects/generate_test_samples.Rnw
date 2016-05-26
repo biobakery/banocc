@@ -28,9 +28,6 @@
 <<setup, include=FALSE, cache=FALSE>>=
 rm(list=ls())
 library(knitr)
-devtools::load_all()
-opts_chunk$set(fig.align='center', fig.show='hold')
-options(replace.assign=TRUE,width=90)
 @ 
 
 <<compile-stan-model, cache=TRUE, echo=FALSE>>=
