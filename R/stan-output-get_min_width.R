@@ -16,11 +16,11 @@ get_min_width <- function(posterior_samples, parameter.names="ln_Rho",
                   num_level=num_level)
 
     samples_dim <- lapply(posterior_samples, dim)
-    min_width <- banocc::initialize_min_width(
+    min_width <- initialize_min_width(
         parameter.names=parameter.names, samples_dim=samples_dim,
         value=NA, verbose=verbose, num_level=num_level + 1)
 
-    missing_min_width <- banocc::initialize_min_width(
+    missing_min_width <- initialize_min_width(
         parameter.names=parameter.names, samples_dim=samples_dim,
         value=TRUE, verbose=verbose, num_level=num_level + 1)
 
@@ -30,7 +30,7 @@ get_min_width <- function(posterior_samples, parameter.names="ln_Rho",
 
 
     while(any_still_missing && width < 1-precision){
-        updated_width <- banocc::eval_width(
+        updated_width <- eval_width(
             min_width=min_width, missing_min_width=missing_min_width,
             posterior_samples=posterior_samples,
             parameter.names=parameter.names, width=width, type=type,
@@ -45,7 +45,7 @@ get_min_width <- function(posterior_samples, parameter.names="ln_Rho",
     }
 
     if (any_still_missing){
-        min_width <- banocc::update_min_width(
+        min_width <- update_min_width(
             min_width=min_width, which_to_update=missing_min_width,
             width=1, verbose=verbose, num_level=num_level+1)
     }
@@ -72,30 +72,30 @@ eval_width <- function(min_width, missing_min_width, posterior_samples,
                        ){
     cat_v("Begin eval_width\n", verbose,
                   num_level=num_level)
-    CI <- banocc::get_credible_intervals(posterior_samples=posterior_samples,
+    CI <- get_credible_intervals(posterior_samples=posterior_samples,
                                          list=FALSE,
                                          parameter.names=parameter.names,
                                          conf=width, type="marginal.hpd",#type,
                                          verbose=verbose,
                                          num_level=num_level+1)
 
-    CI_include_null <- banocc::check_CI(CI=CI, null_value=null_value,
+    CI_include_null <- check_CI(CI=CI, null_value=null_value,
                                 verbose=verbose, num_level=num_level+1)
 
     any_included <- Reduce(any, lapply(CI_include_null, any, na.rm=TRUE))
 
     if (any_included){
-        which_to_update <- banocc::find_idx_to_update(
+        which_to_update <- find_idx_to_update(
             CI_include_null=CI_include_null,
             missing_min_width=missing_min_width)
         need_to_update <- Reduce(any, lapply(which_to_update, any,
                                              na.rm=TRUE))
         if (need_to_update){
-            updated_min_width <- banocc::update_min_width(
+            updated_min_width <- update_min_width(
                 min_width=min_width, which_to_update=which_to_update,
                 width=width,
                 verbose=verbose, num_level=num_level+1)
-            updated_missing_min_width <- banocc::update_missing_min_width(
+            updated_missing_min_width <- update_missing_min_width(
                 missing_min_width=missing_min_width,
                 which_to_update=which_to_update, width=width,
                 verbose=verbose,

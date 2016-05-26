@@ -25,7 +25,7 @@ get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
                   function(i) {
                       list(mu = as.vector(mvtnorm::rmvnorm(1, data$nu,
                                data$Lambda)),
-                           L  = t(chol(banocc::rlkj(data$P, data$eta))),
+                           L  = t(chol(rlkj(data$P, data$eta))),
                            sigma = mapply(function(a, b){
                                rgamma(1, shape=a, rate = b)
                                },

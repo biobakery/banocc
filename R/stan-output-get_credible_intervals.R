@@ -24,7 +24,7 @@ get_credible_intervals <- function(posterior_samples, list=FALSE,
     if (type == "marginal.centered"){
         alpha <- 1 - conf
         credible.intervals <-
-            banocc::get_posterior_quantiles(posterior_samples, list=list,
+            get_posterior_quantiles(posterior_samples, list=list,
                                             probs=c((alpha/2), 1 - (alpha/2)),
                                             parameter.names=parameter.names)
         if (!list){

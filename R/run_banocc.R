@@ -49,24 +49,24 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     cat_v("Begin run_banocc\n", verbose, num_level=num_level)
     Data <- list(C=C, N=nrow(C), P=ncol(C))
     
-    Data$nu     <- banocc::check_nu(nu, Data$P, verbose, num_level=num_level+1)
-    Data$Lambda <- banocc::check_Lambda(Lambda, Data$P, verbose,
+    Data$nu     <- check_nu(nu, Data$P, verbose, num_level=num_level+1)
+    Data$Lambda <- check_Lambda(Lambda, Data$P, verbose,
                                         num_level=num_level+1)
-    alpha_beta <- banocc::get_alpha_beta(alpha=alpha, beta=beta,
+    alpha_beta <- get_alpha_beta(alpha=alpha, beta=beta,
                                          sd_mean=sd_mean, sd_var=sd_var,
                                          p=Data$P,
                                          verbose=verbose, num_level=num_level+1)
     Data$alpha <- alpha_beta$alpha
     Data$beta <- alpha_beta$beta
-    Data$eta <- banocc::get_eta(eta)
+    Data$eta <- get_eta(eta)
 
     if (is.null(init)){
-        init <- banocc::get_IVs(chains=chains, data=Data, verbose=verbose,
+        init <- get_IVs(chains=chains, data=Data, verbose=verbose,
                                 num_level=num_level + 1)
     }
 
     cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
-    Fit.all <- banocc::mycapture(rstan::sampling(bayes_model, data=Data,
+    Fit.all <- mycapture(rstan::sampling(bayes_model, data=Data,
                                                  chains=chains, iter=iter,
                                                  warmup=warmup, thin=thin,
                                                  init=init, cores=cores,
@@ -75,7 +75,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     cat_v("End fitting the model\n", verbose, num_level=num_level+1)
 
     post.samples.list <- rstan::extract(Fit)
-    CI <- banocc::get_credible_intervals(posterior_samples=post.samples.list,
+    CI <- get_credible_intervals(posterior_samples=post.samples.list,
                                          list=TRUE,
                                          parameter.names=c("ln_Rho"),
                                          conf=1-conf_alpha,
@@ -87,7 +87,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     CI <- CI$ln_Rho
 
     if (get_min_width){
-        min_width <- banocc::get_min_width(posterior_sample=post.samples.list,
+        min_width <- get_min_width(posterior_sample=post.samples.list,
                                            parameter.names=c("ln_Rho"),
                                            null_value=0, type="marginal.hpd",
                                            precision=0.01, verbose=verbose,
@@ -98,7 +98,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     min_width <- min_width$ln_Rho
 
     if (calc_snc){
-        snc <- banocc::get_snc(posterior_samples=post.samples.list,
+        snc <- get_snc(posterior_samples=post.samples.list,
                                parameter.names=c("ln_Rho"))
     } else {
         snc <- list(ln_Rho=NULL)
@@ -106,7 +106,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     snc <- snc$ln_Rho
 
     Estimates <-
-        banocc::get_posterior_estimates(posterior_samples=post.samples.list,
+        get_posterior_estimates(posterior_samples=post.samples.list,
                                         estimate_method="median",
                                         parameter.names="ln_Rho")
     dimnames(Estimates$ln_Rho) <- list(colnames(Data$C), colnames(Data$C))
@@ -125,7 +125,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
 check_nu <- function(nu, p, verbose=FALSE, num_level=0){
     cat_v("Begin check_nu\n", verbose, num_level=num_level)
     nu <- as.numeric(nu)
-    nu <- banocc::check_vector("nu", nu, p, verbose, num_level=num_level+1)
+    nu <- check_vector("nu", nu, p, verbose, num_level=num_level+1)
     cat_v("End check_nu\n", verbose, num_level=num_level)
     return(nu)
 }
@@ -136,13 +136,13 @@ check_alpha_beta <- function(alpha, beta, p, verbose=FALSE, num_level=0){
         stop("'alpha' and 'beta' must be of equal length")
     }
     alpha <- as.numeric(alpha)
-    alpha <- banocc::check_vector("alpha", alpha, p, verbose,
+    alpha <- check_vector("alpha", alpha, p, verbose,
                                   num_level=num_level + 1)
     if (any(alpha <= 0)){
         stop("'alpha' values must be positive")
     }
     beta  <- as.numeric(beta)
-    beta  <- banocc::check_vector("beta", beta, p, verbose,
+    beta  <- check_vector("beta", beta, p, verbose,
                                   num_level=num_level + 1)
     if (any(beta <= 0)){
         stop("'beta' values must be positive")
@@ -157,13 +157,13 @@ check_sd_mean_var <- function(sd_mean, sd_var, p, verbose=FALSE, num_level=0){
         stop("'sd_mean' and 'sd_var' must be of equal length")
     }
     sd_mean <- as.numeric(sd_mean)
-    sd_mean <- banocc::check_vector("sd_mean", sd_mean, p, verbose,
+    sd_mean <- check_vector("sd_mean", sd_mean, p, verbose,
                                     num_level=num_level + 1)
     if (any(sd_mean <= 0)){
         stop("'sd_mean' values must be positive")
     }
     sd_var  <- as.numeric(sd_var)
-    sd_var  <- banocc::check_vector("sd_var", sd_var, p, verbose,
+    sd_var  <- check_vector("sd_var", sd_var, p, verbose,
                                     num_level = num_level + 1)
     if (any(sd_var <= 0)){
         stop("'sd_var' values must be positive")
@@ -238,7 +238,7 @@ get_alpha_beta <- function(alpha, beta, p, sd_mean=NULL, sd_var=NULL,
             stop(paste0("Must provide both 'alpha' and 'beta' OR both 'sd_mean'",
                         " and 'sd_var'"))
         }
-        alpha_beta <- banocc::check_alpha_beta(alpha, beta, p, verbose,
+        alpha_beta <- check_alpha_beta(alpha, beta, p, verbose,
                                                num_level=num_level+1)
     } else if (!is.null(sd_var) || !is.null(sd_mean)){
         if (is.null(sd_var) || is.null(sd_mean)){
@@ -246,7 +246,7 @@ get_alpha_beta <- function(alpha, beta, p, sd_mean=NULL, sd_var=NULL,
                         "'alpha' and 'beta'"))
         }
         alpha_beta <- list()
-        sd_mean_var <- banocc::check_sd_mean_var(sd_mean, sd_var, p,
+        sd_mean_var <- check_sd_mean_var(sd_mean, sd_var, p,
                                                  num_level=num_level+1)
         alpha_beta$beta  <- sd_mean_var$sd_mean / sd_mean_var$sd_var
         alpha_beta$alpha <- sd_mean_var$sd_mean^2 / sd_mean_var$sd_var

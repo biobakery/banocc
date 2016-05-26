@@ -13,7 +13,7 @@ get_pseudo_p_values <- function(posterior_samples, parameter.names="ln_Rho",
     if (verbose) cat("Starting pseudo p-value function.\n")
     alpha <- 1 - step.size
     post.quant <-
-        banocc::get_posterior_quantiles(posterior_samples,
+        get_posterior_quantiles(posterior_samples,
                                         probs=c(alpha/2, 1-alpha/2), list=TRUE,
                                         parameter.names=parameter.names)
     p.values <- lapply(post.quant, function(elt){
@@ -45,7 +45,7 @@ get_pseudo_p_values <- function(posterior_samples, parameter.names="ln_Rho",
     while(!stop.condition && alpha > step.size/2){
         if (verbose) cat(paste0("alpha = ", alpha, "\n"))
         post.quant <-
-            banocc::get_posterior_quantiles(posterior_samples,
+            get_posterior_quantiles(posterior_samples,
                                             probs=c(alpha/2, 1-alpha/2),
                                             list=TRUE,
                                             parameter.names=parameter.names)

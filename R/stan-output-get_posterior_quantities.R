@@ -39,7 +39,7 @@ function(posterior_samples,
         })
     } else if (estimate_method=="median"){
         posterior_estimates <-
-            banocc::get_posterior_quantiles(posterior_samples, probs=0.5,
+            get_posterior_quantiles(posterior_samples, probs=0.5,
                                             parameter.names=parameter.names)
     } else {
         stop('Invalid estimate_method; must be "mean" or "median"')
