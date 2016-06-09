@@ -47,6 +47,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
                        get_min_width=FALSE, calc_snc=FALSE, verbose=FALSE,
                        num_level=0){
     cat_v("Begin run_banocc\n", verbose, num_level=num_level)
+    C <- check_C(C, verbose=verbose, num_level=num_level+1)
     Data <- list(C=C, N=nrow(C), P=ncol(C))
     
     Data$nu     <- check_nu(nu, Data$P, verbose, num_level=num_level+1)
@@ -265,4 +266,36 @@ get_eta <- function(eta){
         return(eta)
     }
 
+}
+
+check_C <- function(C, zero_adj=0.0001, verbose=FALSE, num_level=0){
+    cat_v("Begin checking input data matrix\n", verbose=verbose,
+          num_level=num_level)
+    if (any(C < 0)){
+        stop("Some values of C are < 0")
+    }
+    if (any(C > 1)){
+        stop("Some values of C are > 1")
+    }
+    if (any(abs(rowSums(C) - 1) > 1e-8)){
+        stop(paste0("Some row sums of C are not 1; perhaps you transposed ",
+                    "features and samples?"))
+    }
+    if (!is.data.frame(C) && !is.matrix(c)){
+        stop("C must be a data frame or matrix")
+    }
+    C <- as.matrix(C)
+    if (!is.numeric(C)){
+        stop("C must be numeric")
+    }
+    if (any(C == 0)){
+        warning(paste0("Some values of C are zero. ",
+                       "Since zero-inflation is not yet implemented, these ",
+                       "will be changed to ", zero_adj, "."))
+        C <- adjust_zeros(C, zero_adj=zero_adj, verbose=verbose,
+                          num_level=num_level+1)
+    }
+    cat_v("End checking input data matrix\n", verbose=verbose,
+          num_level=num_level)
+    return(C)
 }
