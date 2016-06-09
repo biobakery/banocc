@@ -23,22 +23,9 @@ parameters {
 transformed parameters {
   cov_matrix[P] Sigma; // the lognormal scale parameter
   corr_matrix[P] Rho; // the lognormal correlation parameter
-  vector[P] ln_mu;    // the lognormal mean
-  cov_matrix[P] ln_Sigma; // the lognormal covariance
-  vector[P]  R_denom;  //
-  corr_matrix[P] ln_Rho; // the lognormal correlation
 
   Rho <- L * L';
   Sigma <- quad_form_diag(Rho, sigma);
-
-  ln_mu <- exp(mu + 0.5 * diagonal(Sigma));
-  ln_Sigma <- tcrossprod(rep_matrix(ln_mu, 1)) .* (exp(Sigma) - 1);
-  for (i in 1:P){
-    R_denom[i] <- inv_sqrt(exp(Sigma[i, i]) - 1);
-  }
-  // This method of calculating ln_Rho eliminates ln_mu, so doesn't involve
-  // such large numbers
-  ln_Rho   <- quad_form_diag(exp(Sigma) - 1, R_denom);
 }
 
 model {
