@@ -77,40 +77,40 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     post.samples.list <- rstan::extract(Fit)
     CI <- get_credible_intervals(posterior_samples=post.samples.list,
                                          list=TRUE,
-                                         parameter.names=c("ln_Rho"),
+                                         parameter.names=c("Rho"),
                                          conf=1-conf_alpha,
                                          type="marginal.hpd",
                                          verbose=verbose, num_level=num_level+1)
 
-    dimnames(CI$ln_Rho$lower) <- list(colnames(Data$C), colnames(Data$C))
-    dimnames(CI$ln_Rho$upper) <- list(colnames(Data$C), colnames(Data$C))
-    CI <- CI$ln_Rho
+    dimnames(CI$Rho$lower) <- list(colnames(Data$C), colnames(Data$C))
+    dimnames(CI$Rho$upper) <- list(colnames(Data$C), colnames(Data$C))
+    CI <- CI$Rho
 
     if (get_min_width){
         min_width <- get_min_width(posterior_sample=post.samples.list,
-                                           parameter.names=c("ln_Rho"),
+                                           parameter.names=c("Rho"),
                                            null_value=0, type="marginal.hpd",
                                            precision=0.01, verbose=verbose,
                                            num_level=num_level + 1)
     } else {
-        min_width <- list(ln_Rho=NULL)
+        min_width <- list(Rho=NULL)
     }
-    min_width <- min_width$ln_Rho
+    min_width <- min_width$Rho
 
     if (calc_snc){
         snc <- get_snc(posterior_samples=post.samples.list,
-                               parameter.names=c("ln_Rho"))
+                               parameter.names=c("Rho"))
     } else {
-        snc <- list(ln_Rho=NULL)
+        snc <- list(Rho=NULL)
     }
-    snc <- snc$ln_Rho
+    snc <- snc$Rho
 
     Estimates <-
         get_posterior_estimates(posterior_samples=post.samples.list,
                                         estimate_method="median",
-                                        parameter.names="ln_Rho")
-    dimnames(Estimates$ln_Rho) <- list(colnames(Data$C), colnames(Data$C))
-    Estimates <- Estimates$ln_Rho
+                                        parameter.names="Rho")
+    dimnames(Estimates$Rho) <- list(colnames(Data$C), colnames(Data$C))
+    Estimates <- Estimates$Rho
 
     
     return_object <- list(Data=Data, Fit=Fit, Fit.print=Fit.all$print.output,
