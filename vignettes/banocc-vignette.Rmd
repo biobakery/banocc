@@ -1,15 +1,29 @@
 ---
-title: "Introduction to BAnOCC (Bayesian Analaysis of Compositional Covariance)"
+title: "Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)"
 author: "Emma Schwager"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: rmarkdown::github_document
 vignette: >
   %\VignetteIndexEntry{BAnOCC (Bayesian Analysis of Compositional Covariance)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-BAnOCC is a package for analyzing compositional covariance. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis. 
+Compositional data occur in many disciplines: geology, nutrition,
+economics, and ecology, to name a few. Data are compositional when
+each sample is sum-constrained. For example, mineral compositions
+describe a mineral in terms of the weight percentage coming from
+various elements; or taxonomic compositions break down a community by
+the fraction of individuals that come from a particular species. In
+ecology in particular, the covariance between features is often of
+interest to determine which species possible interact with each
+other. However, the sum constraint of compositional data makes naive
+measures inappropriate.
+
+BAnOCC is a package for analyzing compositional covariance while
+accounting for the compositional structure. Briefly, the model assumes
+that the unobserved counts are log-normally distributed and then
+infers the correlation matrix of the log-basis.
 
 ## How To Install
 There are three options for installing BAnOCC:
@@ -20,7 +34,7 @@ There are three options for installing BAnOCC:
 
 ### To install from within R 
 **This is not yet available**
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 source("<bioconductor URL>")
 biocLite("BAnOCC")
 ```
@@ -35,10 +49,23 @@ R CMD INSTALL banocc
 ```
 
 ## To Run
+The BAnOCC package contains two things:
+
+* `bayesStanModel`, the model BAnOCC model in the  `rstan` format
+* `run_banocc`, a wrapper function for `rstan::sampling` that samples
+  from the model and returns a list with various useful elements
+
 ```{r, eval=FALSE}
 # This code is not run
 library(banocc)
 data(banocc_data)
 bayesModel   <- rstan::stan_model(model_code=bayesStanModel)
-bayes_output <- banocc::run_banocc(banocc_data)
+bayes_output <- banocc::run_banocc(banocc_data, bayes_model=bayesModel)
+```
+
+For a full description of the possible parameters for `run_banocc`,
+their default values, and the output, see
+
+```{r, eval=FALSE} 
+?run_banocc 
 ```

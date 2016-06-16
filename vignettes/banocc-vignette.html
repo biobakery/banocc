@@ -12,9 +12,9 @@
 
 <meta name="author" content="Emma Schwager" />
 
-<meta name="date" content="2016-06-14" />
+<meta name="date" content="2016-06-16" />
 
-<title>Introduction to BAnOCC (Bayesian Analaysis of Compositional Covariance)</title>
+<title>Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)</title>
 
 
 
@@ -68,13 +68,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Introduction to BAnOCC (Bayesian Analaysis of Compositional Covariance)</h1>
+<h1 class="title toc-ignore">Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)</h1>
 <h4 class="author"><em>Emma Schwager</em></h4>
-<h4 class="date"><em>2016-06-14</em></h4>
+<h4 class="date"><em>2016-06-16</em></h4>
 
 
 
-<p>BAnOCC is a package for analyzing compositional covariance. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis.</p>
+<p>Compositional data occur in many disciplines: geology, nutrition, economics, and ecology, to name a few. Data are compositional when each sample is sum-constrained. For example, mineral compositions describe a mineral in terms of the weight percentage coming from various elements; or taxonomic compositions break down a community by the fraction of individuals that come from a particular species. In ecology in particular, the covariance between features is often of interest to determine which species possible interact with each other. However, the sum constraint of compositional data makes naive measures inappropriate.</p>
+<p>BAnOCC is a package for analyzing compositional covariance while accounting for the compositional structure. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis.</p>
 <div id="how-to-install" class="section level2">
 <h2>How To Install</h2>
 <p>There are three options for installing BAnOCC:</p>
@@ -86,8 +87,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="to-install-from-within-r" class="section level3">
 <h3>To install from within R</h3>
 <p><strong>This is not yet available</strong></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">source</span>(<span class="st">&quot;&lt;bioconductor URL&gt;&quot;</span>)
-<span class="kw">biocLite</span>(<span class="st">&quot;BAnOCC&quot;</span>)</code></pre></div>
 </div>
 <div id="to-install-using-a-compressed-file-from-bitbucket" class="section level3">
 <h3>To install using a compressed file from bitbucket</h3>
@@ -101,11 +100,18 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="to-run" class="section level2">
 <h2>To Run</h2>
+<p>The BAnOCC package contains two things:</p>
+<ul>
+<li><code>bayesStanModel</code>, the model BAnOCC model in the <code>rstan</code> format</li>
+<li><code>run_banocc</code>, a wrapper function for <code>rstan::sampling</code> that samples from the model and returns a list with various useful elements</li>
+</ul>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This code is not run</span>
 <span class="kw">library</span>(banocc)
 <span class="kw">data</span>(banocc_data)
 bayesModel   &lt;-<span class="st"> </span>rstan::<span class="kw">stan_model</span>(<span class="dt">model_code=</span>bayesStanModel)
-bayes_output &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(banocc_data)</code></pre></div>
+bayes_output &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(banocc_data, <span class="dt">bayes_model=</span>bayesModel)</code></pre></div>
+<p>For a full description of the possible parameters for <code>run_banocc</code>, their default values, and the output, see</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">?run_banocc </code></pre></div>
 </div>
 
 
