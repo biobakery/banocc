@@ -41,10 +41,11 @@ R CMD INSTALL banocc
 How To Run
 ----------
 
-The BAnOCC package contains two things:
+The BAnOCC package contains three things:
 
--   `bayesStanModel`, the model BAnOCC model in the `rstan` format
+-   `bayesStanModel`, which is the BAnOCC model in the `rstan` format
 -   `run_banocc`, a wrapper function for `rstan::sampling` that samples from the model and returns a list with various useful elements
+-   `banocc_data`, a small test dataset
 
 ```r
 # This code is not run

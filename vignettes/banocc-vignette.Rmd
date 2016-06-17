@@ -50,12 +50,13 @@ git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
 R CMD INSTALL banocc
 ```
 
-## To Run
-The BAnOCC package contains two things:
+## How To Run
+The BAnOCC package contains three things:
 
-* `bayesStanModel`, the model BAnOCC model in the  `rstan` format
+* `bayesStanModel`, which is the BAnOCC model in the  `rstan` format
 * `run_banocc`, a wrapper function for `rstan::sampling` that samples
   from the model and returns a list with various useful elements
+* `banocc_data`, a small test dataset
 
 ```{r, eval=FALSE}
 # This code is not run
