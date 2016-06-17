@@ -58,7 +58,7 @@ The BAnOCC package contains three things:
   from the model and returns a list with various useful elements
 * `banocc_data`, a small test dataset
 
-```{r, eval=FALSE}
+```{r basic-run-banocc, eval=FALSE}
 # This code is not run
 library(banocc)
 data(banocc_data)
@@ -69,6 +69,6 @@ bayes_output <- banocc::run_banocc(banocc_data, bayes_model=bayesModel)
 For a full description of the possible parameters for `run_banocc`,
 their default values, and the output, see
 
-```{r, eval=FALSE} 
+```{r run-banocc-help, eval=FALSE} 
 ?run_banocc 
 ```

@@ -32,8 +32,8 @@ There are three options for installing BAnOCC:
 **This is not yet available**
 
 ### To install directly from bitbucket
-```bash
 
+``` bash
 git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
 R CMD INSTALL banocc
 ```
@@ -47,7 +47,7 @@ The BAnOCC package contains three things:
 -   `run_banocc`, a wrapper function for `rstan::sampling` that samples from the model and returns a list with various useful elements
 -   `banocc_data`, a small test dataset
 
-```r
+``` r
 # This code is not run
 library(banocc)
 data(banocc_data)
@@ -57,6 +57,6 @@ bayes_output <- banocc::run_banocc(banocc_data, bayes_model=bayesModel)
 
 For a full description of the possible parameters for `run_banocc`, their default values, and the output, see
 
-```r
+``` r
 ?run_banocc 
 ```
