@@ -12,7 +12,9 @@ Emma Schwager
     -   [Data and Prior Input](#data-and-prior-input)
     -   [Sampling Control](#sampling-control)
     -   [Output Control](#output-control)
-    -   [The Model](#the-model)
+-   [Assessing Convergence](#assessing-convergence)
+-   [Choosing Priors](#choosing-priors)
+-   [The Model](#the-model)
 -   [References](#references)
 
 Introduction
@@ -90,7 +92,7 @@ For a full and complete description of the possible parameters for `run_banocc`,
 
 ### Data and Prior Input
 
-The only required input to `run_banocc` is the dataset, `C`. This is assumed to be *n* × *p*, with *n* samples and *p* features. The row sums are therefore required to be less than 1 for all samples.
+The only required input to `run_banocc` is the dataset, `C` and the compiled stan model, `banocc_model`. The dataset is assumed to be *n* × *p*, with *n* samples and *p* features. The row sums are therefore required to be less than 1 for all samples.
 
 The hyperparameter values can be specified as input. Their names correspond to the parameters in the plate diagram figure (see section [The Model](#the-model)). For example,
 
@@ -202,7 +204,18 @@ b_snc <- banocc::run_banocc(C = banocc_data,
 
 Detailed statements about the function's execution can also be printed using the `verbose` argument. The relative indentation of the verbose output indicates the nesting level of the function. The starting indentation can be set with `num_level`.
 
-### The Model
+Assessing Convergence
+---------------------
+
+**Coming Soon!**
+
+Choosing Priors
+---------------
+
+**Coming Soon!**
+
+The Model
+---------
 
 A pictoral representation of the model is shown below. Briefly, the basis (or unobserved, unrestricted counts) for each sample is assumed to be a lognormal distribution with parameters ***m*** and ***S***. The prior on ***m*** is a normal distribution parametrized by mean ***n*** and variance-covariance matrix ***L***. Since we are interested in the correlation structure, we break ***S*** into a correlation matrix ***W*** and a vector of standard deviations ***s***. The prior on ***W*** is an LKJ distribution (Lewandowski, Kurowicka, and Joe 2009) with shrinkage parameter *η*, while the prior on eash *s*<sub>*j*</sub> is a gamma prior with shape *a*<sub>*j*</sub> and rate *b*<sub>*j*</sub>.
 
@@ -212,7 +225,7 @@ If we print the model, we can actually see the code. It is written in the format
 
 ``` r
 # This code is not run
-cat(bayesStanModel)
+cat(banocc_model)
 ```
 
 References
@@ -220,8 +233,8 @@ References
 
 Hoffman, Matthew D., and Andrew Gelman. 2014. “The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo.” *J. Mach. Learn. Res.* 15 (1). JMLR.org: 1593–1623. <http://dl.acm.org/citation.cfm?id=2627435.2638586>.
 
-Lewandowski, Daniel, Dorota Kurowicka, and Harry Joe. 2009. “Generating Random Correlation Matrices Based on Vines and Extended Onion Method.” *Journal of Multivariate Analysis* 100 (9): 1989–2001. doi:[http://dx.doi.org/10.1016/j.jmva.2009.04.008](https://doi.org/http://dx.doi.org/10.1016/j.jmva.2009.04.008).
+Lewandowski, Daniel, Dorota Kurowicka, and Harry Joe. 2009. “Generating Random Correlation Matrices Based on Vines and Extended Onion Method.” *Journal of Multivariate Analysis* 100 (9): 1989–2001. <http://dx.doi.org/10.1016/j.jmva.2009.04.008>.
 
-Li, Qing, and Nan Lin. 2010. “The Bayesian Elastic Net.” *Bayesian Anal.* 5 (1). International Society for Bayesian Analysis: 151–70. doi:[10.1214/10-BA506](https://doi.org/10.1214/10-BA506).
+Li, Qing, and Nan Lin. 2010. “The Bayesian Elastic Net.” *Bayesian Anal.* 5 (1). International Society for Bayesian Analysis: 151–70. <http://dx.doi.org/10.1214/10-BA506>.
 
 Stan Development Team. 2015. “Stan: A C++ Library for Probability and Sampling, Version 2.10.0.” <http://mc-stan.org/>.

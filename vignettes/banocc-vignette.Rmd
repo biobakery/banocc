@@ -87,9 +87,10 @@ For a full and complete description of the possible parameters for
 
 ### Data and Prior Input 
 
-The only required input to `run_banocc` is the dataset, `C`. This is
-assumed to be $n \times p$, with $n$ samples and $p$ features. The row
-sums are therefore required to be less than 1 for all samples.
+The only required input to `run_banocc` is the dataset, `C` and the
+compiled stan model, `banocc_model`. The dataset is assumed to be $n
+\times p$, with $n$ samples and $p$ features. The row sums are
+therefore required to be less than 1 for all samples.
 
 The hyperparameter values can be specified as input. Their names
 correspond to the parameters in the plate diagram figure (see section
@@ -229,7 +230,15 @@ using the `verbose` argument. The relative indentation of the verbose
 output indicates the nesting level of the function. The starting
 indentation can be set with `num_level`.
 
-### The Model
+## Assessing Convergence
+
+**Coming Soon!**
+
+## Choosing Priors
+
+**Coming Soon!**
+
+## The Model
 
 A pictoral representation of the model is shown below. Briefly, the
 basis (or unobserved, unrestricted counts) for each sample is assumed
@@ -249,9 +258,10 @@ prior on eash $s_j$ is a gamma prior with shape $a_j$ and rate $b_j$.
 If we print the model, we can actually see the code. It is written in
 the format required by the `rstan` package, since `banocc` uses this
 package to sample from the model.
+
 ```{r model, eval=FALSE}
 # This code is not run
-cat(bayesStanModel)
+cat(banocc_model)
 ```
 
 ## References
