@@ -5,29 +5,29 @@
 \title{Runs BAnOCC to fit the model and generate appropriate convergence metrics
   and inference.}
 \usage{
-run_banocc(bayes_model, C, nu = rep(0, ncol(C)), Lambda = 10 *
-  diag(ncol(C)), alpha = rep(1, ncol(C)), beta = rep(0.5, ncol(C)),
-  eta = 1, cores = getOption("mc.cores", 1L), chains = 4, iter = 2000,
+run_banocc(banocc_model, C, n = rep(0, ncol(C)), L = 10 * diag(ncol(C)),
+  a = rep(1, ncol(C)), b = rep(0.5, ncol(C)), eta = 1,
+  cores = getOption("mc.cores", 1L), chains = 4, iter = 2000,
   warmup = floor(iter/2), thin = 1, init = NULL, control = NULL,
   sd_mean = NULL, sd_var = NULL, conf_alpha = 0.05,
   get_min_width = FALSE, calc_snc = FALSE, verbose = FALSE,
   num_level = 0)
 }
 \arguments{
-\item{bayes_model}{The compiled stan model (as with
+\item{banocc_model}{The compiled stan model (as with
 \code{stan_model(model_code = bayesStanModel)}).}
 
 \item{C}{The dataset (rows=samples, columns=features), which is nxp}
 
-\item{nu}{The prior mean for mu; vectors of length less than p will be
+\item{n}{The prior mean for m; vectors of length less than p will be
 recycled.}
 
-\item{Lambda}{The prior variance-covariance for mu (must be
+\item{L}{The prior variance-covariance for m (must be
 positive-definite with dimension pxp where p=number of features in C), or
-a vector of length p of variances for mu. If a vector of length less than p
+a vector of length p of variances for m. If a vector of length less than p
 is given, it will be recycled.}
 
-\item{alpha, beta}{Vectors of parameters for the gamma prior on the standard
+\item{a, b}{Vectors of parameters for the gamma prior on the standard
 deviations. They must be of equal length. If a vector of length less than p
 is given, it will be recycled.}
 
@@ -38,25 +38,29 @@ is given, it will be recycled.}
     to be as many processors as the hardware and RAM allow (up to the 
     number of chains).}
 
-\item{chains}{A positive integer specifying number of chains; defaults to 4.}
+\item{chains}{A positive integer specifying the number of Markov chains. 
+    The default is 4.}
 
-\item{iter}{A positive integer specifying how many iterations for each chain
-    (including warmup). The default is 2000.}
+\item{iter}{A positive integer specifying the number of iterations for each 
+    chain (including warmup). The default is 2000.}
 
 \item{warmup}{A positive integer specifying the number of warmup (aka burnin)
-    iterations.  If step-size adaptation is on (which it is by default), this 
-    also controls the number of iterations for which adaptation is run (and
-    hence the samples should not be used for inference). The number of warmup
-    should not be larger than \code{iter} and the default is \code{iter/2}.}
+    iterations per chain. If step-size adaptation is on (which it is by default), 
+    this also controls the number of iterations for which adaptation is run (and
+    hence these warmup samples should not be used for inference). The number of 
+    warmup iterations should not be larger than \code{iter} and the default is 
+    \code{iter/2}.}
 
-\item{thin}{A positive integer specifying the period for saving samples; defaults to 1.}
+\item{thin}{A positive integer specifying the period for saving samples. 
+    The default is 1, which is usually the recommended value.}
 
 \item{init}{The initial values as a list (see
 \code{\link[rstan]{sampling}}). Default value is NULL, which means that
 initial values are sampled from the priors.}
 
-\item{control}{See the argument \code{control} of function
-    \code{\link{stan}}.}
+\item{control}{A named \code{list} of parameters to control the sampler's
+    behavior. See the details in the documentation for the \code{control} argument
+    in \code{\link{stan}}.}
 
 \item{sd_mean, sd_var}{Vectors of means and variances for the gamma priors on
 the standard deviations. They must be of equal length. If a vector of length

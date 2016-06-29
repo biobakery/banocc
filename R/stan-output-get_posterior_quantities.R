@@ -22,7 +22,7 @@
 get_posterior_estimates <-
 function(posterior_samples,
          estimate_method="mean",
-         parameter.names=c("mu", "Sigma")){
+         parameter.names=c("m", "S")){
     names(parameter.names) <- parameter.names
     
     if(estimate_method=="mean"){
@@ -50,7 +50,7 @@ function(posterior_samples,
 # @rdname get_posterior_quantities
 get_posterior_quantiles <-
 function(posterior_samples, probs, list=FALSE,
-         parameter.names=c("mu", "Sigma")
+         parameter.names=c("m", "S")
          ){
     names(parameter.names) <- parameter.names
     posterior_quantiles <- lapply(parameter.names, function(name){

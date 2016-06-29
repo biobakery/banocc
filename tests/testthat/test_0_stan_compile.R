@@ -1,7 +1,7 @@
 context("Step 0 - compiling bayesStanModel")
 
-load("testthat_objects/bayesModel_test.RData")
+load("testthat_objects/banocc_model_test.RData")
 
-test_that("bayesStanModel compiles to give an object of class 'stanmodel'", {
-    expect_is(bayes_model, 'stanmodel')
+test_that("banocc_model compiles to give an object of class 'stanmodel'", {
+    expect_is(banocc_model, 'stanmodel')
 })

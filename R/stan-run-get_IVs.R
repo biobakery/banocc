@@ -23,13 +23,13 @@ get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
     }
     IVs <- lapply(1:chains,
                   function(i) {
-                      list(mu = as.vector(mvtnorm::rmvnorm(1, data$nu,
-                               data$Lambda)),
-                           L  = t(chol(rlkj(data$P, data$eta))),
-                           sigma = mapply(function(a, b){
+                      list(m = as.vector(mvtnorm::rmvnorm(1, data$n,
+                               data$L)),
+                           WChol  = t(chol(rlkj(data$P, data$eta))),
+                           s = mapply(function(a, b){
                                rgamma(1, shape=a, rate = b)
                                },
-                               data$alpha, data$beta))
+                               data$a, data$b))
                   })
     cat_v("Done.\n", verbose)
     return(IVs)

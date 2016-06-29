@@ -6,7 +6,7 @@
 #   \code{parameter.names}.
 #
 
-get_snc <- function(posterior_samples, parameter.names=c("mu", "Sigma"),
+get_snc <- function(posterior_samples, parameter.names=c("m", "S"),
                     verbose=FALSE, num_level=0){
     cat_v("Begin get_snc\n", verbose, num_level=num_level)
     names(parameter.names) <- parameter.names

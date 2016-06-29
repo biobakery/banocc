@@ -1,16 +1,16 @@
 #' Runs BAnOCC to fit the model and generate appropriate convergence metrics
 #'   and inference.
 #'
-#' @param bayes_model The compiled stan model (as with
+#' @param banocc_model The compiled stan model (as with
 #'   \code{stan_model(model_code = bayesStanModel)}).
 #' @param C The dataset (rows=samples, columns=features), which is nxp
-#' @param nu The prior mean for mu; vectors of length less than p will be
+#' @param n The prior mean for m; vectors of length less than p will be
 #'   recycled.
-#' @param Lambda The prior variance-covariance for mu (must be
+#' @param L The prior variance-covariance for m (must be
 #'   positive-definite with dimension pxp where p=number of features in C), or
-#'   a vector of length p of variances for mu. If a vector of length less than p
+#'   a vector of length p of variances for m. If a vector of length less than p
 #'   is given, it will be recycled.
-#' @param alpha,beta Vectors of parameters for the gamma prior on the standard
+#' @param a,b Vectors of parameters for the gamma prior on the standard
 #'   deviations. They must be of equal length. If a vector of length less than p
 #'   is given, it will be recycled.
 #' @param sd_mean,sd_var Vectors of means and variances for the gamma priors on
@@ -37,9 +37,9 @@
 #'
 #' @export
 
-run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
-                       Lambda = 10*diag(ncol(C)),
-                       alpha = rep(1, ncol(C)), beta = rep(0.5, ncol(C)),
+run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
+                       L = 10*diag(ncol(C)),
+                       a = rep(1, ncol(C)), b = rep(0.5, ncol(C)),
                        eta = 1, cores = getOption("mc.cores", 1L),
                        chains = 4, iter = 2000, warmup = floor(iter/2),
                        thin = 1, init = NULL, control=NULL,
@@ -50,15 +50,15 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     C <- check_C(C, verbose=verbose, num_level=num_level+1)
     Data <- list(C=C, N=nrow(C), P=ncol(C))
     
-    Data$nu     <- check_nu(nu, Data$P, verbose, num_level=num_level+1)
-    Data$Lambda <- check_Lambda(Lambda, Data$P, verbose,
-                                        num_level=num_level+1)
-    alpha_beta <- get_alpha_beta(alpha=alpha, beta=beta,
-                                         sd_mean=sd_mean, sd_var=sd_var,
-                                         p=Data$P,
-                                         verbose=verbose, num_level=num_level+1)
-    Data$alpha <- alpha_beta$alpha
-    Data$beta <- alpha_beta$beta
+    Data$n <- check_n(n, Data$P, verbose, num_level=num_level+1)
+    Data$L <- check_L(L, Data$P, verbose,
+                      num_level=num_level+1)
+    a_b <- get_a_b(a=a, b=b,
+                   sd_mean=sd_mean, sd_var=sd_var,
+                   p=Data$P,
+                   verbose=verbose, num_level=num_level+1)
+    Data$a   <- a_b$a
+    Data$b   <- a_b$b
     Data$eta <- get_eta(eta)
 
     if (is.null(init)){
@@ -67,7 +67,7 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     }
 
     cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
-    Fit.all <- mycapture(rstan::sampling(bayes_model, data=Data,
+    Fit.all <- mycapture(rstan::sampling(banocc_model, data=Data,
                                                  chains=chains, iter=iter,
                                                  warmup=warmup, thin=thin,
                                                  init=init, cores=cores,
@@ -78,40 +78,40 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     post.samples.list <- rstan::extract(Fit)
     CI <- get_credible_intervals(posterior_samples=post.samples.list,
                                          list=TRUE,
-                                         parameter.names=c("Rho"),
+                                         parameter.names=c("W"),
                                          conf=1-conf_alpha,
                                          type="marginal.hpd",
                                          verbose=verbose, num_level=num_level+1)
 
-    dimnames(CI$Rho$lower) <- list(colnames(Data$C), colnames(Data$C))
-    dimnames(CI$Rho$upper) <- list(colnames(Data$C), colnames(Data$C))
-    CI <- CI$Rho
+    dimnames(CI$W$lower) <- list(colnames(Data$C), colnames(Data$C))
+    dimnames(CI$W$upper) <- list(colnames(Data$C), colnames(Data$C))
+    CI <- CI$W
 
     if (get_min_width){
         min_width <- get_min_width(posterior_sample=post.samples.list,
-                                           parameter.names=c("Rho"),
+                                           parameter.names=c("W"),
                                            null_value=0, type="marginal.hpd",
                                            precision=0.01, verbose=verbose,
                                            num_level=num_level + 1)
     } else {
         min_width <- list(Rho=NULL)
     }
-    min_width <- min_width$Rho
+    min_width <- min_width$W
 
     if (calc_snc){
         snc <- get_snc(posterior_samples=post.samples.list,
-                               parameter.names=c("Rho"))
+                               parameter.names=c("W"))
     } else {
         snc <- list(Rho=NULL)
     }
-    snc <- snc$Rho
+    snc <- snc$W
 
     Estimates <-
         get_posterior_estimates(posterior_samples=post.samples.list,
                                         estimate_method="median",
-                                        parameter.names="Rho")
-    dimnames(Estimates$Rho) <- list(colnames(Data$C), colnames(Data$C))
-    Estimates <- Estimates$Rho
+                                        parameter.names="W")
+    dimnames(Estimates$W) <- list(colnames(Data$C), colnames(Data$C))
+    Estimates <- Estimates$W
 
     
     return_object <- list(Data=Data, Fit=Fit, Fit.print=Fit.all$print.output,
@@ -123,33 +123,33 @@ run_banocc <- function(bayes_model, C, nu = rep(0, ncol(C)),
     return(return_object)
 }
 
-check_nu <- function(nu, p, verbose=FALSE, num_level=0){
-    cat_v("Begin check_nu\n", verbose, num_level=num_level)
-    nu <- as.numeric(nu)
-    nu <- check_vector("nu", nu, p, verbose, num_level=num_level+1)
-    cat_v("End check_nu\n", verbose, num_level=num_level)
-    return(nu)
+check_n <- function(n, p, verbose=FALSE, num_level=0){
+    cat_v("Begin check_n\n", verbose, num_level=num_level)
+    n <- as.numeric(n)
+    n <- check_vector("n", n, p, verbose, num_level=num_level+1)
+    cat_v("End check_n\n", verbose, num_level=num_level)
+    return(n)
 }
 
-check_alpha_beta <- function(alpha, beta, p, verbose=FALSE, num_level=0){
-    cat_v("Begin check_alpha_beta\n", verbose, num_level=num_level)
-    if (length(alpha) != length(beta)){
-        stop("'alpha' and 'beta' must be of equal length")
+check_a_b <- function(a, b, p, verbose=FALSE, num_level=0){
+    cat_v("Begin check_a_b\n", verbose, num_level=num_level)
+    if (length(a) != length(b)){
+        stop("'a' and 'b' must be of equal length")
     }
-    alpha <- as.numeric(alpha)
-    alpha <- check_vector("alpha", alpha, p, verbose,
+    a <- as.numeric(a)
+    a <- check_vector("a", a, p, verbose,
                                   num_level=num_level + 1)
-    if (any(alpha <= 0)){
-        stop("'alpha' values must be positive")
+    if (any(a <= 0)){
+        stop("'a' values must be positive")
     }
-    beta  <- as.numeric(beta)
-    beta  <- check_vector("beta", beta, p, verbose,
+    b  <- as.numeric(b)
+    b  <- check_vector("b", b, p, verbose,
                                   num_level=num_level + 1)
-    if (any(beta <= 0)){
-        stop("'beta' values must be positive")
+    if (any(b <= 0)){
+        stop("'b' values must be positive")
     }
-    cat_v("End check_alpha_beta\n", verbose, num_level=num_level)
-    return(list(alpha=alpha, beta=beta))
+    cat_v("End check_a_b\n", verbose, num_level=num_level)
+    return(list(a=a, b=b))
 }
 
 check_sd_mean_var <- function(sd_mean, sd_var, p, verbose=FALSE, num_level=0){
@@ -192,71 +192,71 @@ check_vector <- function(parm.name, parm, p, verbose=TRUE, num_level=0){
     return(parm)
 }
 
-check_Lambda <- function(Lambda, p, verbose=FALSE, num_level=0){
-    cat_v("Begin check_Lambda...", verbose, num_level=num_level)
-    if (!is.numeric(Lambda)){
-        stop("Lambda must be numeric")
+check_L <- function(L, p, verbose=FALSE, num_level=0){
+    cat_v("Begin check_L...", verbose, num_level=num_level)
+    if (!is.numeric(L)){
+        stop("L must be numeric")
     }
 
-    if (is.matrix(Lambda)){
-        if (any(dim(Lambda) != p)){
-            stop(paste0("Lambda must be a square matrix with the same number of",
+    if (is.matrix(L)){
+        if (any(dim(L) != p)){
+            stop(paste0("L must be a square matrix with the same number of",
                         " columns as C"))
         }
-        if (any(eigen(Lambda)$values <= 0)){
-            stop("'Lambda' is not positive definite.")
+        if (any(eigen(L)$values <= 0)){
+            stop("'L' is not positive definite.")
         }
-        if (!is.symmetric(Lambda)){
-            stop("'Lambda' must be symmetric")
+        if (!is.symmetric(L)){
+            stop("'L' must be symmetric")
         }
-    } else if (is.vector(Lambda)){
-        if ((length(Lambda) < p) && (length(Lambda) > 1)){
-            warning("'Lambda' is being recycled")
-            num_rep <- ceiling(p / length(Lambda))
-            Lambda <- diag(rep(Lambda, num_rep)[1:p])
-        } else if (length(Lambda) == 1){
-            Lambda <- diag(rep(Lambda, p))
-        } else if (length(Lambda) > p){
-            warning("'Lambda' has length > p; only first p elements will be ",
+    } else if (is.vector(L)){
+        if ((length(L) < p) && (length(L) > 1)){
+            warning("'L' is being recycled")
+            num_rep <- ceiling(p / length(L))
+            L <- diag(rep(L, num_rep)[1:p])
+        } else if (length(L) == 1){
+            L <- diag(rep(L, p))
+        } else if (length(L) > p){
+            warning("'L' has length > p; only first p elements will be ",
                     "used.")
-            Lambda <- diag(Lambda[1:p])
+            L <- diag(L[1:p])
         } else {
-            Lambda <- diag(Lambda)
+            L <- diag(L)
         }
     } else {
-        stop("'Lambda' must be either a matrix or a vector")
+        stop("'L' must be either a matrix or a vector")
     }
     cat_v("Done.\n", verbose)
-    return(Lambda)
+    return(L)
 }
 
-get_alpha_beta <- function(alpha, beta, p, sd_mean=NULL, sd_var=NULL,
+get_a_b <- function(a, b, p, sd_mean=NULL, sd_var=NULL,
                            verbose=FALSE, num_level=0){
-    cat_v("Begin get_alpha_beta...", verbose=verbose,
+    cat_v("Begin get_a_b...", verbose=verbose,
                   num_level=num_level)
-    if (!is.null(alpha) || !is.null(beta)){
-        if (is.null(alpha) || is.null(beta)){
-            stop(paste0("Must provide both 'alpha' and 'beta' OR both 'sd_mean'",
+    if (!is.null(a) || !is.null(b)){
+        if (is.null(a) || is.null(b)){
+            stop(paste0("Must provide both 'a' and 'b' OR both 'sd_mean'",
                         " and 'sd_var'"))
         }
-        alpha_beta <- check_alpha_beta(alpha, beta, p, verbose,
+        a_b <- check_a_b(a, b, p, verbose,
                                                num_level=num_level+1)
     } else if (!is.null(sd_var) || !is.null(sd_mean)){
         if (is.null(sd_var) || is.null(sd_mean)){
             stop(paste0("Must provide both 'sd_mean' and 'sd_var' OR both ",
-                        "'alpha' and 'beta'"))
+                        "'a' and 'b'"))
         }
-        alpha_beta <- list()
+        a_b <- list()
         sd_mean_var <- check_sd_mean_var(sd_mean, sd_var, p,
                                                  num_level=num_level+1)
-        alpha_beta$beta  <- sd_mean_var$sd_mean / sd_mean_var$sd_var
-        alpha_beta$alpha <- sd_mean_var$sd_mean^2 / sd_mean_var$sd_var
+        a_b$b  <- sd_mean_var$sd_mean / sd_mean_var$sd_var
+        a_b$a <- sd_mean_var$sd_mean^2 / sd_mean_var$sd_var
     } else {
-        stop(paste0("Must provide both 'alpha' and 'beta' OR both 'sd_mean'",
+        stop(paste0("Must provide both 'a' and 'b' OR both 'sd_mean'",
                     " and 'sd_var'"))
     }
     cat_v("Done.\n", verbose)
-    return(alpha_beta)
+    return(a_b)
 }
 
 get_eta <- function(eta){

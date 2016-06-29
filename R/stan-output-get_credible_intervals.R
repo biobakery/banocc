@@ -15,7 +15,7 @@
 #
 
 get_credible_intervals <- function(posterior_samples, list=FALSE,
-                                   parameter.names=c("mu", "Sigma"),
+                                   parameter.names=c("m", "S"),
                                    conf=0.95,
                                    type="marginal.hpd",
                                    verbose=FALSE, num_level=0){

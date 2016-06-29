@@ -9,7 +9,7 @@
 # @return Returns a list of the minimum CI widths that include
 #   \code{null_value} for each parameter in \code{parameter.names}.
 #
-get_min_width <- function(posterior_samples, parameter.names="ln_Rho",
+get_min_width <- function(posterior_samples, parameter.names="W",
                           null_value=0, type="marginal.hpd", precision=0.01,
                           verbose=FALSE, num_level=0){
     cat_v("Begin get_min_width\n", verbose,
