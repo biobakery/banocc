@@ -24,8 +24,8 @@ transformed parameters {
   cov_matrix[P] S; // the lognormal scale parameter
   corr_matrix[P] W; // the lognormal correlation parameter
 
-  W <- WChol * WChol';
-  S <- quad_form_diag(W, s);
+  W = WChol * WChol';
+  S = quad_form_diag(W, s);
 }
 
 model {
@@ -44,20 +44,20 @@ model {
       s[k] ~ gamma(a[k], b[k]);
     }
 
-    invS <- inverse(S);
-    s_sq_star <- inv(sum(invS));
+    invS = inverse(S);
+    s_sq_star = inv(sum(invS));
 
-    alpha_star   <- rep_matrix(to_row_vector(m), N) - log(C);
-    m_star <- rows_dot_product(alpha_star * invS, rep_matrix(1, N, P)) * s_sq_star;
+    alpha_star   = rep_matrix(to_row_vector(m), N) - log(C);
+    m_star = rows_dot_product(alpha_star * invS, rep_matrix(1, N, P)) * s_sq_star;
 
-    inc_1 <- 0.5 * N * log(s_sq_star);
-    inc_2 <- - 0.5 * N * log_determinant(S);
+    inc_1 = 0.5 * N * log(s_sq_star);
+    inc_2 = - 0.5 * N * log_determinant(S);
 
-    increment_log_prob(inc_1 + inc_2);
+    target += inc_1 + inc_2;
 
     for (i in 1:N){
-        inc_3i[i] <-  - 0.5 * quad_form(invS, alpha_star[i]' );
-        inc_4i[i] <-  0.5 * m_star[i] * m_star[i] / s_sq_star;
+        inc_3i[i] =  - 0.5 * quad_form(invS, alpha_star[i]' );
+        inc_4i[i] =  0.5 * m_star[i] * m_star[i] / s_sq_star;
                   }
-    increment_log_prob( sum(inc_3i + inc_4i) );
+    target += sum(inc_3i + inc_4i);
 }"
