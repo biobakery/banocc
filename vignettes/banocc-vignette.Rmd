@@ -5,12 +5,12 @@ date: "`r Sys.Date()`"
 output: 
   rmarkdown::github_document:
     toc: yes
+bibliography: BAnOCC_Bibliography.bib
 vignette: >
   %\VignetteIndexEntry{BAnOCC (Bayesian Analysis of Compositional Covariance)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
 Compositional data occur in many disciplines: geology, nutrition,
 economics, and ecology, to name a few. Data are compositional when
 each sample is sum-constrained. For example, mineral compositions
@@ -18,14 +18,17 @@ describe a mineral in terms of the weight percentage coming from
 various elements; or taxonomic compositions break down a community by
 the fraction of individuals that come from a particular species. In
 ecology in particular, the covariance between features is often of
-interest to determine which species possible interact with each
+interest to determine which species possibly interact with each
 other. However, the sum constraint of compositional data makes naive
 measures inappropriate.
 
 BAnOCC is a package for analyzing compositional covariance while
 accounting for the compositional structure. Briefly, the model assumes
 that the unobserved counts are log-normally distributed and then
-infers the correlation matrix of the log-basis.
+infers the correlation matrix of the log-basis. The inference is made
+using No U-Turn Sampling for Hamiltonian Monte Carlo
+[@HoffmanAndGelman2014] as implemented in the `rstan` R package
+[@StanSoftware2015].
 
 ## How To Install
 There are three options for installing BAnOCC:
@@ -51,6 +54,10 @@ R CMD INSTALL banocc
 ```
 
 ## How To Run
+We first need to load the package:
+```{r load, eval=TRUE}
+library(banocc)
+```
 The BAnOCC package contains three things:
 
 * `bayesStanModel`, which is the BAnOCC model in the  `rstan` format
@@ -58,12 +65,14 @@ The BAnOCC package contains three things:
   from the model and returns a list with various useful elements
 * `banocc_data`, a small test dataset
 
-```{r basic-run-banocc, eval=FALSE}
-# This code is not run
-library(banocc)
-data(banocc_data)
-bayesModel   <- rstan::stan_model(model_code=bayesStanModel)
-bayes_output <- banocc::run_banocc(banocc_data, bayes_model=bayesModel)
+The simplest way to run the model is to load the test dataset, compile
+the model, and sample from it: 
+
+```{r basic-run-banocc, eval=FALSE} 
+# This code is not run 
+data(banocc_data) 
+banocc_model  <- rstan::stan_model(model_code=bayesStanModel) 
+banocc_output <- banocc::run_banocc(banocc_data, bayes_model=banocc_model) 
 ```
 
 For a full description of the possible parameters for `run_banocc`,
@@ -72,3 +81,30 @@ their default values, and the output, see
 ```{r run-banocc-help, eval=FALSE} 
 ?run_banocc 
 ```
+
+### The Model 
+
+A pictoral representation of the model is shown below. Briefly, the
+basis (or unobserved, unrestricted counts) for each sample is assumed
+to be a lognormal distribution with parameters **$m$** and
+**$S$**. The prior on **$m$** is a normal distribution parametrized by
+mean **$n$** and variance-covariance matrix **$L$**. Since we are
+interested in the correlation structure, we break **$S$** into a
+correlation matrix **$W$** and a vector of standard deviations
+**$s$**. The prior on **$W$** is an LKJ distribution
+[@LewandowskiEtAl2009] with shrinkage parameter $\eta$, while the
+prior on eash $s_j$ is a gamma prior with shape $a_j$ and rate $b_j$.
+
+
+![plate-diagram](Figure3.png)
+
+
+If we print the model, we can actually see the code. It is written in
+the format required by the `rstan` package, since `banocc` uses this
+package to sample from the model.
+```{r model, eval=FALSE}
+# This code is not run
+cat(bayesStanModel)
+```
+
+## References
