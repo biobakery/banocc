@@ -67,12 +67,12 @@ run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
     }
 
     cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
-    Fit.all <- mycapture(rstan::sampling(banocc_model, data=Data,
-                                                 chains=chains, iter=iter,
-                                                 warmup=warmup, thin=thin,
-                                                 init=init, cores=cores,
-                                                 control=control))
-    Fit <- Fit.all$output
+    Fit <- rstan::sampling(banocc_model, data=Data,
+                           chains=chains, iter=iter,
+                           warmup=warmup, thin=thin,
+                           init=init, cores=cores,
+                           control=control,
+                           show_messages=FALSE)
     cat_v("End fitting the model\n", verbose, num_level=num_level+1)
 
     post.samples.list <- rstan::extract(Fit)
@@ -114,7 +114,7 @@ run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
     Estimates <- Estimates$W
 
     
-    return_object <- list(Data=Data, Fit=Fit, Fit.print=Fit.all$print.output,
+    return_object <- list(Data=Data, Fit=Fit, 
                           CI.hpd=CI, Estimates.median=Estimates,
                           Min.width=min_width, SNC=snc)
 
