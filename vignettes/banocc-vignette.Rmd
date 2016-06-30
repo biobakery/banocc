@@ -71,11 +71,11 @@ The BAnOCC package contains three things:
 The simplest way to run the model is to load the test dataset, compile
 the model, and sample from it: 
 
-```{r basic-run-banocc, eval=FALSE} 
+```{r basic-run-banocc, eval=FALSE}
 # This code is not run 
-data(banocc_data) 
-banocc_model  <- rstan::stan_model(model_code=banocc_model) 
-banocc_output <- banocc::run_banocc(C = banocc_data, banocc_model=banocc_model) 
+data(banocc_data)
+banocc_model <- rstan::stan_model(model_code = banocc::banocc_model) 
+b_output     <- banocc::run_banocc(C = banocc_data, banocc_model=banocc_model)
 ```
 
 For a full and complete description of the possible parameters for
@@ -232,7 +232,37 @@ indentation can be set with `num_level`.
 
 ## Assessing Convergence
 
-**Coming Soon!**
+There are many ways of assessing convergence, but the two most easily implemented using BAnOCC are:
+
+1. Traceplots of parameters
+1. The Rhat statistic [@GelmanAndRubin1992]
+
+Traceplots can be directly accessed using the `traceplot` function in
+the `rstan` package, which creates a `ggplot2` object that can be
+further maniuplated to tidy the plot.
+
+```{r traceplot, eval=FALSE}
+# This code is not run
+
+# This shows all parameters, so it is rather crowded
+rstan::traceplot(b_output$Fit) 
+
+# The correlations of feature 1 with all other features
+rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"))
+```
+
+The Rhat values can also be directly accessed using the `summary`
+function in the `rstan` package.
+
+```{r Rhat, eval=FALSE}
+# This code is not run
+
+# This returns a named vector withthe Rhat values for all parameters
+rhat_all <- rstan::summary(b_output$Fit)$summary[, "Rhat"]
+
+# To see the Rhat values for the correlations of feature 1
+rhat_all[paste0("W[1,", 2:9, "]")]
+```
 
 ## Choosing Priors
 

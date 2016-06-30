@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-06-29
+2016-06-30
 
 -   [Introduction](#introduction)
 -   [How To Install](#how-to-install)
@@ -79,9 +79,9 @@ The simplest way to run the model is to load the test dataset, compile the model
 
 ``` r
 # This code is not run 
-data(banocc_data) 
-banocc_model  <- rstan::stan_model(model_code=banocc_model) 
-banocc_output <- banocc::run_banocc(C = banocc_data, banocc_model=banocc_model) 
+data(banocc_data)
+banocc_model <- rstan::stan_model(model_code = banocc::banocc_model) 
+b_output     <- banocc::run_banocc(C = banocc_data, banocc_model=banocc_model)
 ```
 
 For a full and complete description of the possible parameters for `run_banocc`, their default values, and the output, see
@@ -207,7 +207,34 @@ Detailed statements about the function's execution can also be printed using the
 Assessing Convergence
 ---------------------
 
-**Coming Soon!**
+There are many ways of assessing convergence, but the two most easily implemented using BAnOCC are:
+
+1.  Traceplots of parameters
+2.  The Rhat statistic (Gelman and Rubin 1992)
+
+Traceplots can be directly accessed using the `traceplot` function in the `rstan` package, which creates a `ggplot2` object that can be further maniuplated to tidy the plot.
+
+``` r
+# This code is not run
+
+# This shows all parameters, so it is rather crowded
+rstan::traceplot(b_output$Fit) 
+
+# The correlations of feature 1 with all other features
+rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"))
+```
+
+The Rhat values can also be directly accessed using the `summary` function in the `rstan` package.
+
+``` r
+# This code is not run
+
+# This returns a named vector withthe Rhat values for all parameters
+rhat_all <- rstan::summary(b_output$Fit)$summary[, "Rhat"]
+
+# To see the Rhat values for the correlations of feature 1
+rhat_all[paste0("W[1,", 2:9, "]")]
+```
 
 Choosing Priors
 ---------------
@@ -230,6 +257,8 @@ cat(banocc_model)
 
 References
 ----------
+
+Gelman, Andrew, and Donald B. Rubin. 1992. “Inference from Iterative Simulation Using Multiple Sequences.” *Statistical Science* 7 (4). Institute of Mathematical Statistics: 457–72. doi:[10.2307/2246093](https://doi.org/10.2307/2246093).
 
 Hoffman, Matthew D., and Andrew Gelman. 2014. “The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo.” *J. Mach. Learn. Res.* 15 (1). JMLR.org: 1593–1623. <http://dl.acm.org/citation.cfm?id=2627435.2638586>.
 

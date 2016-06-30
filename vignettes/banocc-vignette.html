@@ -27,7 +27,7 @@ body {
 
 <h1 id="introduction-to-banocc-bayesian-analaysis-of-compositional-covariance">Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)</h1>
 <p>Emma Schwager<br />
-2016-06-29</p>
+2016-06-30</p>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#how-to-install">How To Install</a>
@@ -86,9 +86,9 @@ body {
 </ul>
 <p>The simplest way to run the model is to load the test dataset, compile the model, and sample from it:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This code is not run </span>
-<span class="kw">data</span>(banocc_data) 
-banocc_model  &lt;-<span class="st"> </span>rstan::<span class="kw">stan_model</span>(<span class="dt">model_code=</span>banocc_model) 
-banocc_output &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> banocc_data, <span class="dt">banocc_model=</span>banocc_model) </code></pre></div>
+<span class="kw">data</span>(banocc_data)
+banocc_model &lt;-<span class="st"> </span>rstan::<span class="kw">stan_model</span>(<span class="dt">model_code =</span> banocc::banocc_model) 
+b_output     &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> banocc_data, <span class="dt">banocc_model=</span>banocc_model)</code></pre></div>
 <p>For a full and complete description of the possible parameters for <code>run_banocc</code>, their default values, and the output, see</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">?run_banocc </code></pre></div>
 <h3 id="data-and-prior-input">Data and Prior Input</h3>
@@ -169,7 +169,27 @@ b_snc &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<
                             <span class="dt">calc_snc =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p>Detailed statements about the function's execution can also be printed using the <code>verbose</code> argument. The relative indentation of the verbose output indicates the nesting level of the function. The starting indentation can be set with <code>num_level</code>.</p>
 <h2 id="assessing-convergence">Assessing Convergence</h2>
-<p><strong>Coming Soon!</strong></p>
+<p>There are many ways of assessing convergence, but the two most easily implemented using BAnOCC are:</p>
+<ol>
+<li>Traceplots of parameters</li>
+<li>The Rhat statistic (Gelman and Rubin 1992)</li>
+</ol>
+<p>Traceplots can be directly accessed using the <code>traceplot</code> function in the <code>rstan</code> package, which creates a <code>ggplot2</code> object that can be further maniuplated to tidy the plot.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This code is not run</span>
+
+<span class="co"># This shows all parameters, so it is rather crowded</span>
+rstan::<span class="kw">traceplot</span>(b_output$Fit) 
+
+<span class="co"># The correlations of feature 1 with all other features</span>
+rstan::<span class="kw">traceplot</span>(b_output$Fit, <span class="dt">pars=</span><span class="kw">paste0</span>(<span class="st">&quot;W[1,&quot;</span>, <span class="dv">2</span>:<span class="dv">9</span>, <span class="st">&quot;]&quot;</span>))</code></pre></div>
+<p>The Rhat values can also be directly accessed using the <code>summary</code> function in the <code>rstan</code> package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This code is not run</span>
+
+<span class="co"># This returns a named vector withthe Rhat values for all parameters</span>
+rhat_all &lt;-<span class="st"> </span>rstan::<span class="kw">summary</span>(b_output$Fit)$summary[, <span class="st">&quot;Rhat&quot;</span>]
+
+<span class="co"># To see the Rhat values for the correlations of feature 1</span>
+rhat_all[<span class="kw">paste0</span>(<span class="st">&quot;W[1,&quot;</span>, <span class="dv">2</span>:<span class="dv">9</span>, <span class="st">&quot;]&quot;</span>)]</code></pre></div>
 <h2 id="choosing-priors">Choosing Priors</h2>
 <p><strong>Coming Soon!</strong></p>
 <h2 id="the-model">The Model</h2>
@@ -179,6 +199,7 @@ b_snc &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This code is not run</span>
 <span class="kw">cat</span>(banocc_model)</code></pre></div>
 <h2 id="references">References</h2>
+<p>Gelman, Andrew, and Donald B. Rubin. 1992. “Inference from Iterative Simulation Using Multiple Sequences.” <em>Statistical Science</em> 7 (4). Institute of Mathematical Statistics: 457–72. <a href="doi:%5B10.2307/2246093%5D(https://doi.org/10.2307/2246093)" class="uri">doi:[10.2307/2246093](https://doi.org/10.2307/2246093)</a>.</p>
 <p>Hoffman, Matthew D., and Andrew Gelman. 2014. “The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo.” <em>J. Mach. Learn. Res.</em> 15 (1). JMLR.org: 1593–1623. <a href="http://dl.acm.org/citation.cfm?id=2627435.2638586" class="uri">http://dl.acm.org/citation.cfm?id=2627435.2638586</a>.</p>
 <p>Lewandowski, Daniel, Dorota Kurowicka, and Harry Joe. 2009. “Generating Random Correlation Matrices Based on Vines and Extended Onion Method.” <em>Journal of Multivariate Analysis</em> 100 (9): 1989–2001. <a href="http://dx.doi.org/10.1016/j.jmva.2009.04.008" class="uri">http://dx.doi.org/10.1016/j.jmva.2009.04.008</a>.</p>
 <p>Li, Qing, and Nan Lin. 2010. “The Bayesian Elastic Net.” <em>Bayesian Anal.</em> 5 (1). International Society for Bayesian Analysis: 151–70. <a href="http://dx.doi.org/10.1214/10-BA506" class="uri">http://dx.doi.org/10.1214/10-BA506</a>.</p>
