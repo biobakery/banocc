@@ -232,7 +232,7 @@ check_L <- function(L, p, verbose=FALSE, num_level=0){
 
 get_a_b <- function(a, b, p, sd_mean=NULL, sd_var=NULL,
                            verbose=FALSE, num_level=0){
-    cat_v("Begin get_a_b...", verbose=verbose,
+    cat_v("Begin get_a_b\n", verbose=verbose,
                   num_level=num_level)
     if (!is.null(a) || !is.null(b)){
         if (is.null(a) || is.null(b)){
@@ -255,7 +255,7 @@ get_a_b <- function(a, b, p, sd_mean=NULL, sd_var=NULL,
         stop(paste0("Must provide both 'a' and 'b' OR both 'sd_mean'",
                     " and 'sd_var'"))
     }
-    cat_v("Done.\n", verbose)
+    cat_v("End get_a_b\n", verbose)
     return(a_b)
 }
 
