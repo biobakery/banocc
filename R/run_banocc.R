@@ -2,7 +2,7 @@
 #'   and inference.
 #'
 #' @param banocc_model The compiled stan model (as with
-#'   \code{stan_model(model_code = bayesStanModel)}).
+#'   \code{stan_model(model_code = banocc_model)}).
 #' @param C The dataset (rows=samples, columns=features), which is nxp
 #' @param n The prior mean for m; vectors of length less than p will be
 #'   recycled.

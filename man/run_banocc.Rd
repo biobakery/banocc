@@ -15,7 +15,7 @@ run_banocc(banocc_model, C, n = rep(0, ncol(C)), L = 10 * diag(ncol(C)),
 }
 \arguments{
 \item{banocc_model}{The compiled stan model (as with
-\code{stan_model(model_code = bayesStanModel)}).}
+\code{stan_model(model_code = banocc_model)}).}
 
 \item{C}{The dataset (rows=samples, columns=features), which is nxp}
 
