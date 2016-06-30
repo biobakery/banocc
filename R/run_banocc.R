@@ -67,12 +67,14 @@ run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
     }
 
     cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
+    refresh <- ifelse(verbose, max(iter/10, 1), 0)
     Fit <- rstan::sampling(banocc_model, data=Data,
                            chains=chains, iter=iter,
                            warmup=warmup, thin=thin,
                            init=init, cores=cores,
                            control=control,
-                           show_messages=FALSE)
+                           show_messages=FALSE,
+                           refresh=refresh)
     cat_v("End fitting the model\n", verbose, num_level=num_level+1)
 
     post.samples.list <- rstan::extract(Fit)
