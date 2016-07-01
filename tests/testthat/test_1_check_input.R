@@ -1,4 +1,9 @@
 context("Step 1 - checking input")
+load("testthat_objects/sample_stan_data.RData")
+data(compositions_null)
+data(compositions_hard_null)
+data(compositions_pos_spike)
+data(compositions_neg_spike)
 
 test_that("check_vector of non-numeric vector gives error", {
     test_check_vector <- function(x){
@@ -138,4 +143,24 @@ test_that("check_sd_mean_var fails if sd_mean or sd_var have zero values", {
     expect_error(check_sd_mean_var(sd_mean=c(1, 0), sd_var=1:2, p=2),  err_string)
     expect_error(check_sd_mean_var(sd_mean=1:2, sd_var=c(0, 1), p=2),  err_string)
     expect_error(check_sd_mean_var(sd_mean=1:2, sd_var=c(1, 0), p=2),  err_string)
+})
+
+test_that("check_C accepts a data frame", {
+    expect_is(check_C(Data$C), "matrix")
+})
+test_that("check_C handles zero-inflation", {
+    zi <- Data$C
+    zi[sample(nrow(zi), 20), 1] <- 0
+    expect_warning(check_C(zi), "values of C are zero.")
+    expect_is(suppressWarnings(check_C(zi)), "matrix")
+})
+test_that("check_C accepts a matrix", {
+    expect_is(check_C(as.matrix(Data$C)), "matrix")
+})
+
+test_that("check_C works on all included compositional datasets", {
+    expect_is(check_C(compositions_null), "matrix")
+    expect_is(check_C(compositions_hard_null), "matrix")
+    expect_is(check_C(compositions_pos_spike), "matrix")
+    expect_is(check_C(compositions_neg_spike), "matrix")
 })
