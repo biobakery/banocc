@@ -1,6 +1,83 @@
-#' Simulated relative abundances for 9 features across
-#' 100 samples.
+#' Simulated count data with no feature correlations
 #'
-#' @format A data frame with 100 rows (the samples)
+#' Nine features are drawn independently from similar log-normal
+#'   distributions to generate null count data. Because the feature
+#'   distributions are very similar, the compositions generated from
+#'   this dataset (see \code{compositions_null}), should have a correlation
+#'   structure similar to that of the counts.
+#'
+#' @format A data frame with 1000 rows (the samples)
 #'   and 9 variables (the features)
-"banocc_data"
+"counts_null"
+
+#' Simulated compositional data with no feature correlations
+#'
+#' These are the normalized samples corresponding to \code{counts_null}. They
+#'   should have a similar (but not identical) correlation structure.
+#'
+#' @format A data frame with 1000 rows (compositional samples) and 9
+#'   variables (the features)
+"compositions_null"
+
+#' Simulated count data with no feature correlations
+#'
+#' Nine features are draw independently from very different log-normal
+#'   distributions whose means and variances are positively correlated. This
+#'   means that the compositions generated from this dataset
+#'   (see \code{compositions_hard_null}) should be have a correlation
+#'   structure very different from that of these counts.
+#'
+#' @format A data frame with 1000 rows (samples) and 9 variables (the
+#'   features)
+"counts_hard_null"
+
+#' Simulated compositional data with no feature correlations
+#'
+#' These are the normalized samples corresponding to \code{counts_hard_null}.
+#'   They should have a very different correlation structure from the counts.
+#'   In particular, there should be one strong, positive association which
+#'   is not present in the count correlation structure.
+#'
+#' @format A data frame with 1000 rows (compositional samples) and 9 variables
+#'   (the features)
+"compositions_hard_null"
+
+#' Simulated count data with one positive feature correlation
+#'
+#' Nine features are drawn from a log-normal distribution with one positive
+#'   correlation. The resulting compositions are in
+#'   \code{compositions_pos_spike}.
+#'
+#' @format A data frame with 1000 rows (samples) and 9 variables (the
+#'   features)
+"counts_pos_spike"
+
+#' Simulated compositional data with a positive count correlation
+#'
+#' These are the normalized data corresponding to \code{counts_pos_spike}. The
+#'   count data have one positive feature correlation, but the compositional
+#'   correlation structure should be different.
+#'
+#' @format A data frame with 1000 rows (compositional samples) and 9
+#'   variables (the features)
+"compositions_pos_spike"
+
+#' Simulated count data with one negative feature correlation
+#'
+#' Nine features are drawn from a log-normal distribution with one negative
+#'   correlation. The resulting compositions are in
+#'   \code{compositions_neg_spike}
+#'
+#' @format A data frame with 1000 rows (samples) and 9 variables (the
+#'   features)
+"counts_neg_spike"
+
+#' Simulated compositional data with a negative count correlation
+#'
+#' These are the normalized data corresponding to \code{counts_neg_spike}. The
+#'   count data have one negative feature correlation, but the compositional
+#'   correlation strucutre should be different.
+#'
+#' @format A data frame with 1000 rows (compositional samples) and 9
+#'   variables (the features)
+"compositions_neg_spike"
