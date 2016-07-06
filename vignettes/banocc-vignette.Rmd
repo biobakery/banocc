@@ -255,27 +255,50 @@ indentation can be set with `num_level`.
 
 There are many ways of assessing convergence, but the two most easily implemented using BAnOCC are:
 
-1. Traceplots of parameters
-1. The Rhat statistic [@GelmanAndRubin1992]
+1. Traceplots of parameters, which show visually what values of a
+parameter have been sampled across all iterations. At convergence, the
+sampler should be moving rapidly across the space, and the chains
+should overlap well. In other words, it should look like grass.
+
+1. The Rhat statistic [@GelmanAndRubin1992], which measures agreement
+between all the chains. It should be close to one at convergence.
 
 ### Traceplots
 
 Traceplots can be directly accessed using the `traceplot` function in
 the `rstan` package, which creates a `ggplot2` object that can be
-further maniuplated to tidy the plot.
-```{r traceplot, eval=TRUE, cache=TRUE}
-# This shows all parameters, so it is rather crowded
-rstan::traceplot(b_output$Fit) 
+further maniuplated to 'prettify' the plot. The traceplots so
+generated are for the samples drawn _after_ the warmup period. For
+example, we could plot the traceplots for the correlations of feature
+1 with all other features. There is good overlap between the chains,
+but we need more samples from the posterior to be confident of
+convergence.
 
+```{r traceplot, eval=TRUE, cache=TRUE}
 # The correlations of feature 1 with all other features
 rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"))
 ```
 
+We could also see the warmup period samples by using
+`inc_warmup=TRUE`. This shows that the chains have moved from very
+different starting points to a similar distribution, which is a good
+sign of convergence.
+
+```{r traceplot-warmup, eval=TRUE, cache=TRUE}
+# The correlations of feature 1 with all other features, including warmup
+rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"),
+                 inc_warmup=TRUE)
+```
 
 ### Rhat Statistics
 
 The Rhat values can also be directly accessed using the `summary`
-function in the `rstan` package.
+function in the `rstan` package. It measures the degree of agreement
+between all the chains. At convergence, the Rhat statistics should be
+approximately one for all parameters. For example, the Rhat values for
+the correlation between feature 1 and all other features (the same as
+those plotted above), agree with the traceplots that convergence has
+not yet been reached.
 
 ```{r Rhat, eval=TRUE, cache=TRUE}
 # This returns a named vector withthe Rhat values for all parameters
