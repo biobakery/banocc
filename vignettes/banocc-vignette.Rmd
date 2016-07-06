@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   rmarkdown::github_document:
     toc: yes
+    toc_depth: 4
 bibliography: BAnOCC_Bibliography.bib
 vignette: >
   %\VignetteIndexEntry{BAnOCC (Bayesian Analysis of Compositional Covariance)}
@@ -40,17 +41,17 @@ There are three options for installing BAnOCC:
 * Using compressed file from bitbucket
 * Directly from bitbucket
 
-### To install from within R 
+### From Within R 
 **This is not yet available**
 ```{r, eval=FALSE, echo=FALSE}
 source("<bioconductor URL>")
 biocLite("BAnOCC")
 ```
 
-### To install using a compressed file from bitbucket
+### From Bitbucket (Compressed File)
 **This is not yet available**
 
-### To install directly from bitbucket
+### From Bitbucket (Directly)
 ```bash
 git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
 R CMD INSTALL banocc
@@ -95,10 +96,14 @@ For a full and complete description of the possible parameters for
 
 ### Data and Prior Input 
 
+#### Required Input
+
 The only required input to `run_banocc` is the dataset, `C` and the
 compiled stan model, `banocc_model`. The dataset is assumed to be $n
 \times p$, with $n$ samples and $p$ features. The row sums are
 therefore required to be less than 1 for all samples.
+
+#### Hyperparameters
 
 The hyperparameter values can be specified as input. Their names
 correspond to the parameters in the plate diagram figure (see section
@@ -132,11 +137,16 @@ b_sd_mean <- banocc::run_banocc(C = compositions_null,
 
 There are several options to control the behavior of the HMC
 sampler. This is simply a call to `rstan::sampling`, and so many of
-the parameters are the same. The number of chains, iterations, and
-warmup iterations as well as the rate of thinning can be specified
-using the same parameters. For example, the following code gives a
-total of three iterations from each of two chains. These parameters
-are used only for brevity and are NOT recommended in practice.
+the parameters are the same. 
+
+#### General Sampling Control
+
+The number of chains, iterations, and warmup iterations as well as the
+rate of thinning can be specified using the same parameters as for
+`rstan::sampling` and `rstan::stan`. For example, the following code
+gives a total of three iterations from each of two chains. These
+parameters are used only for brevity and are NOT recommended in
+practice.
 
 ```{r sampling-sampling, eval=FALSE}
 # This code is not run
@@ -147,6 +157,8 @@ b_sampling <- banocc::run_banocc(C = compositions_null,
                                  warmup = 5,
                                  thin = 2)
 ```
+
+#### Number of Cores
 
 The number of cores used for sampling on a multi-processor machine can
 also be specified, which allows chains to run in parallel and
@@ -161,6 +173,8 @@ b_cores <- banocc::run_banocc(C = compositions_null,
                               chains = 2,
                               cores = 2)
 ```
+
+#### Initial Values
 
 The initial values are sampled from the priors by default because the
 positive definite constraint on the covariance matrix makes it
@@ -196,6 +210,8 @@ can be found in the help for the `rstan::stan` function:
 There are several parameters that control the type of output which is
 returned.
 
+#### Credible Interval Width
+
 The width of the returned credible intervals is controlled by
 `conf_alpha`. A $100\% * (1-\alpha_\text{conf})$ credible interval is
 returned:
@@ -212,6 +228,8 @@ b_99 <- banocc::run_banocc(C = compositions_null,
                            banocc_model = banocc_model,
                            conf_alpha = 0.01)
 ```
+
+#### Additional Output
 
 Two types of output can be requested for each correlation that are not
 included by default:
@@ -245,6 +263,8 @@ There are many ways of assessing convergence, but the two most easily implemente
 1. Traceplots of parameters
 1. The Rhat statistic [@GelmanAndRubin1992]
 
+### Traceplots
+
 Traceplots can be directly accessed using the `traceplot` function in
 the `rstan` package, which creates a `ggplot2` object that can be
 further maniuplated to tidy the plot.
@@ -258,6 +278,9 @@ rstan::traceplot(b_output$Fit)
 # The correlations of feature 1 with all other features
 rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"))
 ```
+
+
+### Rhat Statistics
 
 The Rhat values can also be directly accessed using the `summary`
 function in the `rstan` package.
