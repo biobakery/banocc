@@ -331,11 +331,12 @@ prior on eash $s_j$ is a gamma prior with shape $a_j$ and rate $b_j$.
 
 If we print the model, we can actually see the code. It is written in
 the format required by the `rstan` package, since `banocc` uses this
-package to sample from the model.
+package to sample from the model. See [@StanManual2015] for more
+detailed information on this format.
 
 ```{r model, eval=FALSE}
 # This code is not run
-cat(banocc_model)
+cat(banocc::banocc_model)
 ```
 
 ## References
