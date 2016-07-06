@@ -80,8 +80,11 @@ The BAnOCC package contains three things:
 The simplest way to run the model is to load the test dataset, compile
 the model, and sample from it: 
 
-```{r basic-run-banocc, eval=FALSE}
-# This code is not run 
+```{r rerun, cache=TRUE, echo=FALSE}
+rerun <- 1
+```
+
+```{r basic-run-banocc, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 data(compositions_null)
 banocc_model <- rstan::stan_model(model_code = banocc::banocc_model) 
 b_output     <- banocc::run_banocc(C = compositions_null, banocc_model=banocc_model)
@@ -109,8 +112,7 @@ The hyperparameter values can be specified as input. Their names
 correspond to the parameters in the plate diagram figure (see section
 [The Model]). For example,
 
-```{r input-hyperparameters, eval=FALSE} 
-# This code is not run
+```{r input-hyperparameters, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"} 
 p <- ncol(compositions_null)
 b_hp <- banocc::run_banocc(C = compositions_null, 
                            banocc_model = banocc_model,
@@ -125,8 +127,7 @@ The hyperparameter values for **$s$** can be alternatively specified
 as the means and variances of the prior using the parameters `sd_mean`
 and `sd_var`. For example,
 
-```{r input-sd-mean, eval=FALSE}
-# This code is not run
+```{r input-sd-mean, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 b_sd_mean <- banocc::run_banocc(C = compositions_null,
                                 banocc_model = banocc_model,
                                 sd_mean = rep(2, p),
@@ -148,8 +149,7 @@ gives a total of three iterations from each of two chains. These
 parameters are used only for brevity and are NOT recommended in
 practice.
 
-```{r sampling-sampling, eval=FALSE}
-# This code is not run
+```{r sampling-sampling, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 b_sampling <- banocc::run_banocc(C = compositions_null,
                                  banocc_model = banocc_model,
                                  chains = 2,
@@ -183,8 +183,7 @@ automatically. They can also be set to a particular value by using a
 list. `WChol` is the cholesky decomposition of **$W$** that is used by
 the sampler for computational reasons.
 
-```{r sampling-init, eval=FALSE}
-# This code is not run
+```{r sampling-init, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 init <- list(list(m = rep(0, p),
                   WChol = t(chol(diag(p))),
 		  s = rep(1, p)),
@@ -216,9 +215,7 @@ The width of the returned credible intervals is controlled by
 `conf_alpha`. A $100\% * (1-\alpha_\text{conf})$ credible interval is
 returned:
 
-```{r output-ci, eval=FALSE}
-# This code is not run
-
+```{r output-ci, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 # Get 90% credible intervals
 b_90 <- banocc::run_banocc(C = compositions_null,
                            banocc_model = banocc_model,
@@ -237,9 +234,7 @@ included by default:
 1. The smallest credible interval width that includes zero
 1. The scaled neighborhood criterion, or SNC [@LiAndLin2010]
 
-```{r output-extra, eval=FALSE}
-# This code is not run
-
+```{r output-extra, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 # Get the smallest credible interval width that includes zero
 b_min_width <- banocc::run_banocc(C = compositions_null,
                                   banocc_model = banocc_model,
@@ -268,10 +263,7 @@ There are many ways of assessing convergence, but the two most easily implemente
 Traceplots can be directly accessed using the `traceplot` function in
 the `rstan` package, which creates a `ggplot2` object that can be
 further maniuplated to tidy the plot.
-
-```{r traceplot, eval=FALSE}
-# This code is not run
-
+```{r traceplot, eval=TRUE, cache=TRUE}
 # This shows all parameters, so it is rather crowded
 rstan::traceplot(b_output$Fit) 
 
@@ -285,9 +277,7 @@ rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"))
 The Rhat values can also be directly accessed using the `summary`
 function in the `rstan` package.
 
-```{r Rhat, eval=FALSE}
-# This code is not run
-
+```{r Rhat, eval=TRUE, cache=TRUE}
 # This returns a named vector withthe Rhat values for all parameters
 rhat_all <- rstan::summary(b_output$Fit)$summary[, "Rhat"]
 
