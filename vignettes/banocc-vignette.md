@@ -25,6 +25,8 @@ Emma Schwager
     -   [Traceplots](#traceplots)
     -   [Rhat Statistics](#rhat-statistics)
 -   [Choosing Priors](#choosing-priors)
+    -   [Log-Basis Correlation Matrix](#log-basis-correlation-matrix)
+    -   [Log-Basis Mean and Standard Deviations](#log-basis-mean-and-standard-deviations)
 -   [The Model](#the-model)
 -   [References](#references)
 
@@ -285,7 +287,17 @@ rhat_all[paste0("W[1,", 2:9, "]")]
 Choosing Priors
 ---------------
 
-**Coming Soon!**
+The hyperparameters for the model (see section [The Model](#the-model)) need to be chosen appropriately.
+
+### Log-Basis Correlation Matrix
+
+The prior on the correlation matrix ***W*** is an LKJ distribution with parameter *η* (see section [The Model](#the-model) and Lewandowski, Kurowicka, and Joe 2009). When *η* = 1, this prior is uniform over the space of positive definite correlation matrices. As *η* increases, the prior probability mass for each correlation becomes more and more concentrated around 0, which can be seen in the figures below.
+
+![eta 1](prior_eta_1_n_1000_W.png) ![eta 10](prior_eta_10_n_1000_W.png) ![eta 25](prior_eta_25_n_1000_W.png)
+
+### Log-Basis Mean and Standard Deviations
+
+We recommend plotting *both* the explicit priors on the log-basis means and standard deviations as well as the implicit priors on the un-transformed basis means and standard deviations.
 
 The Model
 ---------
