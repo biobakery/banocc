@@ -17,19 +17,20 @@ run_banocc(banocc_model, C, n = rep(0, ncol(C)), L = 10 * diag(ncol(C)),
 \item{banocc_model}{The compiled stan model (as with
 \code{stan_model(model_code = banocc_model)}).}
 
-\item{C}{The dataset (rows=samples, columns=features), which is nxp}
+\item{C}{The dataset as a data frame or matrix, with the samples as the
+rows and the features as the columns.}
 
 \item{n}{The prior mean for m; vectors of length less than p will be
 recycled.}
 
 \item{L}{The prior variance-covariance for m (must be
-positive-definite with dimension pxp where p=number of features in C), or
-a vector of length p of variances for m. If a vector of length less than p
-is given, it will be recycled.}
+positive-definite with dimension pxp where p=number of features in C),
+or a vector of length p of variances for m. If a vector of length less
+than p is given, it will be recycled.}
 
 \item{a, b}{Vectors of parameters for the gamma prior on the standard
-deviations. They must be of equal length. If a vector of length less than p
-is given, it will be recycled.}
+deviations. They must be of equal length. If a vector of length less
+than p is given, it will be recycled.}
 
 \item{eta}{scale parameter of LKJ distribution; must be >= 1.}
 
@@ -55,16 +56,17 @@ is given, it will be recycled.}
     The default is 1, which is usually the recommended value.}
 
 \item{init}{The initial values as a list (see
-\code{\link[rstan]{sampling}}). Default value is NULL, which means that
-initial values are sampled from the priors.}
+\code{\link[rstan]{sampling}} in the \code{rstan} package). Default
+value is NULL, which means that initial values are sampled from the
+priors.}
 
 \item{control}{A named \code{list} of parameters to control the sampler's
     behavior. See the details in the documentation for the \code{control} argument
     in \code{\link{stan}}.}
 
-\item{sd_mean, sd_var}{Vectors of means and variances for the gamma priors on
-the standard deviations. They must be of equal length. If a vector of length
-less than p is given, it will be recycled.}
+\item{sd_mean, sd_var}{Vectors of means and variances for the gamma priors
+on the standard deviations. They must be of equal length. If a vector
+of length less than p is given, it will be recycled.}
 
 \item{conf_alpha}{The percentage of the posterior density outside the
 credible interval. That is, a \code{1-conf_alpha} * 100\% credible
@@ -78,11 +80,43 @@ calculated?}
 
 \item{verbose}{Print informative statements as the function executes?}
 
-\item{num_level}{The number of the level (will determine the number of
-spaces to add to verbose output)}
+\item{num_level}{The number of indentations to add to the output when
+\code{verbose = TRUE}.}
+}
+\value{
+Returns a named list with the following elements:
+\describe{
+  \item{\emph{Data}}{The data formatted as a named list that includes the
+    input data and the prior parameters}
+
+  \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
+    \code{\link[rstan]{sampling}}}
+
+  \item{\emph{CI}}{The \code{1-conf_alpha} * 100\% credible intervals}
+
+  \item{\emph{Estimates.median}}{The correlation estimates, which are the
+    marginal posterior medians}
+
+  \item{\emph{Min.width}}{Only present if the \code{get_min_width}
+    argument is \code{TRUE}. The minimum CI width that includes zero for
+    each correlation.}
+
+  \item{\emph{SNC}}{Only present if the \code{calc_snc} argument is
+    \code{TRUE}. The scaled neighborhood criterion for each correlation.}
+}
 }
 \description{
 Runs BAnOCC to fit the model and generate appropriate convergence metrics
   and inference.
+}
+\examples{
+\dontrun{
+  banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
+  b_output <- run_banocc(C=compositions_null, banocc_model=banocc_model)
+}
+
+}
+\seealso{
+\code{vignette("banocc-vignette")} for more examples.
 }
 

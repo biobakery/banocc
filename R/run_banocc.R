@@ -3,23 +3,25 @@
 #'
 #' @param banocc_model The compiled stan model (as with
 #'   \code{stan_model(model_code = banocc_model)}).
-#' @param C The dataset (rows=samples, columns=features), which is nxp
+#' @param C The dataset as a data frame or matrix, with the samples as the
+#'   rows and the features as the columns. 
 #' @param n The prior mean for m; vectors of length less than p will be
 #'   recycled.
 #' @param L The prior variance-covariance for m (must be
-#'   positive-definite with dimension pxp where p=number of features in C), or
-#'   a vector of length p of variances for m. If a vector of length less than p
-#'   is given, it will be recycled.
+#'   positive-definite with dimension pxp where p=number of features in C),
+#'   or a vector of length p of variances for m. If a vector of length less
+#'   than p is given, it will be recycled.
 #' @param a,b Vectors of parameters for the gamma prior on the standard
-#'   deviations. They must be of equal length. If a vector of length less than p
-#'   is given, it will be recycled.
-#' @param sd_mean,sd_var Vectors of means and variances for the gamma priors on
-#'   the standard deviations. They must be of equal length. If a vector of length
-#'   less than p is given, it will be recycled.
+#'   deviations. They must be of equal length. If a vector of length less
+#'   than p is given, it will be recycled.
+#' @param sd_mean,sd_var Vectors of means and variances for the gamma priors
+#'   on the standard deviations. They must be of equal length. If a vector
+#'   of length less than p is given, it will be recycled.
 #' @param eta scale parameter of LKJ distribution; must be >= 1.
 #' @param init The initial values as a list (see
-#'   \code{\link[rstan]{sampling}}). Default value is NULL, which means that
-#'   initial values are sampled from the priors.
+#'   \code{\link[rstan]{sampling}} in the \code{rstan} package). Default
+#'   value is NULL, which means that initial values are sampled from the
+#'   priors.
 #' @inheritParams rstan::sampling
 #' @param get_min_width A boolean value: should the minimum CI width that
 #'   includes zero be calculated?
@@ -29,13 +31,43 @@
 #' @param calc_snc Boolean: should the scaled neighborhood criterion be
 #'   calculated?
 #' @param verbose Print informative statements as the function executes?
-#' @param num_level The number of the level (will determine the number of
-#'   spaces to add to verbose output)
+#' @param num_level The number of indentations to add to the output when
+#'   \code{verbose = TRUE}.
 #'
 #' @importFrom rstan extract
 #' @importFrom rstan sampling
 #'
 #' @export
+#'
+#' @return
+#' Returns a named list with the following elements:
+#' \describe{
+#'   \item{\emph{Data}}{The data formatted as a named list that includes the
+#'     input data and the prior parameters}
+#' 
+#'   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
+#'     \code{\link[rstan]{sampling}}}
+#' 
+#'   \item{\emph{CI}}{The \code{1-conf_alpha} * 100\% credible intervals}
+#'
+#'   \item{\emph{Estimates.median}}{The correlation estimates, which are the
+#'     marginal posterior medians}
+#' 
+#'   \item{\emph{Min.width}}{Only present if the \code{get_min_width}
+#'     argument is \code{TRUE}. The minimum CI width that includes zero for
+#'     each correlation.}
+#' 
+#'   \item{\emph{SNC}}{Only present if the \code{calc_snc} argument is
+#'     \code{TRUE}. The scaled neighborhood criterion for each correlation.}
+#' }
+#' 
+#' @examples
+#' \dontrun{
+#'   banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
+#'   b_output <- run_banocc(C=compositions_null, banocc_model=banocc_model)
+#' }
+#'
+#' @seealso \code{vignette("banocc-vignette")} for more examples.
 
 run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
                        L = 10*diag(ncol(C)),
