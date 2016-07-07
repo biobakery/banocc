@@ -58,10 +58,14 @@ R CMD INSTALL banocc
 ```
 
 ## How To Run
+
+### Loading
 We first need to load the package:
 ```{r load, eval=TRUE}
 library(banocc)
 ```
+
+### Package Features
 The BAnOCC package contains three things:
 
 * `bayesStanModel`, which is the BAnOCC model in the  `rstan` format
@@ -77,18 +81,8 @@ The BAnOCC package contains three things:
     Positive corr. in the counts  | `counts_pos_spike` | `compositions_pos_spike`
     Negative corr. in the counts  | `counts_neg_spike` | `compositions_neg_spike`
 
-The simplest way to run the model is to load the test dataset, compile
-the model, and sample from it: 
 
-```{r rerun, cache=TRUE, echo=FALSE}
-rerun <- 1
-```
-
-```{r basic-run-banocc, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
-data(compositions_null)
-banocc_model <- rstan::stan_model(model_code = banocc::banocc_model) 
-b_output     <- banocc::run_banocc(C = compositions_null, banocc_model=banocc_model)
-```
+### Data and Prior Input 
 
 For a full and complete description of the possible parameters for
 `run_banocc`, their default values, and the output, see
@@ -96,8 +90,6 @@ For a full and complete description of the possible parameters for
 ```{r run-banocc-help, eval=FALSE} 
 ?run_banocc 
 ```
-
-### Data and Prior Input 
 
 #### Required Input
 
@@ -110,6 +102,19 @@ less than one for all samples.
 required so that `run_banocc` doesn't need to waste time compiling the
 model every time it is called. To compile, use
 `rstan::stan_model(model_code=banocc::banocc_model)`.
+
+The simplest way to run the model is to load a test dataset, compile
+the model, and sample from it:
+
+```{r rerun, cache=TRUE, echo=FALSE}
+rerun <- 1
+```
+
+```{r basic-run-banocc, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
+data(compositions_null)
+banocc_model <- rstan::stan_model(model_code = banocc::banocc_model) 
+b_output     <- banocc::run_banocc(C = compositions_null, banocc_model=banocc_model)
+```
 
 
 #### Hyperparameters

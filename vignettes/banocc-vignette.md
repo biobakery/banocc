@@ -9,6 +9,8 @@ Emma Schwager
     -   [From Bitbucket (Compressed File)](#from-bitbucket-compressed-file)
     -   [From Bitbucket (Directly)](#from-bitbucket-directly)
 -   [How To Run](#how-to-run)
+    -   [Loading](#loading)
+    -   [Package Features](#package-features)
     -   [Data and Prior Input](#data-and-prior-input)
         -   [Required Input](#required-input)
         -   [Hyperparameters](#hyperparameters)
@@ -60,6 +62,8 @@ R CMD INSTALL banocc
 How To Run
 ----------
 
+### Loading
+
 We first need to load the package:
 
 ``` r
@@ -78,6 +82,8 @@ library(banocc)
     ## rstan_options(auto_write = TRUE)
     ## options(mc.cores = parallel::detectCores())
 
+### Package Features
+
 The BAnOCC package contains three things:
 
 -   `bayesStanModel`, which is the BAnOCC model in the `rstan` format
@@ -91,13 +97,7 @@ The BAnOCC package contains three things:
     | Positive corr. in the counts  | `counts_pos_spike` | `compositions_pos_spike` |
     | Negative corr. in the counts  | `counts_neg_spike` | `compositions_neg_spike` |
 
-The simplest way to run the model is to load the test dataset, compile the model, and sample from it:
-
-``` r
-data(compositions_null)
-banocc_model <- rstan::stan_model(model_code = banocc::banocc_model) 
-b_output     <- banocc::run_banocc(C = compositions_null, banocc_model=banocc_model)
-```
+### Data and Prior Input
 
 For a full and complete description of the possible parameters for `run_banocc`, their default values, and the output, see
 
@@ -105,14 +105,20 @@ For a full and complete description of the possible parameters for `run_banocc`,
 ?run_banocc 
 ```
 
-### Data and Prior Input
-
 #### Required Input
 
 There are only two required inputs to `run_banocc`:
 
 1.  The dataset `C`. This is assumed to be *n* × *p*, with *n* samples and *p* features. The row sums are therefore required to be less than one for all samples.
 2.  The compiled stan model `banocc_model`. The compiled model is required so that `run_banocc` doesn't need to waste time compiling the model every time it is called. To compile, use `rstan::stan_model(model_code=banocc::banocc_model)`.
+
+The simplest way to run the model is to load a test dataset, compile the model, and sample from it:
+
+``` r
+data(compositions_null)
+banocc_model <- rstan::stan_model(model_code = banocc::banocc_model) 
+b_output     <- banocc::run_banocc(C = compositions_null, banocc_model=banocc_model)
+```
 
 #### Hyperparameters
 

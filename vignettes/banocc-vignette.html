@@ -38,6 +38,8 @@ body {
 </ul></li>
 <li><a href="#how-to-run">How To Run</a>
 <ul>
+<li><a href="#loading">Loading</a></li>
+<li><a href="#package-features">Package Features</a></li>
 <li><a href="#data-and-prior-input">Data and Prior Input</a>
 <ul>
 <li><a href="#required-input">Required Input</a></li>
@@ -82,6 +84,7 @@ body {
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone https://<span class="kw">&lt;</span>your-user-name<span class="kw">&gt;</span>@bitbucket.org/biobakery/banocc.git
 <span class="kw">R</span> CMD INSTALL banocc</code></pre></div>
 <h2 id="how-to-run">How To Run</h2>
+<h3 id="loading">Loading</h3>
 <p>We first need to load the package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(banocc)</code></pre></div>
 <pre><code>## Loading required package: rstan
@@ -95,6 +98,7 @@ body {
 ## For execution on a local, multicore CPU with excess RAM we recommend calling
 ## rstan_options(auto_write = TRUE)
 ## options(mc.cores = parallel::detectCores())</code></pre>
+<h3 id="package-features">Package Features</h3>
 <p>The BAnOCC package contains three things:</p>
 <ul>
 <li><code>bayesStanModel</code>, which is the BAnOCC model in the <code>rstan</code> format</li>
@@ -132,19 +136,19 @@ body {
 </tbody>
 </table></li>
 </ul>
-<p>The simplest way to run the model is to load the test dataset, compile the model, and sample from it:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(compositions_null)
-banocc_model &lt;-<span class="st"> </span>rstan::<span class="kw">stan_model</span>(<span class="dt">model_code =</span> banocc::banocc_model) 
-b_output     &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null, <span class="dt">banocc_model=</span>banocc_model)</code></pre></div>
+<h3 id="data-and-prior-input">Data and Prior Input</h3>
 <p>For a full and complete description of the possible parameters for <code>run_banocc</code>, their default values, and the output, see</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">?run_banocc </code></pre></div>
-<h3 id="data-and-prior-input">Data and Prior Input</h3>
 <h4 id="required-input">Required Input</h4>
 <p>There are only two required inputs to <code>run_banocc</code>:</p>
 <ol>
 <li>The dataset <code>C</code>. This is assumed to be <em>n</em> × <em>p</em>, with <em>n</em> samples and <em>p</em> features. The row sums are therefore required to be less than one for all samples.</li>
 <li>The compiled stan model <code>banocc_model</code>. The compiled model is required so that <code>run_banocc</code> doesn't need to waste time compiling the model every time it is called. To compile, use <code>rstan::stan_model(model_code=banocc::banocc_model)</code>.</li>
 </ol>
+<p>The simplest way to run the model is to load a test dataset, compile the model, and sample from it:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(compositions_null)
+banocc_model &lt;-<span class="st"> </span>rstan::<span class="kw">stan_model</span>(<span class="dt">model_code =</span> banocc::banocc_model) 
+b_output     &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null, <span class="dt">banocc_model=</span>banocc_model)</code></pre></div>
 <h4 id="hyperparameters">Hyperparameters</h4>
 <p>The hyperparameter values can be specified as input. Their names correspond to the parameters in the plate diagram figure (see section <a href="#the-model">The Model</a>). For example,</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p &lt;-<span class="st"> </span><span class="kw">ncol</span>(compositions_null)
