@@ -121,25 +121,6 @@ run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
     dimnames(CI$W$upper) <- list(colnames(Data$C), colnames(Data$C))
     CI <- CI$W
 
-    if (get_min_width){
-        min_width <- get_min_width(posterior_sample=post.samples.list,
-                                           parameter.names=c("W"),
-                                           null_value=0, type="marginal.hpd",
-                                           precision=0.01, verbose=verbose,
-                                           num_level=num_level + 1)
-    } else {
-        min_width <- list(Rho=NULL)
-    }
-    min_width <- min_width$W
-
-    if (calc_snc){
-        snc <- get_snc(posterior_samples=post.samples.list,
-                               parameter.names=c("W"))
-    } else {
-        snc <- list(Rho=NULL)
-    }
-    snc <- snc$W
-
     Estimates <-
         get_posterior_estimates(posterior_samples=post.samples.list,
                                         estimate_method="median",
@@ -149,8 +130,22 @@ run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
 
     
     return_object <- list(Data=Data, Fit=Fit, 
-                          CI.hpd=CI, Estimates.median=Estimates,
-                          Min.width=min_width, SNC=snc)
+                          CI.hpd=CI, Estimates.median=Estimates)
+
+    if (get_min_width){
+        min_width <- get_min_width(posterior_sample=post.samples.list,
+                                           parameter.names=c("W"),
+                                           null_value=0, type="marginal.hpd",
+                                           precision=0.01, verbose=verbose,
+                                           num_level=num_level + 1)
+        return_object$Min.width <- min_width$W
+    }
+
+    if (calc_snc){
+        snc <- get_snc(posterior_samples=post.samples.list,
+                               parameter.names=c("W"))
+        return_object$SNC <- snc$W
+    }
 
     cat_v("End run_banocc\n", verbose, num_level=num_level)
 
