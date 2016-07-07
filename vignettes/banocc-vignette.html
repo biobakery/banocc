@@ -27,7 +27,7 @@ body {
 
 <h1 id="introduction-to-banocc-bayesian-analaysis-of-compositional-covariance">Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)</h1>
 <p>Emma Schwager<br />
-2016-07-06</p>
+2016-07-07</p>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#how-to-install">How To Install</a>
@@ -140,7 +140,11 @@ b_output     &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">?run_banocc </code></pre></div>
 <h3 id="data-and-prior-input">Data and Prior Input</h3>
 <h4 id="required-input">Required Input</h4>
-<p>The only required input to <code>run_banocc</code> is the dataset, <code>C</code> and the compiled stan model, <code>banocc_model</code>. The dataset is assumed to be <em>n</em> × <em>p</em>, with <em>n</em> samples and <em>p</em> features. The row sums are therefore required to be less than 1 for all samples.</p>
+<p>There are only two required inputs to <code>run_banocc</code>:</p>
+<ol>
+<li>The dataset <code>C</code>. This is assumed to be <em>n</em> × <em>p</em>, with <em>n</em> samples and <em>p</em> features. The row sums are therefore required to be less than one for all samples.</li>
+<li>The compiled stan model <code>banocc_model</code>. The compiled model is required so that <code>run_banocc</code> doesn't need to waste time compiling the model every time it is called. To compile, use <code>rstan::stan_model(model_code=banocc::banocc_model)</code>.</li>
+</ol>
 <h4 id="hyperparameters">Hyperparameters</h4>
 <p>The hyperparameter values can be specified as input. Their names correspond to the parameters in the plate diagram figure (see section <a href="#the-model">The Model</a>). For example,</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p &lt;-<span class="st"> </span><span class="kw">ncol</span>(compositions_null)
@@ -151,8 +155,9 @@ b_hp &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<s
                            <span class="dt">a =</span> <span class="kw">rep</span>(<span class="dv">1</span>,   p),
                            <span class="dt">b =</span> <span class="kw">rep</span>(<span class="fl">0.5</span>, p),
                            <span class="dt">eta =</span> <span class="dv">1</span>)</code></pre></div>
-<p>The hyperparameter values for <strong><em>s</em></strong> can be alternatively specified as the means and variances of the prior using the parameters <code>sd_mean</code> and <code>sd_var</code>. For example,</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">b_sd_mean &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
+<p>The hyperparameter values for <strong><em>s</em></strong>, the standard deviations of the log-transformed basis, can be alternatively specified as the means and variances of the prior using the parameters <code>sd_mean</code> and <code>sd_var</code>. This is because the mean of a Gamma distribution is <em>a</em><sub><em>j</em></sub>/<em>b</em><sub><em>j</em></sub>, and the variance is <em>a</em><sub><em>j</em></sub>/<em>b</em><sub><em>j</em></sub><sup>2</sup>. For example,</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This is the same prior as above</span>
+b_sd_mean &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
                                 <span class="dt">banocc_model =</span> banocc_model,
                                 <span class="dt">sd_mean =</span> <span class="kw">rep</span>(<span class="dv">2</span>, p),
                                 <span class="dt">sd_var  =</span> <span class="kw">rep</span>(<span class="dv">4</span>, p))</code></pre></div>

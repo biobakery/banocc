@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-07-06
+2016-07-07
 
 -   [Introduction](#introduction)
 -   [How To Install](#how-to-install)
@@ -109,7 +109,10 @@ For a full and complete description of the possible parameters for `run_banocc`,
 
 #### Required Input
 
-The only required input to `run_banocc` is the dataset, `C` and the compiled stan model, `banocc_model`. The dataset is assumed to be *n* × *p*, with *n* samples and *p* features. The row sums are therefore required to be less than 1 for all samples.
+There are only two required inputs to `run_banocc`:
+
+1.  The dataset `C`. This is assumed to be *n* × *p*, with *n* samples and *p* features. The row sums are therefore required to be less than one for all samples.
+2.  The compiled stan model `banocc_model`. The compiled model is required so that `run_banocc` doesn't need to waste time compiling the model every time it is called. To compile, use `rstan::stan_model(model_code=banocc::banocc_model)`.
 
 #### Hyperparameters
 
@@ -126,9 +129,10 @@ b_hp <- banocc::run_banocc(C = compositions_null,
                            eta = 1)
 ```
 
-The hyperparameter values for ***s*** can be alternatively specified as the means and variances of the prior using the parameters `sd_mean` and `sd_var`. For example,
+The hyperparameter values for ***s***, the standard deviations of the log-transformed basis, can be alternatively specified as the means and variances of the prior using the parameters `sd_mean` and `sd_var`. This is because the mean of a Gamma distribution is *a*<sub>*j*</sub>/*b*<sub>*j*</sub>, and the variance is *a*<sub>*j*</sub>/*b*<sub>*j*</sub><sup>2</sup>. For example,
 
 ``` r
+# This is the same prior as above
 b_sd_mean <- banocc::run_banocc(C = compositions_null,
                                 banocc_model = banocc_model,
                                 sd_mean = rep(2, p),
