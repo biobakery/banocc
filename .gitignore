@@ -6,3 +6,5 @@ inst/doc
 tests/testthat/testthat_objects/*
 cache/*
 *.back
+vignettes/banocc-vignette_cache/*
+vignettes/banocc-vignette_files/*
