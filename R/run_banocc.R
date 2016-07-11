@@ -139,12 +139,16 @@ run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
                                            precision=0.01, verbose=verbose,
                                            num_level=num_level + 1)
         return_object$Min.width <- min_width$W
+        colnames(return_object$Min.width) <- colnames(Data$C)
+        rownames(return_object$Min.width) <- colnames(Data$C)
     }
 
     if (calc_snc){
         snc <- get_snc(posterior_samples=post.samples.list,
                                parameter.names=c("W"))
         return_object$SNC <- snc$W
+        colnames(return_object$SNC) <- colnames(Data$C)
+        rownames(return_object$SNC) <- colnames(Data$C)
     }
 
     cat_v("End run_banocc\n", verbose, num_level=num_level)
