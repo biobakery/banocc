@@ -11,42 +11,6 @@ cat_v <- function(s_string, verbose, num_level=0){
    if(verbose) cat(s_string)
 }
 
-# A function that captures any printed output from an evaluated R expression
-#   and returns it as an element of a list
-#
-# @param ... The expression to be evaluated
-# @param file An optional string or connection to which to write the output
-# @return A list; \code{output} is the actual output of \code{...}, and
-#   \code{print.output} is the printed output from evaluating \code{...}.
-
-mycapture <-
-function(..., file=NULL){
-      closeit <- TRUE
-        if (is.null(file))
-                file <- textConnection("rval", "w", local = TRUE)
-        else if (is.character(file))
-                file <- file(file, if (append)
-                                   "a"
-                                              else "w")
-        else if (inherits(file, "connection")) {
-                if (!isOpen(file))
-                          open(file, if (append)
-                                       "a"
-                                          else "w")
-                    else closeit <- FALSE
-            }
-        else stop("'file' must be NULL, a character string or a connection")
-        sink(file)
-        output <- list(output=eval(...))
-        sink()
-        if (closeit){
-                close(file)
-            }
-        output$print.output = rval
-        return(output)
-  }
-
-
 # Check if a square matrix is symmetric
 #
 # @param mat The square matrix to be checked
