@@ -9,6 +9,9 @@
 \usage{
 counts_pos_spike
 }
+\value{
+A data frame with 1000 unconstrained samples from 9 features.
+}
 \description{
 Nine features are drawn from a log-normal distribution with one positive
   correlation. The resulting compositions are in

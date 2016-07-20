@@ -9,6 +9,9 @@
 \usage{
 counts_null
 }
+\value{
+A data frame with 1000 unconstrained samples from 9 features.
+}
 \description{
 Nine features are drawn independently from similar log-normal
   distributions to generate null count data. Because the feature

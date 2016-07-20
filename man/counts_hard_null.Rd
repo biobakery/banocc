@@ -9,6 +9,9 @@
 \usage{
 counts_hard_null
 }
+\value{
+A data frame with 1000 unconstrained samples from 9 features.
+}
 \description{
 Nine features are draw independently from very different log-normal
   distributions whose means and variances are positively correlated. This

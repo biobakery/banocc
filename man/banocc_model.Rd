@@ -8,6 +8,10 @@
 \usage{
 banocc_model
 }
+\value{
+The BAnOCC model as a string to be compiled with
+    \code{rstan::stan_model}
+}
 \description{
 This is the literal model used for fitting in Stan
 }

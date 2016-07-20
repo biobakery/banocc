@@ -1,6 +1,10 @@
 #' The stan model used in the Bayesian fit
 #'
 #' This is the literal model used for fitting in Stan
+#'
+#' @return The BAnOCC model as a string to be compiled with
+#'     \code{rstan::stan_model}
+#' 
 #' @export
 
 banocc_model <- "data {
