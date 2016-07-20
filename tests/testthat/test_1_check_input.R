@@ -164,3 +164,9 @@ test_that("check_C works on all included compositional datasets", {
     expect_is(check_C(compositions_pos_spike), "matrix")
     expect_is(check_C(compositions_neg_spike), "matrix")
 })
+
+test_that("check_conf_alpha fails if conf_alpha is NULL or non-numeric", {
+    numeric_error <- "conf_alpha must be coercible to numeric type"
+    expect_error(check_conf_alpha(NULL), "conf_alpha must not be NULL")
+    expect_error(check_conf_alpha("ab"), numeric_error)
+})
