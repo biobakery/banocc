@@ -1,9 +1,13 @@
 inst/doc
 *~
 \#*
-*.RData
+.RData
 *.tex
-tests/testthat/testthat_objects/*
+*.out
+*.pdf
+*.aux
+*.log
+tests/testthat/testthat_objects/cache/*
 cache/*
 *.back
 vignettes/banocc-vignette_cache/*
