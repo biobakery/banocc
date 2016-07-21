@@ -15,6 +15,7 @@
 #   }
 # @inheritParams cat_v
 #
+#' @importFrom mvtnorm rmvnorm
 
 get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
     cat_v("Begin get_IVs...", verbose, num_level=num_level)
