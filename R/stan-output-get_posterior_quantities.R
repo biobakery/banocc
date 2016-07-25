@@ -26,21 +26,13 @@ function(posterior_samples,
     names(parameter.names) <- parameter.names
     
     if(estimate_method=="mean"){
-        posterior_estimates <- lapply(parameter.names, function(name){
-            is.mat <- length(dim(posterior_samples[[name]])) == 3
-            is.vec <- length(dim(posterior_samples[[name]])) == 2
-            if(is.mat){
-                apply(posterior_samples[[name]], c(2, 3), mean)
-            } else if (is.vec) {
-                apply(posterior_samples[[name]], 2, mean)
-            } else {
-                mean(posterior_samples[[name]])
-            }
-        })
+        posterior_estimates <- lapply(parameter.names, ps_function,
+                                      posterior_samples=posterior_samples,
+                                      func=mean)
     } else if (estimate_method=="median"){
         posterior_estimates <-
             get_posterior_quantiles(posterior_samples, probs=0.5,
-                                            parameter.names=parameter.names)
+                                    parameter.names=parameter.names)
     } else {
         stop('Invalid estimate_method; must be "mean" or "median"')
     }
@@ -53,46 +45,23 @@ function(posterior_samples, probs, list=FALSE,
          parameter.names=c("m", "S")
          ){
     names(parameter.names) <- parameter.names
-    posterior_quantiles <- lapply(parameter.names, function(name){
-        is.mat <- length(dim(posterior_samples[[name]])) == 3
-        is.vec <- length(dim(posterior_samples[[name]])) == 2
-        if(is.mat){
-            apply(posterior_samples[[name]], c(2, 3), quantile, probs=probs)
-        } else if (is.vec) {
-            apply(posterior_samples[[name]], 2, quantile, probs=probs)
+    posterior_quantiles <- lapply(parameter.names, ps_function,
+                                  posterior_samples=posterior_samples,
+                                  func=quantile, probs=probs)
+    posterior_quantiles <- lapply(posterior_quantiles, function(pq){
+        if (length(probs) == 1 && is.vector(pq)){
+            unname(pq)
         } else {
-            q <- quantile(posterior_samples[[name]], probs=probs)
-            if (length(probs) > 1){
-                q
-            } else {
-                unname(q)
-            }
+            pq
         }
     })
 
     if(!list){
         return(posterior_quantiles)
     } else if (length(probs) > 1){
-        posterior_quantiles.list <-
-            lapply(parameter.names,
-                   function(name) vector("list", length=length(probs))
-                   )
-        for (i in seq_along(probs)){
-            for(name in parameter.names){
-                is.mat <- length(dim(posterior_samples[[name]])) == 3
-                is.vec <- length(dim(posterior_samples[[name]])) == 2
-                if(is.mat){
-                  posterior_quantiles.list[[name]][[i]] <-
-                      posterior_quantiles[[name]][i, , ]
-                } else if (is.vec){
-                    posterior_quantiles.list[[name]][[i]] <-
-                        posterior_quantiles[[name]][i, ]
-                } else {
-                    posterior_quantiles.list[[name]][[i]] <-
-                        unname(posterior_quantiles[[name]][i])
-                }
-            }
-        }
+        posterior_quantiles.list <- make_list(
+            array_list=posterior_quantiles, parameter.names=parameter.names,
+            posterior_samples=posterior_samples, elt_length=length(probs))
         return(posterior_quantiles.list)
     } else {
         posterior_quantiles.list <-
