@@ -118,7 +118,7 @@ test_that("get_posterior_quantiles matches eltwise calcn for matrices when list=
 test_that("get_posterior_quantiles matches eltwise calcn for scalars when list=TRUE", {
     q <- unname(quantile(posterior_samples$lp__, probs=probs))
     for (i in seq_along(probs)){
-        expect_equal(pq$lp__[[i]], q[i])
+        expect_equal(pq$lp__[[i]][1], q[i])
     }
 })
 
