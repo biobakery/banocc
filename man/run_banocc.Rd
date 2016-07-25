@@ -17,20 +17,21 @@ run_banocc(banocc_model, C, n = rep(0, ncol(C)), L = 10 * diag(ncol(C)),
 \item{banocc_model}{The compiled stan model (as with
 \code{stan_model(model_code = banocc_model)}).}
 
-\item{C}{The dataset as a data frame or matrix, with the samples as the
-rows and the features as the columns.}
+\item{C}{The dataset as a data frame or matrix. This should be N by P
+with N samples as the rows and P features as the columns.}
 
-\item{n}{The prior mean for m; vectors of length less than p will be
-recycled.}
+\item{n}{The prior mean for m; vectors of length less than P (the number
+of features/columns of \code{C}) will be recycled.}
 
 \item{L}{The prior variance-covariance for m (must be
-positive-definite with dimension pxp where p=number of features in C),
-or a vector of length p of variances for m. If a vector of length less
-than p is given, it will be recycled.}
+positive-definite with dimension PxP where P=number of features/columns
+in \code{C}), or a vector of length p of variances for m. If a vector of
+length less than P is given, it will be recycled.}
 
 \item{a, b}{Vectors of parameters for the gamma prior on the standard
 deviations. They must be of equal length. If a vector of length less
-than p is given, it will be recycled.}
+than P (the number of features/columns in \code{C}) is given, it will
+be recycled.}
 
 \item{eta}{scale parameter of LKJ distribution; must be >= 1.}
 
@@ -66,7 +67,8 @@ priors.}
 
 \item{sd_mean, sd_var}{Vectors of means and variances for the gamma priors
 on the standard deviations. They must be of equal length. If a vector
-of length less than p is given, it will be recycled.}
+of length less than P (the number of features/columns in \code{C}) is
+given, it will be recycled.}
 
 \item{conf_alpha}{The percentage of the posterior density outside the
 credible interval. That is, a \code{1-conf_alpha} * 100\% credible
@@ -87,7 +89,8 @@ calculated?}
 Returns a named list with the following elements:
 \describe{
   \item{\emph{Data}}{The data formatted as a named list that includes the
-    input data and the prior parameters}
+    input data (\code{C}) and the prior parameters (\code{n}, \code{L},
+    \code{a}, \code{b}, \code{eta})}
 
   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
     \code{\link[rstan]{sampling}}}
