@@ -115,22 +115,20 @@ run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
                            refresh=refresh)
     cat_v("End fitting the model\n", verbose, num_level=num_level+1)
 
-    post.samples.list <- rstan::extract(Fit)
-    CI <- get_credible_intervals(posterior_samples=post.samples.list,
-                                         list=TRUE,
-                                         parameter.names=c("W"),
-                                         conf=1-conf_alpha,
-                                         type="marginal.hpd",
-                                         verbose=verbose, num_level=num_level+1)
+    post_samples_list <- rstan::extract(Fit)
+    CI <- get_credible_intervals(posterior_samples=post_samples_list,
+                                 list=TRUE, parameter.names=c("W"),
+                                 conf=1-conf_alpha, type="marginal.hpd",
+                                 verbose=verbose, num_level=num_level+1)
 
     dimnames(CI$W$lower) <- list(colnames(Data$C), colnames(Data$C))
     dimnames(CI$W$upper) <- list(colnames(Data$C), colnames(Data$C))
     CI <- CI$W
 
     Estimates <-
-        get_posterior_estimates(posterior_samples=post.samples.list,
-                                        estimate_method="median",
-                                        parameter.names="W")
+        get_posterior_estimates(posterior_samples=post_samples_list,
+                                estimate_method="median",
+                                parameter.names="W")
     dimnames(Estimates$W) <- list(colnames(Data$C), colnames(Data$C))
     Estimates <- Estimates$W
 
@@ -139,18 +137,19 @@ run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
                           CI.hpd=CI, Estimates.median=Estimates)
 
     if (get_min_width){
-        min_width <- get_min_width(posterior_sample=post.samples.list,
-                                           parameter.names=c("W"),
-                                           null_value=0, type="marginal.hpd",
-                                           precision=0.01, verbose=verbose,
-                                           num_level=num_level + 1)
+        min_width <- get_min_width(posterior_sample=post_samples_list,
+                                   parameter.names=c("W"),
+                                   null_value=0, type="marginal.hpd",
+                                   precision=0.01, verbose=verbose,
+                                   num_level=num_level + 1)
+        
         return_object$Min.width <- min_width$W
         colnames(return_object$Min.width) <- colnames(Data$C)
         rownames(return_object$Min.width) <- colnames(Data$C)
     }
 
     if (calc_snc){
-        snc <- get_snc(posterior_samples=post.samples.list,
+        snc <- get_snc(posterior_samples=post_samples_list,
                                parameter.names=c("W"))
         return_object$SNC <- snc$W
         colnames(return_object$SNC) <- colnames(Data$C)
@@ -294,7 +293,7 @@ get_a_b <- function(a, b, p, sd_mean=NULL, sd_var=NULL,
         stop(paste0("Must provide both 'a' and 'b' OR both 'sd_mean'",
                     " and 'sd_var'"))
     }
-    cat_v("End get_a_b\n", verbose)
+    cat_v("End get_a_b\n", verbose, num_level=num_level)
     return(a_b)
 }
 
