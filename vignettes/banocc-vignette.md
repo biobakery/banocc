@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-07-12
+2016-07-28
 
 [TOC]
 
@@ -33,7 +33,9 @@ There are three options for installing BAnOCC:
 
 Clone the repository using `git clone`, which downloads the package as its own directory called `banocc`.
 
-`bash git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git`
+``` bash
+git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
+```
 
 Then, install BAnOCC's dependencies. If these are already installed on your machine, this step can be skipped.
 
@@ -99,7 +101,7 @@ For a full and complete description of the possible parameters for `run_banocc`,
 
 There are only two required inputs to `run_banocc`:
 
-1.  The dataset `C`. This is assumed to be *n* × *p*, with *n* samples and *p* features. The row sums are therefore required to be less than one for all samples.
+1.  The dataset `C`. This is assumed to be *N* × *P*, with *N* samples and *P* features. The row sums are therefore required to be less than one for all samples.
 2.  The compiled stan model `banocc_model`. The compiled model is required so that `run_banocc` doesn't need to waste time compiling the model every time it is called. To compile, use `rstan::stan_model(model_code=banocc::banocc_model)`.
 
 The simplest way to run the model is to load a test dataset, compile the model, and sample from it:
