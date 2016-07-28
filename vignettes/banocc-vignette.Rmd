@@ -20,11 +20,11 @@ economics, and ecology, to name a few. Data are compositional when
 each sample is sum-constrained. For example, mineral compositions
 describe a mineral in terms of the weight percentage coming from
 various elements; or taxonomic compositions break down a community by
-the fraction of individuals that come from a particular species. In
-ecology in particular, the covariance between features is often of
-interest to determine which species possibly interact with each
-other. However, the sum constraint of compositional data makes naive
-measures inappropriate.
+the fraction of community memebers that come from a particular
+species. In ecology in particular, the covariance between features is
+often of interest to determine which species possibly interact with
+each other. However, the sum constraint of compositional data makes
+naive measures inappropriate.
 
 BAnOCC is a package for analyzing compositional covariance while
 accounting for the compositional structure. Briefly, the model assumes
@@ -51,9 +51,27 @@ biocLite("BAnOCC")
 ### From Bitbucket (Compressed File)
 **This is not yet available**
 
-### From Bitbucket (Directly)
-```bash
+### From Bitbucket (Directly) 
+
+Clone the repository using `git clone`, which downloads the package as
+its own directory called `banocc`.
+
+```bash 
 git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
+```
+
+Then, install BAnOCC's dependencies. If these are already installed on
+your machine, this step can be skipped.
+
+```bash
+Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda'))"
+```
+
+Lastly, install BAnOCC using `R CMD INSTALL`. Note that this _will
+not_ automatically install the dependencies, so they must be installed
+first.
+
+```bash 
 R CMD INSTALL banocc
 ```
 
@@ -95,8 +113,8 @@ For a full and complete description of the possible parameters for
 
 There are only two required inputs to `run_banocc`:
 
-1. The dataset `C`. This is assumed to be $n \times p$, with $n$
-samples and $p$ features. The row sums are therefore required to be
+1. The dataset `C`. This is assumed to be $N \times P$, with $N$
+samples and $P$ features. The row sums are therefore required to be
 less than one for all samples.
 1. The compiled stan model `banocc_model`. The compiled model is
 required so that `run_banocc` doesn't need to waste time compiling the

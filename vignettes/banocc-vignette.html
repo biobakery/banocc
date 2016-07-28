@@ -27,7 +27,7 @@ body {
 
 <h1 id="introduction-to-banocc-bayesian-analaysis-of-compositional-covariance">Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)</h1>
 <p>Emma Schwager<br />
-2016-07-07</p>
+2016-07-12</p>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#how-to-install">How To Install</a>
@@ -71,7 +71,7 @@ body {
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="introduction">Introduction</h2>
-<p>Compositional data occur in many disciplines: geology, nutrition, economics, and ecology, to name a few. Data are compositional when each sample is sum-constrained. For example, mineral compositions describe a mineral in terms of the weight percentage coming from various elements; or taxonomic compositions break down a community by the fraction of individuals that come from a particular species. In ecology in particular, the covariance between features is often of interest to determine which species possibly interact with each other. However, the sum constraint of compositional data makes naive measures inappropriate.</p>
+<p>Compositional data occur in many disciplines: geology, nutrition, economics, and ecology, to name a few. Data are compositional when each sample is sum-constrained. For example, mineral compositions describe a mineral in terms of the weight percentage coming from various elements; or taxonomic compositions break down a community by the fraction of community memebers that come from a particular species. In ecology in particular, the covariance between features is often of interest to determine which species possibly interact with each other. However, the sum constraint of compositional data makes naive measures inappropriate.</p>
 <p>BAnOCC is a package for analyzing compositional covariance while accounting for the compositional structure. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis (see <a href="#the-model">The Model</a> section for a more detailed explanation). The inference is made using No U-Turn Sampling for Hamiltonian Monte Carlo (Hoffman and Gelman 2014) as implemented in the <code>rstan</code> R package (Stan Development Team 2015b).</p>
 <h2 id="how-to-install">How To Install</h2>
 <p>There are three options for installing BAnOCC:</p>
@@ -85,8 +85,12 @@ body {
 <h3 id="from-bitbucket-compressed-file">From Bitbucket (Compressed File)</h3>
 <p><strong>This is not yet available</strong></p>
 <h3 id="from-bitbucket-directly">From Bitbucket (Directly)</h3>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone https://<span class="kw">&lt;</span>your-user-name<span class="kw">&gt;</span>@bitbucket.org/biobakery/banocc.git
-<span class="kw">R</span> CMD INSTALL banocc</code></pre></div>
+<p>Clone the repository using <code>git clone</code>, which downloads the package as its own directory called <code>banocc</code>.</p>
+<p><code>bash git clone https://&lt;your-user-name&gt;@bitbucket.org/biobakery/banocc.git</code></p>
+<p>Then, install BAnOCC's dependencies. If these are already installed on your machine, this step can be skipped.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">Rscript</span> -e <span class="st">&quot;install.packages(c('rstan', 'mvtnorm', 'coda'))&quot;</span></code></pre></div>
+<p>Lastly, install BAnOCC using <code>R CMD INSTALL</code>. Note that this <em>will not</em> automatically install the dependencies, so they must be installed first.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">R</span> CMD INSTALL banocc</code></pre></div>
 <h2 id="how-to-run">How To Run</h2>
 <h3 id="loading">Loading</h3>
 <p>We first need to load the package:</p>

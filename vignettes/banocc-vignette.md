@@ -1,39 +1,14 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-07-07
+2016-07-12
 
--   [Introduction](#introduction)
--   [How To Install](#how-to-install)
-    -   [From Within R](#from-within-r)
-    -   [From Bitbucket (Compressed File)](#from-bitbucket-compressed-file)
-    -   [From Bitbucket (Directly)](#from-bitbucket-directly)
--   [How To Run](#how-to-run)
-    -   [Loading](#loading)
-    -   [Package Features](#package-features)
-    -   [Data and Prior Input](#data-and-prior-input)
-        -   [Required Input](#required-input)
-        -   [Hyperparameters](#hyperparameters)
-    -   [Sampling Control](#sampling-control)
-        -   [General Sampling Control](#general-sampling-control)
-        -   [Number of Cores](#number-of-cores)
-        -   [Initial Values](#initial-values)
-    -   [Output Control](#output-control)
-        -   [Credible Interval Width](#credible-interval-width)
-        -   [Additional Output](#additional-output)
--   [Assessing Convergence](#assessing-convergence)
-    -   [Traceplots](#traceplots)
-    -   [Rhat Statistics](#rhat-statistics)
--   [Choosing Priors](#choosing-priors)
-    -   [Log-Basis Correlation Matrix](#log-basis-correlation-matrix)
-    -   [Log-Basis Mean and Standard Deviations](#log-basis-mean-and-standard-deviations)
--   [The Model](#the-model)
--   [References](#references)
+[TOC]
 
 Introduction
 ------------
 
-Compositional data occur in many disciplines: geology, nutrition, economics, and ecology, to name a few. Data are compositional when each sample is sum-constrained. For example, mineral compositions describe a mineral in terms of the weight percentage coming from various elements; or taxonomic compositions break down a community by the fraction of individuals that come from a particular species. In ecology in particular, the covariance between features is often of interest to determine which species possibly interact with each other. However, the sum constraint of compositional data makes naive measures inappropriate.
+Compositional data occur in many disciplines: geology, nutrition, economics, and ecology, to name a few. Data are compositional when each sample is sum-constrained. For example, mineral compositions describe a mineral in terms of the weight percentage coming from various elements; or taxonomic compositions break down a community by the fraction of community memebers that come from a particular species. In ecology in particular, the covariance between features is often of interest to determine which species possibly interact with each other. However, the sum constraint of compositional data makes naive measures inappropriate.
 
 BAnOCC is a package for analyzing compositional covariance while accounting for the compositional structure. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis (see [The Model](#the-model) section for a more detailed explanation). The inference is made using No U-Turn Sampling for Hamiltonian Monte Carlo (Hoffman and Gelman 2014) as implemented in the `rstan` R package (Stan Development Team 2015b).
 
@@ -56,8 +31,19 @@ There are three options for installing BAnOCC:
 
 ### From Bitbucket (Directly)
 
+Clone the repository using `git clone`, which downloads the package as its own directory called `banocc`.
+
+`bash git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git`
+
+Then, install BAnOCC's dependencies. If these are already installed on your machine, this step can be skipped.
+
 ``` bash
-git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
+Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda'))"
+```
+
+Lastly, install BAnOCC using `R CMD INSTALL`. Note that this *will not* automatically install the dependencies, so they must be installed first.
+
+``` bash
 R CMD INSTALL banocc
 ```
 
@@ -75,6 +61,8 @@ library(banocc)
     ## Loading required package: rstan
 
     ## Loading required package: ggplot2
+
+[TOC]
 
     ## Loading required package: StanHeaders
 
@@ -283,6 +271,8 @@ rhat_all[paste0("W[1,", 2:9, "]")]
 
     ##   W[1,2]   W[1,3]   W[1,4]   W[1,5]   W[1,6]   W[1,7]   W[1,8]   W[1,9] 
     ## 2.383395 1.988170 2.828204 2.203286 2.606121 2.160999 2.781550 2.049964
+
+[TOC]
 
 Choosing Priors
 ---------------
