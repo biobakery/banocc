@@ -3,7 +3,7 @@ Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 Emma Schwager
 2016-07-28
 
-[TOC]
+.. contents::
 
 Introduction
 ------------
@@ -63,8 +63,6 @@ library(banocc)
     ## Loading required package: rstan
 
     ## Loading required package: ggplot2
-
-[TOC]
 
     ## Loading required package: StanHeaders
 
@@ -273,8 +271,6 @@ rhat_all[paste0("W[1,", 2:9, "]")]
 
     ##   W[1,2]   W[1,3]   W[1,4]   W[1,5]   W[1,6]   W[1,7]   W[1,8]   W[1,9] 
     ## 2.383395 1.988170 2.828204 2.203286 2.606121 2.160999 2.781550 2.049964
-
-[TOC]
 
 Choosing Priors
 ---------------
