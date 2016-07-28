@@ -3,7 +3,7 @@ Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 Emma Schwager
 2016-07-28
 
-.. contents::
+[TOC]
 
 Introduction
 ------------
