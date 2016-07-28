@@ -3,14 +3,39 @@ Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 Emma Schwager
 2016-07-28
 
-[TOC]
+-   [Introduction](#markdown-header-introduction)
+-   [How To Install](#markdown-header-how-to-install)
+    -   [From Within R](#markdown-header-from-within-r)
+    -   [From Bitbucket (Compressed File)](#markdown-header-from-bitbucket-compressed-file)
+    -   [From Bitbucket (Directly)](#markdown-header-from-bitbucket-directly)
+-   [How To Run](#markdown-header-how-to-run)
+    -   [Loading](#markdown-header-loading)
+    -   [Package Features](#markdown-header-package-features)
+    -   [Data and Prior Input](#markdown-header-data-and-prior-input)
+        -   [Required Input](#markdown-header-required-input)
+        -   [Hyperparameters](#markdown-header-hyperparameters)
+    -   [Sampling Control](#markdown-header-sampling-control)
+        -   [General Sampling Control](#markdown-header-general-sampling-control)
+        -   [Number of Cores](#markdown-header-number-of-cores)
+        -   [Initial Values](#markdown-header-initial-values)
+    -   [Output Control](#markdown-header-output-control)
+        -   [Credible Interval Width](#markdown-header-credible-interval-width)
+        -   [Additional Output](#markdown-header-additional-output)
+-   [Assessing Convergence](#markdown-header-assessing-convergence)
+    -   [Traceplots](#markdown-header-traceplots)
+    -   [Rhat Statistics](#markdown-header-rhat-statistics)
+-   [Choosing Priors](#markdown-header-choosing-priors)
+    -   [Log-Basis Correlation Matrix](#markdown-header-log-basis-correlation-matrix)
+    -   [Log-Basis Mean and Standard Deviations](#markdown-header-log-basis-mean-and-standard-deviations)
+-   [The Model](#markdown-header-the-model)
+-   [References](#markdown-header-references)
 
 Introduction
 ------------
 
 Compositional data occur in many disciplines: geology, nutrition, economics, and ecology, to name a few. Data are compositional when each sample is sum-constrained. For example, mineral compositions describe a mineral in terms of the weight percentage coming from various elements; or taxonomic compositions break down a community by the fraction of community memebers that come from a particular species. In ecology in particular, the covariance between features is often of interest to determine which species possibly interact with each other. However, the sum constraint of compositional data makes naive measures inappropriate.
 
-BAnOCC is a package for analyzing compositional covariance while accounting for the compositional structure. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis (see [The Model](#the-model) section for a more detailed explanation). The inference is made using No U-Turn Sampling for Hamiltonian Monte Carlo (Hoffman and Gelman 2014) as implemented in the `rstan` R package (Stan Development Team 2015b).
+BAnOCC is a package for analyzing compositional covariance while accounting for the compositional structure. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis (see [The Model](#markdown-header-the-model) section for a more detailed explanation). The inference is made using No U-Turn Sampling for Hamiltonian Monte Carlo (Hoffman and Gelman 2014) as implemented in the `rstan` R package (Stan Development Team 2015b).
 
 How To Install
 --------------
@@ -112,7 +137,7 @@ b_output     <- banocc::run_banocc(C = compositions_null, banocc_model=banocc_mo
 
 #### Hyperparameters
 
-The hyperparameter values can be specified as input. Their names correspond to the parameters in the plate diagram figure (see section [The Model](#the-model)). For example,
+The hyperparameter values can be specified as input. Their names correspond to the parameters in the plate diagram figure (see section [The Model](#markdown-header-the-model)). For example,
 
 ``` r
 p <- ncol(compositions_null)
@@ -275,11 +300,11 @@ rhat_all[paste0("W[1,", 2:9, "]")]
 Choosing Priors
 ---------------
 
-The hyperparameters for the model (see section [The Model](#the-model)) need to be chosen appropriately.
+The hyperparameters for the model (see section [The Model](#markdown-header-the-model)) need to be chosen appropriately.
 
 ### Log-Basis Correlation Matrix
 
-The prior on the correlation matrix ***W*** is an LKJ distribution with parameter *η* (see section [The Model](#the-model) and Lewandowski, Kurowicka, and Joe 2009). When *η* = 1, this prior is uniform over the space of positive definite correlation matrices. As *η* increases, the prior probability mass for each correlation becomes more and more concentrated around 0, which can be seen in the figures below.
+The prior on the correlation matrix ***W*** is an LKJ distribution with parameter *η* (see section [The Model](#markdown-header-the-model) and Lewandowski, Kurowicka, and Joe 2009). When *η* = 1, this prior is uniform over the space of positive definite correlation matrices. As *η* increases, the prior probability mass for each correlation becomes more and more concentrated around 0, which can be seen in the figures below.
 
 ![eta 1](prior_eta_1_n_1000_W.png) ![eta 10](prior_eta_10_n_1000_W.png) ![eta 25](prior_eta_25_n_1000_W.png)
 
@@ -292,7 +317,7 @@ The Model
 
 A pictoral representation of the model is shown below. Briefly, the basis (or unobserved, unrestricted counts) for each sample is assumed to be a lognormal distribution with parameters ***m*** and ***S***. The prior on ***m*** is a normal distribution parametrized by mean ***n*** and variance-covariance matrix ***L***. Since we are interested in the correlation structure, we break ***S*** into a correlation matrix ***W*** and a vector of standard deviations ***s***. The prior on ***W*** is an LKJ distribution (Lewandowski, Kurowicka, and Joe 2009) with shrinkage parameter *η*, while the prior on eash *s*<sub>*j*</sub> is a gamma prior with shape *a*<sub>*j*</sub> and rate *b*<sub>*j*</sub>.
 
-![plate-diagram](eschwager/banocc/raw/master/vignettes/Figure3.png)
+![plate-diagram](Figure3.png)
 
 If we print the model, we can actually see the code. It is written in the format required by the `rstan` package, since `banocc` uses this package to sample from the model. See (Stan Development Team 2015a) for more detailed information on this format.
 
