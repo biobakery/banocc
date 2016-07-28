@@ -27,7 +27,7 @@ body {
 
 <h1 id="introduction-to-banocc-bayesian-analaysis-of-compositional-covariance">Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)</h1>
 <p>Emma Schwager<br />
-2016-07-12</p>
+2016-07-28</p>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#how-to-install">How To Install</a>
@@ -86,7 +86,7 @@ body {
 <p><strong>This is not yet available</strong></p>
 <h3 id="from-bitbucket-directly">From Bitbucket (Directly)</h3>
 <p>Clone the repository using <code>git clone</code>, which downloads the package as its own directory called <code>banocc</code>.</p>
-<p><code>bash git clone https://&lt;your-user-name&gt;@bitbucket.org/biobakery/banocc.git</code></p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone https://<span class="kw">&lt;</span>your-user-name<span class="kw">&gt;</span>@bitbucket.org/biobakery/banocc.git</code></pre></div>
 <p>Then, install BAnOCC's dependencies. If these are already installed on your machine, this step can be skipped.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">Rscript</span> -e <span class="st">&quot;install.packages(c('rstan', 'mvtnorm', 'coda'))&quot;</span></code></pre></div>
 <p>Lastly, install BAnOCC using <code>R CMD INSTALL</code>. Note that this <em>will not</em> automatically install the dependencies, so they must be installed first.</p>
@@ -150,7 +150,7 @@ body {
 <h4 id="required-input">Required Input</h4>
 <p>There are only two required inputs to <code>run_banocc</code>:</p>
 <ol>
-<li>The dataset <code>C</code>. This is assumed to be <em>n</em> × <em>p</em>, with <em>n</em> samples and <em>p</em> features. The row sums are therefore required to be less than one for all samples.</li>
+<li>The dataset <code>C</code>. This is assumed to be <em>N</em> × <em>P</em>, with <em>N</em> samples and <em>P</em> features. The row sums are therefore required to be less than one for all samples.</li>
 <li>The compiled stan model <code>banocc_model</code>. The compiled model is required so that <code>run_banocc</code> doesn't need to waste time compiling the model every time it is called. To compile, use <code>rstan::stan_model(model_code=banocc::banocc_model)</code>.</li>
 </ol>
 <p>The simplest way to run the model is to load a test dataset, compile the model, and sample from it:</p>
