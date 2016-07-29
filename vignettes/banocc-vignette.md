@@ -150,7 +150,7 @@ b_hp <- banocc::run_banocc(C = compositions_null,
                            eta = 1)
 ```
 
-The hyperparameter values for ***s***, the standard deviations of the log-transformed basis, can be alternatively specified as the means and variances of the prior using the parameters `sd_mean` and `sd_var`. This is because the mean of a Gamma distribution is *a*_*j*/*b*_*j*, and the variance is *a*_*j*/*b*_*j*^2. For example,
+The hyperparameter values for ***s***, the standard deviations of the log-transformed basis, can be alternatively specified as the means and variances of the prior using the parameters `sd_mean` and `sd_var`. This is because the mean of a Gamma distribution is *a*\_*j*/*b*\_*j*, and the variance is *a*\_*j*/*b*\_*j*^2. For example,
 
 ``` r
 # This is the same prior as above
@@ -218,7 +218,7 @@ There are several parameters that control the type of output which is returned.
 
 #### Credible Interval Width
 
-The width of the returned credible intervals is controlled by `conf_alpha`. A 100%\*(1 − *α*_conf) credible interval is returned:
+The width of the returned credible intervals is controlled by `conf_alpha`. A 100%\*(1 − *α*\_conf) credible interval is returned:
 
 ``` r
 # Get 90% credible intervals
@@ -315,7 +315,7 @@ We recommend plotting *both* the explicit priors on the log-basis means and stan
 The Model
 ---------
 
-A pictoral representation of the model is shown below. Briefly, the basis (or unobserved, unrestricted counts) for each sample is assumed to be a lognormal distribution with parameters ***m*** and ***S***. The prior on ***m*** is a normal distribution parametrized by mean ***n*** and variance-covariance matrix ***L***. Since we are interested in the correlation structure, we break ***S*** into a correlation matrix ***W*** and a vector of standard deviations ***s***. The prior on ***W*** is an LKJ distribution (Lewandowski, Kurowicka, and Joe 2009) with shrinkage parameter *η*, while the prior on eash *s*_*j* is a gamma prior with shape *a*_*j* and rate *b*_*j*.
+A pictoral representation of the model is shown below. Briefly, the basis (or unobserved, unrestricted counts) for each sample is assumed to be a lognormal distribution with parameters ***m*** and ***S***. The prior on ***m*** is a normal distribution parametrized by mean ***n*** and variance-covariance matrix ***L***. Since we are interested in the correlation structure, we break ***S*** into a correlation matrix ***W*** and a vector of standard deviations ***s***. The prior on ***W*** is an LKJ distribution (Lewandowski, Kurowicka, and Joe 2009) with shrinkage parameter *η*, while the prior on eash *s*\_*j* is a gamma prior with shape *a*\_*j* and rate *b*\_*j*.
 
 ![plate-diagram](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/Figure3.png)
 
