@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-07-28
+2016-07-29
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -270,7 +270,7 @@ Traceplots can be directly accessed using the `traceplot` function in the `rstan
 rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"))
 ```
 
-![](banocc-vignette_files/figure-markdown_github/traceplot-1.png)
+![](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/banocc-vignette_files/figure-markdown_github/traceplot-1.png)
 
 We could also see the warmup period samples by using `inc_warmup=TRUE`. This shows that the chains have moved from very different starting points to a similar distribution, which is a good sign of convergence.
 
@@ -280,7 +280,7 @@ rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"),
                  inc_warmup=TRUE)
 ```
 
-![](banocc-vignette_files/figure-markdown_github/traceplot-warmup-1.png)
+![](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/banocc-vignette_files/figure-markdown_github/traceplot-warmup-1.png)
 
 ### Rhat Statistics
 
@@ -306,7 +306,7 @@ The hyperparameters for the model (see section [The Model](#markdown-header-the-
 
 The prior on the correlation matrix ***W*** is an LKJ distribution with parameter *η* (see section [The Model](#markdown-header-the-model) and Lewandowski, Kurowicka, and Joe 2009). When *η* = 1, this prior is uniform over the space of positive definite correlation matrices. As *η* increases, the prior probability mass for each correlation becomes more and more concentrated around 0, which can be seen in the figures below.
 
-![eta 1](prior_eta_1_n_1000_W.png) ![eta 10](prior_eta_10_n_1000_W.png) ![eta 25](prior_eta_25_n_1000_W.png)
+![eta 1](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/prior_eta_1_n_1000_W.png) ![eta 10](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/prior_eta_10_n_1000_W.png) ![eta 25](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/prior_eta_25_n_1000_W.png)
 
 ### Log-Basis Mean and Standard Deviations
 
@@ -317,7 +317,7 @@ The Model
 
 A pictoral representation of the model is shown below. Briefly, the basis (or unobserved, unrestricted counts) for each sample is assumed to be a lognormal distribution with parameters ***m*** and ***S***. The prior on ***m*** is a normal distribution parametrized by mean ***n*** and variance-covariance matrix ***L***. Since we are interested in the correlation structure, we break ***S*** into a correlation matrix ***W*** and a vector of standard deviations ***s***. The prior on ***W*** is an LKJ distribution (Lewandowski, Kurowicka, and Joe 2009) with shrinkage parameter *η*, while the prior on eash *s*<sub>*j*</sub> is a gamma prior with shape *a*<sub>*j*</sub> and rate *b*<sub>*j*</sub>.
 
-![plate-diagram](Figure3.png)
+![plate-diagram](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/Figure3.png)
 
 If we print the model, we can actually see the code. It is written in the format required by the `rstan` package, since `banocc` uses this package to sample from the model. See (Stan Development Team 2015a) for more detailed information on this format.
 
