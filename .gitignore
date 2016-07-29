@@ -11,4 +11,3 @@ tests/testthat/testthat_objects/cache/*
 cache/*
 *.back
 vignettes/banocc-vignette_cache/*
-vignettes/banocc-vignette_files/*
