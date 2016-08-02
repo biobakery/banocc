@@ -10,8 +10,8 @@ run_banocc(banocc_model, C, n = rep(0, ncol(C)), L = 10 * diag(ncol(C)),
   cores = getOption("mc.cores", 1L), chains = 4, iter = 50,
   warmup = floor(iter/2), thin = 1, init = NULL, control = NULL,
   sd_mean = NULL, sd_var = NULL, conf_alpha = 0.05,
-  get_min_width = FALSE, calc_snc = FALSE, verbose = FALSE,
-  num_level = 0)
+  get_min_width = FALSE, calc_snc = FALSE, eval_convergence = TRUE,
+  verbose = FALSE, num_level = 0)
 }
 \arguments{
 \item{banocc_model}{The compiled stan model (as with
@@ -79,6 +79,11 @@ includes zero be calculated?}
 
 \item{calc_snc}{Boolean: should the scaled neighborhood criterion be
 calculated?}
+
+\item{eval_convergence}{Boolean: if `TRUE`, convergence will be evaluated
+using the Rhat statistic, and the fit output (estimates, credible
+intervals, etc.) will be missing if this statistic does not indicate
+convergence.}
 
 \item{verbose}{Print informative statements as the function executes?}
 
