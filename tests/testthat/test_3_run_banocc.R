@@ -87,12 +87,14 @@ conf_alpha_opt    <- list(0.05, 0.5)
 get_min_width_opt <- list(TRUE, FALSE)
 calc_snc_opt      <- list(TRUE, FALSE)
 use_matrix        <- list(TRUE, FALSE)
+eval_convergence  <- list(TRUE, FALSE)
 
 opt_idx <- expand.grid(init          = seq_along(init_opt),
                        conf_alpha    = seq_along(conf_alpha_opt),
                        get_min_width = seq_along(get_min_width_opt),
                        calc_snc      = seq_along(calc_snc_opt),
-                       use_matrix    = seq_along(use_matrix))
+                       use_matrix    = seq_along(use_matrix),
+                       eval_convergence = seq_along(eval_convergence))
 
 all_args <- lapply(seq_len(nrow(opt_idx) * 2), function(i){
     j <- ifelse(i %% 2 == 0, i / 2, (i + 1) / 2)
@@ -100,12 +102,14 @@ all_args <- lapply(seq_len(nrow(opt_idx) * 2), function(i){
              opt_idx$conf_alpha[j],
              opt_idx$get_min_width[j],
              opt_idx$calc_snc[j],
-             opt_idx$use_matrix[j])
+             opt_idx$use_matrix[j],
+             opt_idx$eval_convergence[j])
     args <- list(init=init_opt[[idx[1]]],
                  conf_alpha=conf_alpha_opt[[idx[2]]],
                  get_min_width=get_min_width_opt[[idx[3]]],
                  calc_snc=calc_snc_opt[[idx[4]]],
-                 use_matrix=use_matrix[[idx[5]]])
+                 use_matrix=use_matrix[[idx[5]]],
+                 eval_convergence=use_matrix[[idx[6]]])
     if (i %% 2 == 0){
         args$a <- a
         args$b  <- b
@@ -117,6 +121,7 @@ all_args <- lapply(seq_len(nrow(opt_idx) * 2), function(i){
 })
 
 sw_run_banocc <- function(conf_alpha, get_min_width, calc_snc,
+                          eval_convergence,
                           a=NULL, b=NULL, use_matrix=FALSE,
                           sd_mean=NULL, sd_var=NULL, init=NULL){
     sink("banocc.out", type="output")
@@ -130,7 +135,8 @@ sw_run_banocc <- function(conf_alpha, get_min_width, calc_snc,
         n=n, L=L,
         chains=1, iter=4, warmup=2, init=init, sd_mean=sd_mean,
         sd_var=sd_var, conf_alpha=conf_alpha, get_min_width=get_min_width,
-        calc_snc=calc_snc, verbose=FALSE, num_level=0
+        calc_snc=calc_snc, eval_convergence=eval_convergence,
+        verbose=FALSE, num_level=0
         ))
     sink()
     return(rb)
@@ -224,8 +230,12 @@ test_that("run_banocc CI.hpd elt elements have col and row names", {
 test_that("run_banocc CI.hpd elt elements are between -1 and 1", {
     for (i in seq_along(rb)){
         for (k in seq_along(rb[[i]]$CI.hpd)){
-            expect_true(all(rb[[i]]$CI.hpd[[k]] - 1 <= 1e-12))
-            expect_true(all(rb[[i]]$CI.hpd[[k]] + 1 >= 1e-12))
+            if (!all_args[[i]]$eval_convergence){
+                expect_true(all(rb[[i]]$CI.hpd[[k]] - 1 <= 1e-12))
+                expect_true(all(rb[[i]]$CI.hpd[[k]] + 1 >= 1e-12))
+            } else {
+                expect_true(all(is.na(rb[[i]]$CI.hpd[[k]])))
+            }
         }
     }
 })
@@ -248,8 +258,12 @@ test_that("run_banocc Estimates.median has col and row names", {
 test_that("run_banocc Estimates.median elts are between -1 and 1", {
     for (i in seq_along(rb)){
         est.med <- rb[[i]]$Estimates.median
-        expect_true(all(est.med + 1 >= 1e-12))
-        expect_true(all(est.med - 1 <= 1e-12))
+        if (!all_args[[i]]$eval_convergence){
+            expect_true(all(est.med + 1 >= 1e-12))
+            expect_true(all(est.med - 1 <= 1e-12))
+        } else {
+            expect_true(all(is.na(est.med)))
+        }
     }
 })
 
@@ -276,8 +290,12 @@ test_that("run_banocc Min.width elts are between 0 and 1", {
     for (i in seq_along(rb)){
         if (all_args[[i]]$get_min_width){
             mw <- rb[[i]]$Min.width
-            expect_true(all(mw - 1<= 1e-12))
-            expect_true(all(mw    >= 1e-12))
+            if (!all_args[[i]]$eval_convergence){
+                expect_true(all(mw - 1<= 1e-12))
+                expect_true(all(mw    >= 1e-12))
+            } else {
+                expect_true(all(is.na(mw)))
+            }
         }
     }
 })
@@ -305,10 +323,14 @@ test_that("run_banocc SNC elts are between 0 and 1", {
     for (i in seq_along(rb)){
         if (all_args[[i]]$calc_snc){
             snc <- rb[[i]]$SNC
-            if (any(!is.na(snc))){
-                snc <- na.omit(as.vector(snc))
-                expect_true(all(snc - 1 <= 1e-12))
-                expect_true(all(snc    >= 1e-12))
+            if (!all_args[[i]]$eval_convergence){
+                if (any(!is.na(snc))){
+                    snc <- na.omit(as.vector(snc))
+                    expect_true(all(snc - 1 <= 1e-12))
+                    expect_true(all(snc    >= 1e-12))
+                }
+            } else {
+                expect_true(all(is.na(snc)))
             }
         }
     }
