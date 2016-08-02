@@ -122,7 +122,8 @@ model every time it is called. To compile, use
 `rstan::stan_model(model_code=banocc::banocc_model)`.
 
 The simplest way to run the model is to load a test dataset, compile
-the model, and sample from it:
+the model, and sample from it (this gives a warning because the
+default number of iterations is low):
 
 ```{r rerun, cache=TRUE, echo=FALSE}
 rerun <- 1
@@ -256,6 +257,34 @@ b_90 <- banocc::run_banocc(C = compositions_null,
 b_99 <- banocc::run_banocc(C = compositions_null,
                            banocc_model = banocc_model,
                            conf_alpha = 0.01)
+```
+
+#### Checking Convergence
+
+Convergence is evaluated automatically, and in this case the credible
+intervals, estimates, and any additional output in section [Additional
+Output] is missing. This behavior can be turned off using the
+`eval_convergence` option. But be careful!
+
+```{r eval-convergence, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
+# Default is to evaluate convergence
+b_ec <- banocc::run_banocc(C = compositions_null,
+                           banocc_model = banocc_model,
+                           chains = 1)
+
+# This can be turned off using `eval_convergence`
+b_nec <- banocc::run_banocc(C = compositions_null,
+                            banocc_model = banocc_model,
+                            chains = 1,
+                            eval_convergence = FALSE)
+```
+
+```{r show-eval-convergence, eval=TRUE}
+# Iterations are too few, so estimates are missing
+b_ec$Estimates.median
+
+# Convergence was not evaluated, so estimates are not missing
+b_nec$Estimates.median
 ```
 
 #### Additional Output

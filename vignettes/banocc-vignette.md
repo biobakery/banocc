@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-07-29
+2016-08-02
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -20,6 +20,7 @@ Emma Schwager
         -   [Initial Values](#markdown-header-initial-values)
     -   [Output Control](#markdown-header-output-control)
         -   [Credible Interval Width](#markdown-header-credible-interval-width)
+        -   [Checking Convergence](#markdown-header-checking-convergence)
         -   [Additional Output](#markdown-header-additional-output)
 -   [Assessing Convergence](#markdown-header-assessing-convergence)
     -   [Traceplots](#markdown-header-traceplots)
@@ -127,13 +128,18 @@ There are only two required inputs to `run_banocc`:
 1.  The dataset `C`. This is assumed to be *N* × *P*, with *N* samples and *P* features. The row sums are therefore required to be less than one for all samples.
 2.  The compiled stan model `banocc_model`. The compiled model is required so that `run_banocc` doesn't need to waste time compiling the model every time it is called. To compile, use `rstan::stan_model(model_code=banocc::banocc_model)`.
 
-The simplest way to run the model is to load a test dataset, compile the model, and sample from it:
+The simplest way to run the model is to load a test dataset, compile the model, and sample from it (this gives a warning because the default number of iterations is low):
 
 ``` r
 data(compositions_null)
 banocc_model <- rstan::stan_model(model_code = banocc::banocc_model) 
 b_output     <- banocc::run_banocc(C = compositions_null, banocc_model=banocc_model)
 ```
+
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model): Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
 
 #### Hyperparameters
 
@@ -150,6 +156,11 @@ b_hp <- banocc::run_banocc(C = compositions_null,
                            eta = 1)
 ```
 
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
+
 The hyperparameter values for ***s***, the standard deviations of the log-transformed basis, can be alternatively specified as the means and variances of the prior using the parameters `sd_mean` and `sd_var`. This is because the mean of a Gamma distribution is *a*\_*j*/*b*\_*j*, and the variance is *a*\_*j*/*b*\_*j*^2. For example,
 
 ``` r
@@ -159,6 +170,11 @@ b_sd_mean <- banocc::run_banocc(C = compositions_null,
                                 sd_mean = rep(2, p),
                                 sd_var  = rep(4, p))
 ```
+
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
 
 ### Sampling Control
 
@@ -176,6 +192,11 @@ b_sampling <- banocc::run_banocc(C = compositions_null,
                                  warmup = 5,
                                  thin = 2)
 ```
+
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
 
 #### Number of Cores
 
@@ -206,6 +227,11 @@ b_init <- banocc::run_banocc(C = compositions_null,
                              init = init)
 ```
 
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
+
 More specific control of the sampler's behavior comes from the `control` argument to `rstan::sampling`. Details about this argument can be found in the help for the `rstan::stan` function:
 
 ``` r
@@ -225,11 +251,90 @@ The width of the returned credible intervals is controlled by `conf_alpha`. A 10
 b_90 <- banocc::run_banocc(C = compositions_null,
                            banocc_model = banocc_model,
                            conf_alpha = 0.1)
+```
+
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
+
+``` r
 # Get 99% credible intervals
 b_99 <- banocc::run_banocc(C = compositions_null,
                            banocc_model = banocc_model,
                            conf_alpha = 0.01)
 ```
+
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
+
+#### Checking Convergence
+
+Convergence is evaluated automatically, and in this case the credible intervals, estimates, and any additional output in section [Additional Output](#markdown-header-additional-output) is missing. This behavior can be turned off using the `eval_convergence` option. But be careful!
+
+``` r
+# Default is to evaluate convergence
+b_ec <- banocc::run_banocc(C = compositions_null,
+                           banocc_model = banocc_model,
+                           chains = 1)
+```
+
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
+
+``` r
+# This can be turned off using `eval_convergence`
+b_nec <- banocc::run_banocc(C = compositions_null,
+                            banocc_model = banocc_model,
+                            chains = 1,
+                            eval_convergence = FALSE)
+```
+
+``` r
+# Iterations are too few, so estimates are missing
+b_ec$Estimates.median
+```
+
+    ##       f_n_1 f_n_2 f_n_3 f_n_4 f_n_5 f_n_6 f_n_7 f_n_8 f_n_9
+    ## f_n_1    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## f_n_2    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## f_n_3    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## f_n_4    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## f_n_5    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## f_n_6    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## f_n_7    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## f_n_8    NA    NA    NA    NA    NA    NA    NA    NA    NA
+    ## f_n_9    NA    NA    NA    NA    NA    NA    NA    NA    NA
+
+``` r
+# Convergence was not evaluated, so estimates are not missing
+b_nec$Estimates.median
+```
+
+    ##             f_n_1       f_n_2        f_n_3       f_n_4        f_n_5
+    ## f_n_1  1.00000000  0.15914421 -0.020114014  0.20539511  0.233907478
+    ## f_n_2  0.15914421  1.00000000 -0.060846469  0.03644211  0.156682979
+    ## f_n_3 -0.02011401 -0.06084647  1.000000000 -0.10132025 -0.006119546
+    ## f_n_4  0.20539511  0.03644211 -0.101320249  1.00000000  0.030497760
+    ## f_n_5  0.23390748  0.15668298 -0.006119546  0.03049776  1.000000000
+    ## f_n_6  0.29617935  0.08220055 -0.101266459  0.06108097  0.146757700
+    ## f_n_7  0.13892631  0.11380981  0.001800332  0.13738734  0.169902816
+    ## f_n_8  0.33902382  0.14361424 -0.077226063  0.28546828  0.285627595
+    ## f_n_9  0.25610995  0.14614465 -0.099239350  0.18460377  0.054015017
+    ##             f_n_6       f_n_7       f_n_8       f_n_9
+    ## f_n_1  0.29617935 0.138926305  0.33902382  0.25610995
+    ## f_n_2  0.08220055 0.113809814  0.14361424  0.14614465
+    ## f_n_3 -0.10126646 0.001800332 -0.07722606 -0.09923935
+    ## f_n_4  0.06108097 0.137387341  0.28546828  0.18460377
+    ## f_n_5  0.14675770 0.169902816  0.28562760  0.05401502
+    ## f_n_6  1.00000000 0.122930382  0.32895017  0.06245995
+    ## f_n_7  0.12293038 1.000000000  0.14330395  0.02303792
+    ## f_n_8  0.32895017 0.143303955  1.00000000  0.06016072
+    ## f_n_9  0.06245995 0.023037922  0.06016072  1.00000000
 
 #### Additional Output
 
@@ -243,12 +348,24 @@ Two types of output can be requested for each correlation that are not included 
 b_min_width <- banocc::run_banocc(C = compositions_null,
                                   banocc_model = banocc_model,
                                   get_min_width = TRUE)
+```
 
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
+
+``` r
 # Get the scaled neighborhood criterion
 b_snc <- banocc::run_banocc(C = compositions_null,
                             banocc_model = banocc_model,
                             calc_snc = TRUE)
 ```
+
+    ## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
+    ## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
+    ## You might try a larger number of warmup iterations, different priors, or
+    ## different initial values. See vignette for more on evaluating convergence.
 
 Detailed statements about the function's execution can also be printed using the `verbose` argument. The relative indentation of the verbose output indicates the nesting level of the function. The starting indentation can be set with `num_level`.
 
