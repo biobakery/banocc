@@ -131,7 +131,7 @@ sw_run_banocc <- function(conf_alpha, get_min_width, calc_snc,
         data <- as.data.frame(Data$C)
     }
     rb <- suppressWarnings(run_banocc(
-        banocc_model=banocc_model, C=data, a=a, b=b, eta=1,
+        banocc_model=compiled_banocc_model, C=data, a=a, b=b, eta=1,
         n=n, L=L,
         chains=1, iter=4, warmup=2, init=init, sd_mean=sd_mean,
         sd_var=sd_var, conf_alpha=conf_alpha, get_min_width=get_min_width,
@@ -143,6 +143,7 @@ sw_run_banocc <- function(conf_alpha, get_min_width, calc_snc,
 }
 
 rb <- lapply(seq_along(all_args), function(i){
+    print(i)
     do.call(what=sw_run_banocc, args=all_args[[i]])
 })
 

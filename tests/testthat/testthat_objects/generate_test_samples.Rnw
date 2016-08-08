@@ -32,8 +32,8 @@ library(knitr)
 
 <<compile-stan-model, cache=TRUE, echo=FALSE>>=
 rerun <- 0
-banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
-save(banocc_model, file="banocc_model_test.RData")
+compiled_banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
+save(compiled_banocc_model, file="banocc_model_test.RData")
 @ 
 
 <<generate-data, cache=TRUE, echo=FALSE>>=
