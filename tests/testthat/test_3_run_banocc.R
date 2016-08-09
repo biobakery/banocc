@@ -143,7 +143,6 @@ sw_run_banocc <- function(conf_alpha, get_min_width, calc_snc,
 }
 
 rb <- lapply(seq_along(all_args), function(i){
-    print(i)
     do.call(what=sw_run_banocc, args=all_args[[i]])
 })
 
