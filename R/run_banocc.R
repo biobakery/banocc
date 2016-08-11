@@ -1,7 +1,7 @@
 #' Runs BAnOCC to fit the model and generate appropriate convergence metrics
 #'   and inference.
 #'
-#' @param banocc_model The compiled stan model (as with
+#' @param compiled_banocc_model The compiled stan model (as with
 #'   \code{stan_model(model_code = banocc_model)}).
 #' @param C The dataset as a data frame or matrix. This should be N by P
 #'   with N samples as the rows and P features as the columns. 
@@ -71,13 +71,14 @@
 #' 
 #' @examples
 #' \dontrun{
-#'   banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
-#'   b_output <- run_banocc(C=compositions_null, banocc_model=banocc_model)
+#'   compiled_banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
+#'   b_output <- run_banocc(C=compositions_null,
+#'                          compiled_banocc_model=compiled_banocc_model)
 #' }
 #'
 #' @seealso \code{vignette("banocc-vignette")} for more examples.
 
-run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
+run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
                        L = 10*diag(ncol(C)),
                        a = rep(1, ncol(C)), b = rep(0.5, ncol(C)),
                        eta = 1, cores = getOption("mc.cores", 1L),
@@ -111,7 +112,7 @@ run_banocc <- function(banocc_model, C, n = rep(0, ncol(C)),
 
     cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
     refresh <- ifelse(verbose, max(iter/10, 1), 0)
-    Fit <- rstan::sampling(banocc_model, data=Data,
+    Fit <- rstan::sampling(compiled_banocc_model, data=Data,
                            chains=chains, iter=iter,
                            warmup=warmup, thin=thin,
                            init=init, cores=cores,

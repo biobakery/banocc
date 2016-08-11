@@ -27,7 +27,7 @@ body {
 
 <h1 id="introduction-to-banocc-bayesian-analaysis-of-compositional-covariance">Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)</h1>
 <p>Emma Schwager<br />
-2016-08-02</p>
+2016-08-11</p>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#how-to-install">How To Install</a>
@@ -152,59 +152,63 @@ body {
 <p>There are only two required inputs to <code>run_banocc</code>:</p>
 <ol>
 <li>The dataset <code>C</code>. This is assumed to be <em>N</em> × <em>P</em>, with <em>N</em> samples and <em>P</em> features. The row sums are therefore required to be less than one for all samples.</li>
-<li>The compiled stan model <code>banocc_model</code>. The compiled model is required so that <code>run_banocc</code> doesn't need to waste time compiling the model every time it is called. To compile, use <code>rstan::stan_model(model_code=banocc::banocc_model)</code>.</li>
+<li>The compiled stan model <code>compiled_banocc_model</code>. The compiled model is required so that <code>run_banocc</code> doesn't need to waste time compiling the model every time it is called. To compile, use <code>rstan::stan_model(model_code=banocc::banocc_model)</code>.</li>
 </ol>
 <p>The simplest way to run the model is to load a test dataset, compile the model, and sample from it (this gives a warning because the default number of iterations is low):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(compositions_null)
-banocc_model &lt;-<span class="st"> </span>rstan::<span class="kw">stan_model</span>(<span class="dt">model_code =</span> banocc::banocc_model) 
-b_output     &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null, <span class="dt">banocc_model=</span>banocc_model)</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model): Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+compiled_banocc_model &lt;-<span class="st"> </span>rstan::<span class="kw">stan_model</span>(<span class="dt">model_code =</span> banocc::banocc_model) 
+b_output     &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null, <span class="dt">compiled_banocc_model=</span>compiled_banocc_model)</code></pre></div>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model): Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <h4 id="hyperparameters">Hyperparameters</h4>
 <p>The hyperparameter values can be specified as input. Their names correspond to the parameters in the plate diagram figure (see section <a href="#the-model">The Model</a>). For example,</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p &lt;-<span class="st"> </span><span class="kw">ncol</span>(compositions_null)
 b_hp &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null, 
-                           <span class="dt">banocc_model =</span> banocc_model,
+                           <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                            <span class="dt">n =</span> <span class="kw">rep</span>(<span class="dv">0</span>, p),
                            <span class="dt">L =</span> <span class="dv">10</span> *<span class="st"> </span><span class="kw">diag</span>(p), 
                            <span class="dt">a =</span> <span class="kw">rep</span>(<span class="dv">1</span>,   p),
                            <span class="dt">b =</span> <span class="kw">rep</span>(<span class="fl">0.5</span>, p),
                            <span class="dt">eta =</span> <span class="dv">1</span>)</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <p>The hyperparameter values for <strong><em>s</em></strong>, the standard deviations of the log-transformed basis, can be alternatively specified as the means and variances of the prior using the parameters <code>sd_mean</code> and <code>sd_var</code>. This is because the mean of a Gamma distribution is <em>a</em><sub><em>j</em></sub>/<em>b</em><sub><em>j</em></sub>, and the variance is <em>a</em><sub><em>j</em></sub>/<em>b</em><sub><em>j</em></sub><sup>2</sup>. For example,</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This is the same prior as above</span>
 b_sd_mean &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                                <span class="dt">banocc_model =</span> banocc_model,
+                                <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                                 <span class="dt">sd_mean =</span> <span class="kw">rep</span>(<span class="dv">2</span>, p),
                                 <span class="dt">sd_var  =</span> <span class="kw">rep</span>(<span class="dv">4</span>, p))</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <h3 id="sampling-control">Sampling Control</h3>
 <p>There are several options to control the behavior of the HMC sampler. This is simply a call to <code>rstan::sampling</code>, and so many of the parameters are the same.</p>
 <h4 id="general-sampling-control">General Sampling Control</h4>
 <p>The number of chains, iterations, and warmup iterations as well as the rate of thinning can be specified using the same parameters as for <code>rstan::sampling</code> and <code>rstan::stan</code>. For example, the following code gives a total of three iterations from each of two chains. These parameters are used only for brevity and are NOT recommended in practice.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">b_sampling &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                                 <span class="dt">banocc_model =</span> banocc_model,
+                                 <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                                  <span class="dt">chains =</span> <span class="dv">2</span>,
                                  <span class="dt">iter =</span> <span class="dv">11</span>,
                                  <span class="dt">warmup =</span> <span class="dv">5</span>,
                                  <span class="dt">thin =</span> <span class="dv">2</span>)</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <h4 id="number-of-cores">Number of Cores</h4>
 <p>The number of cores used for sampling on a multi-processor machine can also be specified, which allows chains to run in parallel and therefore decreases computation time. Since its purpose is running chains in parallel, computation time will decrease as cores are added up to when the number of cores and the number of chains are equal.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This code is not run</span>
 b_cores &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                              <span class="dt">banocc_model =</span> banocc_model,
+                              <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                               <span class="dt">chains =</span> <span class="dv">2</span>,
                               <span class="dt">cores =</span> <span class="dv">2</span>)</code></pre></div>
 <h4 id="initial-values">Initial Values</h4>
@@ -216,13 +220,14 @@ b_cores &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>
                   <span class="dt">WChol =</span> <span class="kw">t</span>(<span class="kw">chol</span>(<span class="dv">2</span> *<span class="st"> </span><span class="kw">diag</span>(p))),
                   <span class="dt">s =</span> <span class="kw">runif</span>(p, <span class="fl">0.1</span>, <span class="dv">2</span>)))
 b_init &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                             <span class="dt">banocc_model =</span> banocc_model,
+                             <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                              <span class="dt">chains =</span> <span class="dv">2</span>,
                              <span class="dt">init =</span> init)</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <p>More specific control of the sampler's behavior comes from the <code>control</code> argument to <code>rstan::sampling</code>. Details about this argument can be found in the help for the <code>rstan::stan</code> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">?stan</code></pre></div>
 <h3 id="output-control">Output Control</h3>
@@ -231,33 +236,36 @@ b_init &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(
 <p>The width of the returned credible intervals is controlled by <code>conf_alpha</code>. A 100%*(1 − <em>α</em><sub>conf</sub>) credible interval is returned:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get 90% credible intervals</span>
 b_90 &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                           <span class="dt">banocc_model =</span> banocc_model,
+                           <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                            <span class="dt">conf_alpha =</span> <span class="fl">0.1</span>)</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get 99% credible intervals</span>
 b_99 &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                           <span class="dt">banocc_model =</span> banocc_model,
+                           <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                            <span class="dt">conf_alpha =</span> <span class="fl">0.01</span>)</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <h4 id="checking-convergence">Checking Convergence</h4>
 <p>Convergence is evaluated automatically, and in this case the credible intervals, estimates, and any additional output in section <a href="#additional-output">Additional Output</a> is missing. This behavior can be turned off using the <code>eval_convergence</code> option. But be careful!</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Default is to evaluate convergence</span>
 b_ec &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                           <span class="dt">banocc_model =</span> banocc_model,
+                           <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                            <span class="dt">chains =</span> <span class="dv">1</span>)</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This can be turned off using `eval_convergence`</span>
 b_nec &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                            <span class="dt">banocc_model =</span> banocc_model,
+                            <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                             <span class="dt">chains =</span> <span class="dv">1</span>,
                             <span class="dt">eval_convergence =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Iterations are too few, so estimates are missing</span>
@@ -274,26 +282,26 @@ b_ec$Estimates.median</code></pre></div>
 ## f_n_9    NA    NA    NA    NA    NA    NA    NA    NA    NA</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Convergence was not evaluated, so estimates are not missing</span>
 b_nec$Estimates.median</code></pre></div>
-<pre><code>##             f_n_1       f_n_2        f_n_3       f_n_4        f_n_5
-## f_n_1  1.00000000  0.15914421 -0.020114014  0.20539511  0.233907478
-## f_n_2  0.15914421  1.00000000 -0.060846469  0.03644211  0.156682979
-## f_n_3 -0.02011401 -0.06084647  1.000000000 -0.10132025 -0.006119546
-## f_n_4  0.20539511  0.03644211 -0.101320249  1.00000000  0.030497760
-## f_n_5  0.23390748  0.15668298 -0.006119546  0.03049776  1.000000000
-## f_n_6  0.29617935  0.08220055 -0.101266459  0.06108097  0.146757700
-## f_n_7  0.13892631  0.11380981  0.001800332  0.13738734  0.169902816
-## f_n_8  0.33902382  0.14361424 -0.077226063  0.28546828  0.285627595
-## f_n_9  0.25610995  0.14614465 -0.099239350  0.18460377  0.054015017
-##             f_n_6       f_n_7       f_n_8       f_n_9
-## f_n_1  0.29617935 0.138926305  0.33902382  0.25610995
-## f_n_2  0.08220055 0.113809814  0.14361424  0.14614465
-## f_n_3 -0.10126646 0.001800332 -0.07722606 -0.09923935
-## f_n_4  0.06108097 0.137387341  0.28546828  0.18460377
-## f_n_5  0.14675770 0.169902816  0.28562760  0.05401502
-## f_n_6  1.00000000 0.122930382  0.32895017  0.06245995
-## f_n_7  0.12293038 1.000000000  0.14330395  0.02303792
-## f_n_8  0.32895017 0.143303955  1.00000000  0.06016072
-## f_n_9  0.06245995 0.023037922  0.06016072  1.00000000</code></pre>
+<pre><code>##             f_n_1      f_n_2        f_n_3        f_n_4       f_n_5
+## f_n_1  1.00000000 0.05994573 -0.030213477  0.074666252  0.07673775
+## f_n_2  0.05994573 1.00000000  0.049885370  0.129226125  0.04311761
+## f_n_3 -0.03021348 0.04988537  1.000000000 -0.008231725 -0.01671881
+## f_n_4  0.07466625 0.12922612 -0.008231725  1.000000000 -0.06993992
+## f_n_5  0.07673775 0.04311761 -0.016718806 -0.069939919  1.00000000
+## f_n_6  0.16762643 0.18727364  0.067561993  0.078234331  0.03804677
+## f_n_7  0.20364009 0.16643799  0.036574974  0.025390199  0.16355069
+## f_n_8  0.32748106 0.12976068  0.020155149  0.035338759  0.15502329
+## f_n_9  0.12652931 0.03085420 -0.142167644 -0.102523405 -0.05527105
+##            f_n_6      f_n_7       f_n_8       f_n_9
+## f_n_1 0.16762643 0.20364009  0.32748106  0.12652931
+## f_n_2 0.18727364 0.16643799  0.12976068  0.03085420
+## f_n_3 0.06756199 0.03657497  0.02015515 -0.14216764
+## f_n_4 0.07823433 0.02539020  0.03533876 -0.10252341
+## f_n_5 0.03804677 0.16355069  0.15502329 -0.05527105
+## f_n_6 1.00000000 0.25688017  0.38643907  0.14746195
+## f_n_7 0.25688017 1.00000000  0.27664247  0.09180796
+## f_n_8 0.38643907 0.27664247  1.00000000 -0.08349490
+## f_n_9 0.14746195 0.09180796 -0.08349490  1.00000000</code></pre>
 <h4 id="additional-output">Additional Output</h4>
 <p>Two types of output can be requested for each correlation that are not included by default:</p>
 <ol>
@@ -302,20 +310,22 @@ b_nec$Estimates.median</code></pre></div>
 </ol>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get the smallest credible interval width that includes zero</span>
 b_min_width &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                                  <span class="dt">banocc_model =</span> banocc_model,
+                                  <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                                   <span class="dt">get_min_width =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get the scaled neighborhood criterion</span>
 b_snc &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>(<span class="dt">C =</span> compositions_null,
-                            <span class="dt">banocc_model =</span> banocc_model,
+                            <span class="dt">compiled_banocc_model =</span> compiled_banocc_model,
                             <span class="dt">calc_snc =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Warning in banocc::run_banocc(C = compositions_null, banocc_model =
-## banocc_model, : Fit has not converged as evaluated by the Rhat statistic.
-## You might try a larger number of warmup iterations, different priors, or
-## different initial values. See vignette for more on evaluating convergence.</code></pre>
+<pre><code>## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
+## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
+## statistic. You might try a larger number of warmup iterations, different
+## priors, or different initial values. See vignette for more on evaluating
+## convergence.</code></pre>
 <p>Detailed statements about the function's execution can also be printed using the <code>verbose</code> argument. The relative indentation of the verbose output indicates the nesting level of the function. The starting indentation can be set with <code>num_level</code>.</p>
 <h2 id="assessing-convergence">Assessing Convergence</h2>
 <p>There are many ways of assessing convergence, but the two most easily implemented using BAnOCC are:</p>

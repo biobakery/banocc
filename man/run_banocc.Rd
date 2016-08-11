@@ -5,8 +5,8 @@
 \title{Runs BAnOCC to fit the model and generate appropriate convergence metrics
   and inference.}
 \usage{
-run_banocc(banocc_model, C, n = rep(0, ncol(C)), L = 10 * diag(ncol(C)),
-  a = rep(1, ncol(C)), b = rep(0.5, ncol(C)), eta = 1,
+run_banocc(compiled_banocc_model, C, n = rep(0, ncol(C)), L = 10 *
+  diag(ncol(C)), a = rep(1, ncol(C)), b = rep(0.5, ncol(C)), eta = 1,
   cores = getOption("mc.cores", 1L), chains = 4, iter = 50,
   warmup = floor(iter/2), thin = 1, init = NULL, control = NULL,
   sd_mean = NULL, sd_var = NULL, conf_alpha = 0.05,
@@ -14,7 +14,7 @@ run_banocc(banocc_model, C, n = rep(0, ncol(C)), L = 10 * diag(ncol(C)),
   verbose = FALSE, num_level = 0)
 }
 \arguments{
-\item{banocc_model}{The compiled stan model (as with
+\item{compiled_banocc_model}{The compiled stan model (as with
 \code{stan_model(model_code = banocc_model)}).}
 
 \item{C}{The dataset as a data frame or matrix. This should be N by P
@@ -119,8 +119,9 @@ Runs BAnOCC to fit the model and generate appropriate convergence metrics
 }
 \examples{
 \dontrun{
-  banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
-  b_output <- run_banocc(C=compositions_null, banocc_model=banocc_model)
+  compiled_banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
+  b_output <- run_banocc(C=compositions_null,
+                         compiled_banocc_model=compiled_banocc_model)
 }
 
 }
