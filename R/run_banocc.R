@@ -127,6 +127,14 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
         rhat_stat <- rstan::summary(Fit)$summary[, "Rhat"]
         diag_elts <- grep("W.*\\[([0-9]*),[ ]?\\1\\]", names(rhat_stat))
         rhat_stat <- rhat_stat[-diag_elts]
+        chol_ut_re <- "[Cc]hol\\[([0-9]+),[ ]?([0-9]+)"
+        chol_ut_idx <- stringr::str_match(names(rhat_stat),
+                                          chol_ut_re)[, c(2, 3)]
+                                                 
+        chol_upper_tri_elts <- apply(chol_ut_idx, 1, function(r){
+            ifelse(all(is.na(r)), FALSE, which.max(as.numeric(r)) == 2)
+        })
+        rhat_stat <- rhat_stat[-which(chol_upper_tri_elts)]
         if (any(is.na(rhat_stat)) || max(rhat_stat) > 1.2){
             fit_converged <- FALSE
             warning(paste0("Fit has not converged as evaluated by the Rhat ",
