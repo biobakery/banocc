@@ -43,6 +43,7 @@
 #' @importFrom rstan extract
 #' @importFrom rstan sampling
 #' @importFrom rstan summary
+#' @importFrom stringr str_match
 #'
 #' @export
 #'
