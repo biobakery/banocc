@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-08-11
+2016-08-12
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -66,7 +66,7 @@ git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
 Then, install BAnOCC's dependencies. If these are already installed on your machine, this step can be skipped.
 
 ``` bash
-Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda'))"
+Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda', 'stringr'))"
 ```
 
 Lastly, install BAnOCC using `R CMD INSTALL`. Note that this *will not* automatically install the dependencies, so they must be installed first.
@@ -85,18 +85,6 @@ We first need to load the package:
 ``` r
 library(banocc)
 ```
-
-    ## Loading required package: rstan
-
-    ## Loading required package: ggplot2
-
-    ## Loading required package: StanHeaders
-
-    ## rstan (Version 2.10.1, packaged: 2016-06-24 13:22:16 UTC, GitRev: 85f7a56811da)
-
-    ## For execution on a local, multicore CPU with excess RAM we recommend calling
-    ## rstan_options(auto_write = TRUE)
-    ## options(mc.cores = parallel::detectCores())
 
 ### Package Features
 

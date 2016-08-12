@@ -64,7 +64,7 @@ Then, install BAnOCC's dependencies. If these are already installed on
 your machine, this step can be skipped.
 
 ```bash
-Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda'))"
+Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda', 'stringr'))"
 ```
 
 Lastly, install BAnOCC using `R CMD INSTALL`. Note that this _will
