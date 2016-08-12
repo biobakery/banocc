@@ -142,17 +142,25 @@ sw_run_banocc <- function(conf_alpha, get_min_width, calc_snc,
     return(rb)
 }
 
-rb <- lapply(seq_along(all_args), function(i){
-    do.call(what=sw_run_banocc, args=all_args[[i]])
-})
+on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
+on_bioc <- !identical(Sys.getenv("BBS_HOME"), "")
+if (!on_cran && !on_bioc){
+    rb <- lapply(seq_along(all_args), function(i){
+        do.call(what=sw_run_banocc, args=all_args[[i]])
+    })
+}
 
 test_that("run_banocc returns a list", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         expect_is(rb[[i]], "list")
     }
 })
 
 test_that("run_banocc takes a matrix", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         if (all_args[[i]]$use_matrix){
             expect_is(rb[[i]], "list")
@@ -161,6 +169,8 @@ test_that("run_banocc takes a matrix", {
 })
 
 test_that("run_banocc takes a data frame", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         if(!all_args[[i]]$use_matrix){
             expect_is(rb[[i]], "list")
@@ -172,6 +182,8 @@ rb_names <- c("Data", "Fit", "CI.hpd", "Estimates.median")
 extra_names <- c("Min.width", "SNC")
 
 test_that("run_banocc returns list with correct names", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         names_i <- rb_names
         if (all_args[[i]]$get_min_width) names_i <- c(names_i, extra_names[1])
@@ -181,6 +193,8 @@ test_that("run_banocc returns list with correct names", {
 })
 
 test_that("run_banocc Data elt is list", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         expect_is(rb[[i]]$Data, "list")
     }
@@ -188,18 +202,24 @@ test_that("run_banocc Data elt is list", {
 
 data_names <- c("C", "N", "P", "n", "L", "a", "b", "eta")
 test_that("run_banocc Data elt has correct names", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         expect_equal(sort(names(rb[[i]]$Data)), sort(data_names))
     }
 })
 
 test_that("run_banocc Fit elt is stanfit object", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         expect_is(rb[[i]]$Fit, "stanfit")
     }
 })
 
 test_that("run_banocc CI.hpd elt is list with correct names", {
+    skip_on_cran()
+    skip_on_bioc()
     ci_names <- c("lower", "upper")
     for (i in seq_along(rb)){
         expect_is(rb[[i]]$CI.hpd, "list")
@@ -209,6 +229,8 @@ test_that("run_banocc CI.hpd elt is list with correct names", {
 
 p <- ncol(Data$C)
 test_that("run_banocc CI.hpd elt elements are pxp matrices", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         for (k in seq_along(rb[[i]]$CI.hpd)){
             expect_is(rb[[i]]$CI.hpd[[k]], "matrix")
@@ -218,6 +240,8 @@ test_that("run_banocc CI.hpd elt elements are pxp matrices", {
 })
 
 test_that("run_banocc CI.hpd elt elements have col and row names", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         for (k in seq_along(rb[[i]]$CI.hpd)){
             ci <- rb[[i]]$CI.hpd[[k]]
@@ -228,6 +252,8 @@ test_that("run_banocc CI.hpd elt elements have col and row names", {
 })
 
 test_that("run_banocc CI.hpd elt elements are between -1 and 1", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         for (k in seq_along(rb[[i]]$CI.hpd)){
             if (!all_args[[i]]$eval_convergence){
@@ -241,6 +267,8 @@ test_that("run_banocc CI.hpd elt elements are between -1 and 1", {
 })
 
 test_that("run_banocc Estimates.median elt is a pxp matrix", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         expect_is(rb[[i]]$Estimates.median, "matrix")
         expect_equal(dim(rb[[i]]$Estimates.median), c(p, p))
@@ -256,6 +284,8 @@ test_that("run_banocc Estimates.median has col and row names", {
 })
 
 test_that("run_banocc Estimates.median elts are between -1 and 1", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         est.med <- rb[[i]]$Estimates.median
         if (!all_args[[i]]$eval_convergence){
@@ -268,6 +298,8 @@ test_that("run_banocc Estimates.median elts are between -1 and 1", {
 })
 
 test_that("run_banocc Min.width elt is a pxp matrix", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         if (all_args[[i]]$get_min_width){
             expect_is(rb[[i]]$Min.width, "matrix")
@@ -277,6 +309,8 @@ test_that("run_banocc Min.width elt is a pxp matrix", {
 })
 
 test_that("run_banocc Min.width has col and row names", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         if (all_args[[i]]$get_min_width){
             mw <- rb[[i]]$Min.width
@@ -287,6 +321,8 @@ test_that("run_banocc Min.width has col and row names", {
 })
 
 test_that("run_banocc Min.width elts are between 0 and 1", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         if (all_args[[i]]$get_min_width){
             mw <- rb[[i]]$Min.width
@@ -301,6 +337,8 @@ test_that("run_banocc Min.width elts are between 0 and 1", {
 })
 
 test_that("run_banocc SNC elt is a pxp matrix", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         if (all_args[[i]]$calc_snc){
             expect_is(rb[[i]]$SNC, "matrix")
@@ -310,6 +348,8 @@ test_that("run_banocc SNC elt is a pxp matrix", {
 })
 
 test_that("run_banocc SNC has col and row names", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         if (all_args[[i]]$calc_snc){
             snc <- rb[[i]]$SNC
@@ -320,6 +360,8 @@ test_that("run_banocc SNC has col and row names", {
 })
 
 test_that("run_banocc SNC elts are between 0 and 1", {
+    skip_on_cran()
+    skip_on_bioc()
     for (i in seq_along(rb)){
         if (all_args[[i]]$calc_snc){
             snc <- rb[[i]]$SNC
