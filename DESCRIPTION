@@ -10,11 +10,11 @@ Description: Collection of functions for plotting priors, generating output,
 License: MIT + file LICENSE
 Depends: 
     R (>= 3.2.2),
+    rstan (>= 2.10.1)
 Imports: 
     coda (>= 0.18.1),
     mvtnorm,
-    stringr,
-    rstan (>= 2.10.1)
+    stringr
 Suggests: 
     knitr,
     rmarkdown,
