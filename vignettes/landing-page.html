@@ -25,23 +25,23 @@
 <li>Using compressed file from bitbucket</li>
 <li>Directly from bitbucket</li>
 </ul>
-</div>
-<div id="from-within-r" class="section level3">
-<h3>From Within R</h3>
+<div id="from-within-r" class="section level4">
+<h4>From Within R</h4>
 <p><strong>This is not yet available</strong></p>
 </div>
-<div id="from-bitbucket-compressed-file" class="section level3">
-<h3>From Bitbucket (Compressed File)</h3>
+<div id="from-bitbucket-compressed-file" class="section level4">
+<h4>From Bitbucket (Compressed File)</h4>
 <p><strong>This is not yet available</strong></p>
 </div>
-<div id="from-bitbucket-directly" class="section level3">
-<h3>From Bitbucket (Directly)</h3>
+<div id="from-bitbucket-directly" class="section level4">
+<h4>From Bitbucket (Directly)</h4>
 <p>Clone the repository using <code>git clone</code>, which downloads the package as its own directory called <code>banocc</code>.</p>
 <pre class="bash"><code>git clone https://&lt;your-user-name&gt;@bitbucket.org/biobakery/banocc.git</code></pre>
 <p>Then, install BAnOCC’s dependencies. If these are already installed on your machine, this step can be skipped.</p>
 <pre class="bash"><code>Rscript -e &quot;install.packages(c('rstan', 'mvtnorm', 'coda', 'stringr'))&quot;</code></pre>
 <p>Lastly, install BAnOCC using <code>R CMD INSTALL</code>. Note that this <em>will not</em> automatically install the dependencies, so they must be installed first.</p>
 <pre class="bash"><code>R CMD INSTALL banocc</code></pre>
+</div>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
