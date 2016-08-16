@@ -7,7 +7,12 @@ inst/doc
 *.pdf
 *.aux
 *.log
+*.py
 tests/testthat/testthat_objects/cache/*
 cache/*
 *.back
 vignettes/banocc-vignette_cache/*
+vignettes/banocc-landing-page.Rmd
+vignettes/banocc-landing-page.html
+vignettes/banocc-landing-page.md
+vignettes/update_vignette.sh
