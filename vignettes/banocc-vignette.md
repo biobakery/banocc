@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-08-12
+2016-08-15
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -36,7 +36,7 @@ Introduction
 
 Compositional data occur in many disciplines: geology, nutrition, economics, and ecology, to name a few. Data are compositional when each sample is sum-constrained. For example, mineral compositions describe a mineral in terms of the weight percentage coming from various elements; or taxonomic compositions break down a community by the fraction of community memebers that come from a particular species. In ecology in particular, the covariance between features is often of interest to determine which species possibly interact with each other. However, the sum constraint of compositional data makes naive measures inappropriate.
 
-BAnOCC is a package for analyzing compositional covariance while accounting for the compositional structure. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis (see [The Model](#markdown-header-the-model) section for a more detailed explanation). The inference is made using No U-Turn Sampling for Hamiltonian Monte Carlo (Hoffman and Gelman 2014) as implemented in the `rstan` R package (Stan Development Team 2015b).
+BAnOCC is a package for analyzing compositional covariance while accounting for the compositional structure. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis (see the [The Model](#markdown-header-the-model) section for a more detailed explanation). The inference is made using No U-Turn Sampling for Hamiltonian Monte Carlo (Hoffman and Gelman 2014) as implemented in the `rstan` R package (Stan Development Team 2015b).
 
 How To Install
 --------------
@@ -85,6 +85,18 @@ We first need to load the package:
 ``` r
 library(banocc)
 ```
+
+    ## Loading required package: rstan
+
+    ## Loading required package: ggplot2
+
+    ## Loading required package: StanHeaders
+
+    ## rstan (Version 2.10.1, packaged: 2016-06-24 13:22:16 UTC, GitRev: 85f7a56811da)
+
+    ## For execution on a local, multicore CPU with excess RAM we recommend calling
+    ## rstan_options(auto_write = TRUE)
+    ## options(mc.cores = parallel::detectCores())
 
 ### Package Features
 

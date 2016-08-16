@@ -27,7 +27,7 @@ body {
 
 <h1 id="introduction-to-banocc-bayesian-analaysis-of-compositional-covariance">Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)</h1>
 <p>Emma Schwager<br />
-2016-08-12</p>
+2016-08-15</p>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#how-to-install">How To Install</a>
@@ -73,7 +73,7 @@ body {
 </ul>
 <h2 id="introduction">Introduction</h2>
 <p>Compositional data occur in many disciplines: geology, nutrition, economics, and ecology, to name a few. Data are compositional when each sample is sum-constrained. For example, mineral compositions describe a mineral in terms of the weight percentage coming from various elements; or taxonomic compositions break down a community by the fraction of community memebers that come from a particular species. In ecology in particular, the covariance between features is often of interest to determine which species possibly interact with each other. However, the sum constraint of compositional data makes naive measures inappropriate.</p>
-<p>BAnOCC is a package for analyzing compositional covariance while accounting for the compositional structure. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis (see <a href="#the-model">The Model</a> section for a more detailed explanation). The inference is made using No U-Turn Sampling for Hamiltonian Monte Carlo (Hoffman and Gelman 2014) as implemented in the <code>rstan</code> R package (Stan Development Team 2015b).</p>
+<p>BAnOCC is a package for analyzing compositional covariance while accounting for the compositional structure. Briefly, the model assumes that the unobserved counts are log-normally distributed and then infers the correlation matrix of the log-basis (see the <a href="#the-model">The Model</a> section for a more detailed explanation). The inference is made using No U-Turn Sampling for Hamiltonian Monte Carlo (Hoffman and Gelman 2014) as implemented in the <code>rstan</code> R package (Stan Development Team 2015b).</p>
 <h2 id="how-to-install">How To Install</h2>
 <p>There are three options for installing BAnOCC:</p>
 <ul>
@@ -96,6 +96,17 @@ body {
 <h3 id="loading">Loading</h3>
 <p>We first need to load the package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(banocc)</code></pre></div>
+<pre><code>## Loading required package: rstan
+
+## Loading required package: ggplot2
+
+## Loading required package: StanHeaders
+
+## rstan (Version 2.10.1, packaged: 2016-06-24 13:22:16 UTC, GitRev: 85f7a56811da)
+
+## For execution on a local, multicore CPU with excess RAM we recommend calling
+## rstan_options(auto_write = TRUE)
+## options(mc.cores = parallel::detectCores())</code></pre>
 <h3 id="package-features">Package Features</h3>
 <p>The BAnOCC package contains three things:</p>
 <ul>
