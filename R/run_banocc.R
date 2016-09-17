@@ -109,6 +109,23 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
     if (is.null(init)){
         init <- get_IVs(chains=chains, data=Data, verbose=verbose,
                         num_level=num_level + 1)
+        test_output <- rstan::sampling(
+            compiled_banocc_model, data=Data, init=init, chains=chains,
+            iter=4, warmup=2, refresh=0, show_messages=FALSE)
+        num_tests <- 1
+        while (length(dimnames(test_output)) == 0 && num_tests < 10){
+            init <- get_IVs(chains=chains, data=Data, verbose=verbose,
+                            num_level=num_level + 1)
+            test_output <- rstan::sampling(
+                compiled_banocc_model, data=Data, init=init, chains=chains,
+                iter=4, warmup=2, refresh=0, show_messages=FALSE)
+            num_tests <- num_tests + 1
+        }
+        if (length(dimnames(test.output)) == 0){
+            stop(paste0("Unable to generate workable starting values from",
+                        " priors after 10 tries. Try specifying the values ",
+                        "by hand."))
+        }
     }
 
     cat_v("Begin fitting the model\n", verbose, num_level=num_level+1)
