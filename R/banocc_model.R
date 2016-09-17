@@ -10,7 +10,7 @@
 banocc_model <- "data {
     int<lower=0> P; // number of elements of the composition
     int<lower=0> N; // the number of subjects sampled
-    matrix<lower=0,upper=1>[N,P] C; // the relative abundance of a feature in a sample
+    matrix<lower=0,upper=1>[N,P] C; // matrix of N comp. samples, P features
     vector[P] n;  // the mean prior parameter for mu
     cov_matrix[P] L; // the scale prior parameter for mu
     real<lower=1> eta; // the lkj parameter
