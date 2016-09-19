@@ -122,7 +122,7 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
                 iter=4, warmup=2, refresh=0, show_messages=FALSE)
             num_tests <- num_tests + 1
         }
-        if (length(dimnames(test.output)) == 0){
+        if (length(dimnames(test_output)) == 0){
             stop(paste0("Unable to generate workable starting values from",
                         " priors after 10 tries. Try specifying the values ",
                         "by hand."))
