@@ -1,7 +1,7 @@
 Package: banocc
 Type: Package
 Title: Bayesian ANalysis Of Compositional Covariance
-Version: 0.1
+Version: 0.98.0
 Date: 2015-04-14
 Authors@R: person("Emma", "Schwager", email = "emh146@mail.harvard.edu",
                   role = c("aut", "cre"))
@@ -21,3 +21,4 @@ Suggests:
     testthat
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
+biocViews: Metagenomics, Software, Bayesian
