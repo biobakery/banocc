@@ -71,12 +71,10 @@
 #' }
 #' 
 #' @examples
-#' \donttest{
 #'   data(compositions_null)
 #'   compiled_banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
 #'   b_output <- run_banocc(C=compositions_null,
 #'                          compiled_banocc_model=compiled_banocc_model)
-#' }
 #'
 #' @seealso \code{vignette("banocc-vignette")} for more examples.
 

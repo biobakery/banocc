@@ -5,10 +5,8 @@
 #' @return The BAnOCC model as a string to be compiled with
 #'     \code{rstan::stan_model}
 #' @examples
-#' \donttest{
 #' data(compositions_null)
 #' compiled_banocc_model <- rstan::stan_model(model_code = banocc::banocc_model)
-#' }
 #' 
 #' @export
 
