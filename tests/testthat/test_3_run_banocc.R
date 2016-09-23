@@ -275,15 +275,15 @@ test_that("run_banocc Estimates.median elt is a pxp matrix", {
     }
 })
 
-## test_that("run_banocc Estimates.median has col and row names", {
-##     skip_on_cran()
-##     skip_on_bioc()
-##     for (i in seq_along(rb)){
-##         est.med <- rb[[i]]$Estimates.median
-##         expect_equal(colnames(est.med), names(Data$C))
-##         expect_equal(rownames(est.med), names(Data$C))
-##     }
-## })
+test_that("run_banocc Estimates.median has col and row names", {
+    skip_on_cran()
+    skip_on_bioc()
+    for (i in seq_along(rb)){
+        est.med <- rb[[i]]$Estimates.median
+        expect_equal(colnames(est.med), names(Data$C))
+        expect_equal(rownames(est.med), names(Data$C))
+    }
+})
 
 test_that("run_banocc Estimates.median elts are between -1 and 1", {
     skip_on_cran()
