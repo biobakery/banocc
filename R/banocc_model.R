@@ -6,7 +6,9 @@
 #'     \code{rstan::stan_model}
 #' @examples
 #' data(compositions_null)
-#' compiled_banocc_model <- rstan::stan_model(model_code = banocc::banocc_model)
+#' \dontrun{
+#'   compiled_banocc_model <- rstan::stan_model(model_code = banocc_model)
+#' }
 #' 
 #' @export
 

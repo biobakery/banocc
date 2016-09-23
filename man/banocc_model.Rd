@@ -15,5 +15,12 @@ The BAnOCC model as a string to be compiled with
 \description{
 This is the literal model used for fitting in Stan
 }
+\examples{
+data(compositions_null)
+\dontrun{
+  compiled_banocc_model <- rstan::stan_model(model_code = banocc_model)
+}
+
+}
 \keyword{datasets}
 
