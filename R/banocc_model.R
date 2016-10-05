@@ -18,23 +18,21 @@ banocc_model <- "data {
     matrix<lower=0,upper=1>[N,P] C; // matrix of N comp. samples, P features
     vector[P] n;  // the mean prior parameter for mu
     cov_matrix[P] L; // the scale prior parameter for mu
-    real<lower=1> eta; // the lkj parameter
-    real<lower=0> a[P]; // the shape parameters of sigma
-    real<lower=0> b[P]; // the scale parameters of sigma
+    real<lower=0> lambda; // the glasso prior parameter
 }
 
 parameters {
     vector[P] m; // the lognormal centrality parameter
-    cholesky_factor_corr[P] WChol; // the cholesky decomposition of the correlation parameter
-    vector<lower=0>[P] s;  // the standard deviations for the lognormal scale
+    corr_matrix[P] W; // The log-basis correlation matrix
+    vector<lower=0>[P] s; // the log-basis standard deviations
 }
 
 transformed parameters {
-  cov_matrix[P] S; // the lognormal scale parameter
-  corr_matrix[P] W; // the lognormal correlation parameter
+  cov_matrix[P] O; // the log-basis precision matrix
+  cov_matrix[P] S; // the log-basis covariance matrix
 
-  W = WChol * WChol';
   S = quad_form_diag(W, s);
+  O = inverse(S);
 }
 
 model {
@@ -48,9 +46,11 @@ model {
     vector[N] inc_4i;
 
     m ~ multi_normal(n, L);
-    WChol ~ lkj_corr_cholesky(eta);
     for(k in 1:P){
-      s[k] ~ gamma(a[k], b[k]);
+      O[k,k] ~ exponential(lambda/2);
+      for (i in (k+1):P){
+        O[i, k] ~ double_exponential(0, lambda);
+      }
     }
 
     invS = inverse(S);

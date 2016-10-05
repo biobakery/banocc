@@ -26,11 +26,7 @@ get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
                   function(i) {
                       list(m = as.vector(mvtnorm::rmvnorm(1, data$n,
                                data$L)),
-                           WChol  = t(chol(rlkj(data$P, data$eta))),
-                           s = mapply(function(a, b){
-                               rgamma(1, shape=a, rate = b)
-                               },
-                               data$a, data$b))
+                           S = diag(data$P))
                   })
     cat_v("Done.\n", verbose)
     return(IVs)

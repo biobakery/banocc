@@ -11,15 +11,7 @@
 #'   positive-definite with dimension PxP where P=number of features/columns
 #'   in \code{C}), or a vector of length p of variances for m. If a vector of
 #'   length less than P is given, it will be recycled.
-#' @param a,b Vectors of parameters for the gamma prior on the standard
-#'   deviations. They must be of equal length. If a vector of length less
-#'   than P (the number of features/columns in \code{C}) is given, it will
-#'   be recycled.
-#' @param sd_mean,sd_var Vectors of means and variances for the gamma priors
-#'   on the standard deviations. They must be of equal length. If a vector
-#'   of length less than P (the number of features/columns in \code{C}) is
-#'   given, it will be recycled.
-#' @param eta scale parameter of LKJ distribution; must be >= 1.
+#' @param lambda scale parameter of Laplace distribution; must be > 0.
 #' @param init The initial values as a list (see
 #'   \code{\link[rstan]{sampling}} in the \code{rstan} package). Default
 #'   value is NULL, which means that initial values are sampled from the
@@ -52,7 +44,7 @@
 #' \describe{
 #'   \item{\emph{Data}}{The data formatted as a named list that includes the
 #'     input data (\code{C}) and the prior parameters (\code{n}, \code{L},
-#'     \code{a}, \code{b}, \code{eta})}
+#'     \code{lambda})}
 #' 
 #'   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
 #'     \code{\link[rstan]{sampling}}}
@@ -82,8 +74,7 @@
 
 run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
                        L = 10*diag(ncol(C)),
-                       a = rep(1, ncol(C)), b = rep(0.5, ncol(C)),
-                       eta = 1, cores = getOption("mc.cores", 1L),
+                       lambda = 0.02, cores = getOption("mc.cores", 1L),
                        chains = 4, iter = 50, warmup = floor(iter/2),
                        thin = 1, init = NULL, control=NULL,
                        sd_mean=NULL, sd_var=NULL, conf_alpha=0.05,
@@ -99,13 +90,7 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
 
     conf_alpha <- check_conf_alpha(conf_alpha, verbose,
                                    num_level=num_level+1)
-    a_b <- get_a_b(a=a, b=b,
-                   sd_mean=sd_mean, sd_var=sd_var,
-                   p=Data$P,
-                   verbose=verbose, num_level=num_level+1)
-    Data$a   <- a_b$a
-    Data$b   <- a_b$b
-    Data$eta <- get_eta(eta)
+    Data$lambda <- get_lambda(lambda=lambda)
 
     if (is.null(init)){
         init <- get_IVs(chains=chains, data=Data, verbose=verbose,
@@ -144,16 +129,16 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
         cat_v("Begin evaluating convergence\n", verbose,
               num_level=num_level+1)
         rhat_stat <- rstan::summary(Fit)$summary[, "Rhat"]
-        diag_elts <- grep("W.*\\[([0-9]*),[ ]?\\1\\]", names(rhat_stat))
-        rhat_stat <- rhat_stat[-diag_elts]
-        chol_ut_re <- "[Cc]hol\\[([0-9]+),[ ]?([0-9]+)"
-        chol_ut_idx <- stringr::str_match(names(rhat_stat),
-                                          chol_ut_re)[, c(2, 3)]
+        ## diag_elts <- grep("W.*\\[([0-9]*),[ ]?\\1\\]", names(rhat_stat))
+        ## rhat_stat <- rhat_stat[-diag_elts]
+        ## chol_ut_re <- "[Cc]hol\\[([0-9]+),[ ]?([0-9]+)"
+        ## chol_ut_idx <- stringr::str_match(names(rhat_stat),
+        ##                                   chol_ut_re)[, c(2, 3)]
                                                  
-        chol_upper_tri_elts <- apply(chol_ut_idx, 1, function(r){
-            ifelse(all(is.na(r)), FALSE, which.max(as.numeric(r)) == 2)
-        })
-        rhat_stat <- rhat_stat[-which(chol_upper_tri_elts)]
+        ## chol_upper_tri_elts <- apply(chol_ut_idx, 1, function(r){
+        ##     ifelse(all(is.na(r)), FALSE, which.max(as.numeric(r)) == 2)
+        ## })
+        ## rhat_stat <- rhat_stat[-which(chol_upper_tri_elts)]
         if (any(is.na(rhat_stat)) || max(rhat_stat) > 1.2){
             fit_converged <- FALSE
             warning(paste0("Fit has not converged as evaluated by the Rhat ",
@@ -241,47 +226,6 @@ check_n <- function(n, p, verbose=FALSE, num_level=0){
     return(n)
 }
 
-check_a_b <- function(a, b, p, verbose=FALSE, num_level=0){
-    cat_v("Begin check_a_b\n", verbose, num_level=num_level)
-    if (length(a) != length(b)){
-        stop("'a' and 'b' must be of equal length")
-    }
-    a <- as.numeric(a)
-    a <- check_vector("a", a, p, verbose,
-                                  num_level=num_level + 1)
-    if (any(a <= 0)){
-        stop("'a' values must be positive")
-    }
-    b  <- as.numeric(b)
-    b  <- check_vector("b", b, p, verbose,
-                                  num_level=num_level + 1)
-    if (any(b <= 0)){
-        stop("'b' values must be positive")
-    }
-    cat_v("End check_a_b\n", verbose, num_level=num_level)
-    return(list(a=a, b=b))
-}
-
-check_sd_mean_var <- function(sd_mean, sd_var, p, verbose=FALSE, num_level=0){
-    cat_v("Begin check_sd_mean_var\n", verbose, num_level=num_level)
-    if (length(sd_mean) != length(sd_var)){
-        stop("'sd_mean' and 'sd_var' must be of equal length")
-    }
-    sd_mean <- as.numeric(sd_mean)
-    sd_mean <- check_vector("sd_mean", sd_mean, p, verbose,
-                                    num_level=num_level + 1)
-    if (any(sd_mean <= 0)){
-        stop("'sd_mean' values must be positive")
-    }
-    sd_var  <- as.numeric(sd_var)
-    sd_var  <- check_vector("sd_var", sd_var, p, verbose,
-                                    num_level = num_level + 1)
-    if (any(sd_var <= 0)){
-        stop("'sd_var' values must be positive")
-    }
-    cat_v("End check_sd_mean_var\n", verbose, num_level=num_level)
-    return(list(sd_mean=sd_mean, sd_var=sd_var))
-}
 
 check_vector <- function(parm.name, parm, p, verbose=TRUE, num_level=0){
     cat_v("Begin check_vector...", verbose, num_level=num_level)
@@ -340,40 +284,11 @@ check_L <- function(L, p, verbose=FALSE, num_level=0){
     return(L)
 }
 
-get_a_b <- function(a, b, p, sd_mean=NULL, sd_var=NULL,
-                           verbose=FALSE, num_level=0){
-    cat_v("Begin get_a_b\n", verbose=verbose,
-                  num_level=num_level)
-    if (!is.null(a) || !is.null(b)){
-        if (is.null(a) || is.null(b)){
-            stop(paste0("Must provide both 'a' and 'b' OR both 'sd_mean'",
-                        " and 'sd_var'"))
-        }
-        a_b <- check_a_b(a, b, p, verbose,
-                                               num_level=num_level+1)
-    } else if (!is.null(sd_var) || !is.null(sd_mean)){
-        if (is.null(sd_var) || is.null(sd_mean)){
-            stop(paste0("Must provide both 'sd_mean' and 'sd_var' OR both ",
-                        "'a' and 'b'"))
-        }
-        a_b <- list()
-        sd_mean_var <- check_sd_mean_var(sd_mean, sd_var, p,
-                                                 num_level=num_level+1)
-        a_b$b  <- sd_mean_var$sd_mean / sd_mean_var$sd_var
-        a_b$a <- sd_mean_var$sd_mean^2 / sd_mean_var$sd_var
+get_lambda <- function(lambda){
+    if (lambda <= 0){
+        stop("'lambda' must be > 0")
     } else {
-        stop(paste0("Must provide both 'a' and 'b' OR both 'sd_mean'",
-                    " and 'sd_var'"))
-    }
-    cat_v("End get_a_b\n", verbose, num_level=num_level)
-    return(a_b)
-}
-
-get_eta <- function(eta){
-    if (eta < 1){
-        stop("'eta' must be >= 1")
-    } else {
-        return(eta)
+        return(lambda)
     }
 
 }
