@@ -16,7 +16,6 @@
 # @inheritParams cat_v
 #
 #' @importFrom mvtnorm rmvnorm
-#' @importFrom rmutil rlaplace
 
 get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
     cat_v("Begin get_IVs...", verbose, num_level=num_level)
@@ -38,7 +37,9 @@ sample_O <- function(data, num_tries=10){
     diag(O) <- rexp(data$P, data$lambda/2)
     ntries <- 0
     while(any(eigen(O)$values <= 0) && ntries < num_tries){
-      O[upper.tri(O)] <- rlaplace(choose(Data$P, 2), s=data$lambda)
+      expsamp <- rexp(choose(Data$P, 2), rate=1/lambda)
+      O[upper.tri(O)] <- expsamp * sample(c(-1, 1), choose(Data$P, 2),
+                                          replace=TRUE)
       O[lower.tri(O)] <- t(O)[lower.tri(t(O))]        
     }
 
