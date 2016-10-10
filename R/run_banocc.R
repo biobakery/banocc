@@ -129,8 +129,8 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
         cat_v("Begin evaluating convergence\n", verbose,
               num_level=num_level+1)
         rhat_stat <- rstan::summary(Fit)$summary[, "Rhat"]
-        ## diag_elts <- grep("W.*\\[([0-9]*),[ ]?\\1\\]", names(rhat_stat))
-        ## rhat_stat <- rhat_stat[-diag_elts]
+        diag_elts <- grep("W.*\\[([0-9]*),[ ]?\\1\\]", names(rhat_stat))
+        rhat_stat <- rhat_stat[-diag_elts]
         ## chol_ut_re <- "[Cc]hol\\[([0-9]+),[ ]?([0-9]+)"
         ## chol_ut_idx <- stringr::str_match(names(rhat_stat),
         ##                                   chol_ut_re)[, c(2, 3)]
