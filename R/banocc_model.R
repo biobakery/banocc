@@ -23,21 +23,21 @@ banocc_model <- "data {
 
 parameters {
     vector[P] m; // the lognormal centrality parameter
-    corr_matrix[P] W; // The log-basis correlation matrix
-    vector<lower=0>[P] s; // the log-basis standard deviations
+  cov_matrix[P] O; // the log-basis precision matrix
 }
 
 transformed parameters {
-  cov_matrix[P] O; // the log-basis precision matrix
   cov_matrix[P] S; // the log-basis covariance matrix
+  vector<lower=0>[P] s;
+  corr_matrix[P] W;
 
-  S = quad_form_diag(W, s);
-  O = inverse(S);
+  S = inverse(O);
+  s = diagonal(cholesky_decompose(diag_matrix(diagonal(S))));
+  W = quad_form(S, inverse(diag_matrix(s)));
 }
 
 model {
     matrix[N,P] alpha_star;
-    matrix[P,P] invS;
     real s_sq_star;
     vector[N] m_star;
     real inc_1;
@@ -53,20 +53,19 @@ model {
       }
     }
 
-    invS = inverse(S);
-    s_sq_star = inv(sum(invS));
+  s_sq_star = inv(sum(O));
 
     alpha_star   = rep_matrix(to_row_vector(m), N) - log(C);
-    m_star = rows_dot_product(alpha_star * invS, rep_matrix(1, N, P)) * s_sq_star;
+  m_star = rows_dot_product(alpha_star * O, rep_matrix(1, N, P)) * s_sq_star;
 
     inc_1 = 0.5 * N * log(s_sq_star);
-    inc_2 = - 0.5 * N * log_determinant(S);
+  inc_2 = 0.5 * N * log_determinant(O);
 
     target += inc_1 + inc_2;
 
     for (i in 1:N){
-        inc_3i[i] =  - 0.5 * quad_form(invS, alpha_star[i]' );
         inc_4i[i] =  0.5 * m_star[i] * m_star[i] / s_sq_star;
                   }
     target += sum(inc_3i + inc_4i);
+    inc_3i[i] =  - 0.5 * quad_form(O, alpha_star[i]' );
 }"
