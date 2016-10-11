@@ -35,15 +35,22 @@ get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
 sample_O <- function(data, num_tries=10){
     O <- matrix(0, ncol=data$P, nrow=data$P)
     diag(O) <- rexp(data$P, data$lambda/2)
-    ntries <- 0
+    O <- sample_O_tri(data, O)
+    ntries <- 1
     while(any(eigen(O)$values <= 0) && ntries < num_tries){
-      expsamp <- rexp(choose(Data$P, 2), rate=1/lambda)
-      O[upper.tri(O)] <- expsamp * sample(c(-1, 1), choose(Data$P, 2),
-                                          replace=TRUE)
-      O[lower.tri(O)] <- t(O)[lower.tri(t(O))]        
+      O <- sample_O_tri(data, O)
     }
 
     if (all(eigen(O)$values > 0)) return(O)
     stop(paste0("After ", num_tries, "tries, could not sample PD O. ",
          "Try decreasing labda or specifying the initial values by hand."))
+}
+
+
+sample_O_tri <- function(data, O){
+    expsamp <- rexp(choose(data$P, 2), rate=1/data$lambda)
+    O[upper.tri(O)] <- expsamp * sample(c(-1, 1), choose(data$P, 2),
+                                        replace=TRUE)
+    O[lower.tri(O)] <- t(O)[lower.tri(t(O))]        
+    return(O)
 }
