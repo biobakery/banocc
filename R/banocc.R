@@ -1,10 +1,19 @@
 #' banocc: A package for Bayesian ANalysis of Compositional Correlation
 #'
-#' This package contains many helpful functions for analyzing data this way, as
-#'   well as other useful functions for my personal use.
+#' BAnOCC is a package for inferring correlations between features in
+#' compositional data, where each sample sums to one. It provides one
+#' object, \code{banocc_model} and one function, \code{run_banocc}
+#' 
+#' @section banocc objects:
 #'
+#' banocc_model has the \code{stan} model code to be compiled using
+#' \code{rstan::stan}.
+#' 
 #' @section banocc functions:
-#' ADD FUNCTIONS HERE
+#'
+#' run_banocc takes a compiled model, and returns the `stanfit` object
+#' resulting from a call to \code{rstan::sampling} as well as
+#' posterior median and credible interval estimates.
 #'
 #' @docType package
 #' @name banocc
