@@ -3,21 +3,21 @@ load("testthat_objects/banocc_model_test.RData")
 load("testthat_objects/sample_stan_data.RData")
 
 
-test_that("get_lambda gives error if lambda <= 0", {
+test_that("get_gamma_param gives error if param <= 0", {
     err_string <- "must be > 0"
-    expect_error(get_lambda(0),  err_string)
-    expect_error(get_lambda(-1), err_string)
+    expect_error(get_gamma_param(0, "a"),  err_string)
+    expect_error(get_gamma_param(-1, "a"), err_string)
 })
 
-test_that("get_lambda returns lambda if lambda > 0", {
-    expect_equal(get_lambda(pi), pi)
-    expect_equal(get_lambda(2), 2)
+test_that("get_gamma_param returns param if param > 0", {
+    expect_equal(get_gamma_param(pi, "a"), pi)
+    expect_equal(get_gamma_param(2, "a"), 2)
 })
 
 n  <- rep(0, Data$P)
 L  <- 10 * diag(Data$P)
 
-init1    <- list(list(m = n, O=diag(Data$P)))
+init1    <- list(list(m = n, O=diag(Data$P), lamda=0.02))
 init2    <- NULL
 init_opt <- list(init1, init2)
 
@@ -60,8 +60,8 @@ sw_run_banocc <- function(conf_alpha, get_min_width, calc_snc,
         data <- as.data.frame(Data$C)
     }
     rb <- suppressWarnings(run_banocc(
-        compiled_banocc_model=compiled_banocc_model, C=data, lambda=0.02,
-        n=n, L=L,
+        compiled_banocc_model=compiled_banocc_model, C=data, a=0.5,
+        b=0.01, n=n, L=L,
         chains=1, iter=4, warmup=2, init=init,
         conf_alpha=conf_alpha, get_min_width=get_min_width,
         calc_snc=calc_snc, eval_convergence=eval_convergence,
@@ -129,7 +129,7 @@ test_that("run_banocc Data elt is list", {
     }
 })
 
-data_names <- c("C", "N", "P", "n", "L", "lambda")
+data_names <- c("C", "N", "P", "n", "L", "a", "b")
 test_that("run_banocc Data elt has correct names", {
     skip_on_cran()
     skip_on_bioc()

@@ -6,7 +6,7 @@
   and inference.}
 \usage{
 run_banocc(compiled_banocc_model, C, n = rep(0, ncol(C)), L = 10 *
-  diag(ncol(C)), lambda = 0.02, cores = getOption("mc.cores", 1L),
+  diag(ncol(C)), a = 0.5, b = 0.01, cores = getOption("mc.cores", 1L),
   chains = 4, iter = 50, warmup = floor(iter/2), thin = 1,
   init = NULL, control = NULL, sd_mean = NULL, sd_var = NULL,
   conf_alpha = 0.05, get_min_width = FALSE, calc_snc = FALSE,
@@ -27,7 +27,11 @@ positive-definite with dimension PxP where P=number of features/columns
 in \code{C}), or a vector of length p of variances for m. If a vector of
 length less than P is given, it will be recycled.}
 
-\item{lambda}{scale parameter of Laplace distribution; must be > 0.}
+\item{a}{The shape parameter of a gamma distribution (the prior on the
+shrinkage parameter lambda)}
+
+\item{b}{The scale parameter of a gamma distribution (the prior on the
+shrinkage parameter lambda)}
 
 \item{cores}{Number of cores to use when executing the chains in parallel,
     which defaults to 1 but we recommend setting the \code{mc.cores} option 
@@ -84,7 +88,7 @@ Returns a named list with the following elements:
 \describe{
   \item{\emph{Data}}{The data formatted as a named list that includes the
     input data (\code{C}) and the prior parameters (\code{n}, \code{L},
-    \code{lambda})}
+    \code{a}, \code{b})}
 
   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
     \code{\link[rstan]{sampling}}}

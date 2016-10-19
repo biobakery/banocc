@@ -16,14 +16,16 @@ banocc_model <- "data {
   int<lower=0> P; // number of elements of the composition
   int<lower=0> N; // the number of subjects sampled
   matrix<lower=0,upper=1>[N,P] C; // matrix of N comp. samples, P features
-  vector[P] n;  // the mean prior parameter for mu
-  cov_matrix[P] L; // the scale prior parameter for mu
-  real<lower=0> lambda; // the glasso prior parameter
+  vector[P] n;  // the mean prior parameter for m
+  cov_matrix[P] L; // the scale prior parameter for m
+  real<lower=0> a; // the shape prior parameter for lambda
+  real<lower=0> b; // the scale prior parameter for lambda
 }
 
 parameters {
   vector[P] m; // the lognormal centrality parameter
   cov_matrix[P] O; // the log-basis precision matrix
+  real<lower=0> lambda; // the glasso prior parameter
 }
 
 transformed parameters{
@@ -45,6 +47,7 @@ model {
   vector[N] inc_3i;
   vector[N] inc_4i;
 
+  lambda ~ gamma(a, b);
   m ~ multi_normal(n, L);
   for(k in 1:P){
     O[k,k] ~ exponential(lambda/2);

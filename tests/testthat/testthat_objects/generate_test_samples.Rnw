@@ -40,7 +40,7 @@ save(compiled_banocc_model, file="banocc_model_test.RData")
 C <- read.table("sample_data.txt", header=TRUE)
 Data <- list(C=C, N=nrow(C), P=ncol(C),
              n=rep(0, ncol(C)), L=10 * diag(ncol(C)),
-             lambda=0.02)
+             a = 0.5, b=0.01)
 
 save(Data, file="sample_stan_data.RData")
 @ 

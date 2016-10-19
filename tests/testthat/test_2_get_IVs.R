@@ -16,7 +16,7 @@ test_that("get_IVs elements have variable names", {
     test_names <- function(chains, data){
         sort(names(get_IVs(chains=chains, data=data)[[1]]))
     }
-    expected_names <- sort(c("m", "O"))
+    expected_names <- sort(c("m", "O", "lambda"))
     expect_equal(test_names(3, Data), expected_names)
     expect_equal(test_names(1, Data), expected_names)
 })

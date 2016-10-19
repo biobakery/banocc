@@ -11,7 +11,10 @@
 #'   positive-definite with dimension PxP where P=number of features/columns
 #'   in \code{C}), or a vector of length p of variances for m. If a vector of
 #'   length less than P is given, it will be recycled.
-#' @param lambda scale parameter of Laplace distribution; must be > 0.
+#' @param a The shape parameter of a gamma distribution (the prior on the
+#'   shrinkage parameter lambda)
+#' @param b The scale parameter of a gamma distribution (the prior on the
+#'   shrinkage parameter lambda)
 #' @param init The initial values as a list (see
 #'   \code{\link[rstan]{sampling}} in the \code{rstan} package). Default
 #'   value is NULL, which means that initial values are sampled from the
@@ -44,7 +47,7 @@
 #' \describe{
 #'   \item{\emph{Data}}{The data formatted as a named list that includes the
 #'     input data (\code{C}) and the prior parameters (\code{n}, \code{L},
-#'     \code{lambda})}
+#'     \code{a}, \code{b})}
 #' 
 #'   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
 #'     \code{\link[rstan]{sampling}}}
@@ -73,8 +76,8 @@
 #' @seealso \code{vignette("banocc-vignette")} for more examples.
 
 run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
-                       L = 10*diag(ncol(C)),
-                       lambda = 0.02, cores = getOption("mc.cores", 1L),
+                       L = 10*diag(ncol(C)), a=0.5, b=0.01,
+                       cores = getOption("mc.cores", 1L),
                        chains = 4, iter = 50, warmup = floor(iter/2),
                        thin = 1, init = NULL, control=NULL,
                        sd_mean=NULL, sd_var=NULL, conf_alpha=0.05,
@@ -90,7 +93,8 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
 
     conf_alpha <- check_conf_alpha(conf_alpha, verbose,
                                    num_level=num_level+1)
-    Data$lambda <- get_lambda(lambda=lambda)
+    Data$a <- get_gamma_param(param=a, name="a")
+    Data$b <- get_gamma_param(param=b, name="b")
 
     if (is.null(init)){
         init <- get_IVs(chains=chains, data=Data, verbose=verbose,
@@ -284,11 +288,11 @@ check_L <- function(L, p, verbose=FALSE, num_level=0){
     return(L)
 }
 
-get_lambda <- function(lambda){
-    if (lambda <= 0){
-        stop("'lambda' must be > 0")
+get_gamma_param <- function(param, name){
+    if (param <= 0){
+        stop(paste0("'", name, "' must be > 0"))
     } else {
-        return(lambda)
+        return(param)
     }
 
 }
