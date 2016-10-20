@@ -57,7 +57,7 @@ shrinkage parameter lambda)}
 \item{init}{The initial values as a list (see
 \code{\link[rstan]{sampling}} in the \code{rstan} package). Default
 value is NULL, which means that initial values are sampled from the
-priors.}
+priors for parameters m and lambda while O is set to the identity matrix.}
 
 \item{control}{A named \code{list} of parameters to control the sampler's
     behavior. See the details in the documentation for the \code{control} argument

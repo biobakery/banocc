@@ -194,16 +194,16 @@ b_cores <- banocc::run_banocc(C = compositions_null,
 
 #### Initial Values
 
-The initial values are sampled from the priors by default because the
-positive definite constraint on the covariance matrix makes it
-difficult for `rstan::sampling` to generate initial values
-automatically. They can also be set to a particular value by using a
-list. 
+By default, the initial values for **$m$** and $\lambda$ are sampled
+from the priors and the initial values for **$O$** are set to the
+identity matrix of dimension $P$. Setting the initial values for
+**$O$** to the identity helps ensure a parsimonious model fit. The
+initial values can also be set to a particular value by using a list.
 
 ```{r sampling-init, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 init <- list(list(m = rep(0, p),
                   O = diag(p),
-		  lambda = 0.02),
+                  lambda = 0.02),
              list(m = runif(p),
                   O = 10 * diag(p),
                   lambda = runif(1, 0.1, 2)))

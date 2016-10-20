@@ -201,10 +201,10 @@ b_cores &lt;-<span class="st"> </span>banocc::<span class="kw">run_banocc</span>
                               <span class="dt">chains =</span> <span class="dv">2</span>,
                               <span class="dt">cores =</span> <span class="dv">2</span>)</code></pre></div>
 <h4 id="initial-values">Initial Values</h4>
-<p>The initial values are sampled from the priors by default because the positive definite constraint on the covariance matrix makes it difficult for <code>rstan::sampling</code> to generate initial values automatically. They can also be set to a particular value by using a list.</p>
+<p>By default, the initial values for <strong><em>m</em></strong> and <em>λ</em> are sampled from the priors and the initial values for <strong><em>O</em></strong> are set to the identity matrix of dimension <em>P</em>. Setting the initial values for <strong><em>O</em></strong> to the identity helps ensure a parsimonious model fit. The initial values can also be set to a particular value by using a list.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">init &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="dt">m =</span> <span class="kw">rep</span>(<span class="dv">0</span>, p),
                   <span class="dt">O =</span> <span class="kw">diag</span>(p),
-          <span class="dt">lambda =</span> <span class="fl">0.02</span>),
+                  <span class="dt">lambda =</span> <span class="fl">0.02</span>),
              <span class="kw">list</span>(<span class="dt">m =</span> <span class="kw">runif</span>(p),
                   <span class="dt">O =</span> <span class="dv">10</span> *<span class="st"> </span><span class="kw">diag</span>(p),
                   <span class="dt">lambda =</span> <span class="kw">runif</span>(<span class="dv">1</span>, <span class="fl">0.1</span>, <span class="dv">2</span>)))

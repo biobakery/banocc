@@ -26,33 +26,9 @@ get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
                   function(i) {
                       list(m = as.vector(mvtnorm::rmvnorm(1, data$n,
                                data$L)),
-                           O = sample_O(data),
+                           O = diag(data$P),
                            lambda = rgamma(1, data$a, data$b))
                   })
     cat_v("Done.\n", verbose)
     return(IVs)
-}
-
-sample_O <- function(data, num_tries=10){
-    lambda <- max(0.001, data$a / data$b - 2 * (data$a / data$b^2))
-    O <- matrix(0, ncol=data$P, nrow=data$P)
-    diag(O) <- rexp(data$P, lambda/2)
-    O <- sample_O_tri(data, lambda, O)
-    ntries <- 1
-    while(any(eigen(O)$values <= 0) && ntries < num_tries){
-      O <- sample_O_tri(data, lambda, O)
-      ntries <- ntries + 1
-    }
-
-    if (all(eigen(O)$values > 0)) return(O)
-    stop(paste0("After ", num_tries, " tries, could not sample PD O. ",
-         "Try decreasing lambda or specifying the initial values by hand."))
-}
-
-sample_O_tri <- function(data, lambda, O){
-    expsamp <- rexp(choose(data$P, 2), rate=1/lambda)
-    O[upper.tri(O)] <- expsamp * sample(c(-1, 1), choose(data$P, 2),
-                                        replace=TRUE)
-    O[lower.tri(O)] <- t(O)[lower.tri(t(O))]        
-    return(O)
 }

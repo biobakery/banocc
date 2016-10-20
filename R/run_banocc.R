@@ -18,7 +18,7 @@
 #' @param init The initial values as a list (see
 #'   \code{\link[rstan]{sampling}} in the \code{rstan} package). Default
 #'   value is NULL, which means that initial values are sampled from the
-#'   priors.
+#'   priors for parameters m and lambda while O is set to the identity matrix.
 #' @inheritParams rstan::sampling
 #' @param get_min_width A boolean value: should the minimum CI width that
 #'   includes zero be calculated?
