@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-08-15
+2016-10-19
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -26,8 +26,9 @@ Emma Schwager
     -   [Traceplots](#markdown-header-traceplots)
     -   [Rhat Statistics](#markdown-header-rhat-statistics)
 -   [Choosing Priors](#markdown-header-choosing-priors)
-    -   [Log-Basis Correlation Matrix](#markdown-header-log-basis-correlation-matrix)
-    -   [Log-Basis Mean and Standard Deviations](#markdown-header-log-basis-mean-and-standard-deviations)
+    -   [Log-Basis Precision Matrix](#markdown-header-log-basis-precision-matrix)
+    -   [Log-Basis Mean](#markdown-header-log-basis-mean)
+    -   [GLASSO Shrinkage Parameter](#markdown-header-glasso-shrinkage-parameter)
 -   [The Model](#markdown-header-the-model)
 -   [References](#markdown-header-references)
 
@@ -102,7 +103,7 @@ library(banocc)
 
 The BAnOCC package contains three things:
 
--   `bayesStanModel`, which is the BAnOCC model in the `rstan` format
+-   `banocc_model`, which is the BAnOCC model in the `rstan` format
 -   `run_banocc`, a wrapper function for `rstan::sampling` that samples from the model and returns a list with various useful elements
 -   Several test datasets which are included both as counts and as the corresponding compositions:
 
@@ -152,25 +153,8 @@ b_hp <- banocc::run_banocc(C = compositions_null,
                            compiled_banocc_model = compiled_banocc_model,
                            n = rep(0, p),
                            L = 10 * diag(p), 
-                           a = rep(1,   p),
-                           b = rep(0.5, p),
-                           eta = 1)
-```
-
-    ## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
-    ## = compiled_banocc_model, : Fit has not converged as evaluated by the Rhat
-    ## statistic. You might try a larger number of warmup iterations, different
-    ## priors, or different initial values. See vignette for more on evaluating
-    ## convergence.
-
-The hyperparameter values for ***s***, the standard deviations of the log-transformed basis, can be alternatively specified as the means and variances of the prior using the parameters `sd_mean` and `sd_var`. This is because the mean of a Gamma distribution is *a*\_*j*/*b*\_*j*, and the variance is *a*\_*j*/*b*\_*j*^2. For example,
-
-``` r
-# This is the same prior as above
-b_sd_mean <- banocc::run_banocc(C = compositions_null,
-                                compiled_banocc_model = compiled_banocc_model,
-                                sd_mean = rep(2, p),
-                                sd_var  = rep(4, p))
+                           a = 0.5,
+                           b = 0.01)
 ```
 
     ## Warning in banocc::run_banocc(C = compositions_null, compiled_banocc_model
@@ -216,15 +200,15 @@ b_cores <- banocc::run_banocc(C = compositions_null,
 
 #### Initial Values
 
-The initial values are sampled from the priors by default because the positive definite constraint on the covariance matrix makes it difficult for `rstan::sampling` to generate initial values automatically. They can also be set to a particular value by using a list. `WChol` is the cholesky decomposition of ***W*** that is used by the sampler for computational reasons.
+By default, the initial values for ***m*** and *λ* are sampled from the priors and the initial values for ***O*** are set to the identity matrix of dimension *P*. Setting the initial values for ***O*** to the identity helps ensure a parsimonious model fit. The initial values can also be set to a particular value by using a list.
 
 ``` r
 init <- list(list(m = rep(0, p),
-                  WChol = t(chol(diag(p))),
-          s = rep(1, p)),
+                  O = diag(p),
+                  lambda = 0.02),
              list(m = runif(p),
-                  WChol = t(chol(2 * diag(p))),
-                  s = runif(p, 0.1, 2)))
+                  O = 10 * diag(p),
+                  lambda = runif(1, 0.1, 2)))
 b_init <- banocc::run_banocc(C = compositions_null,
                              compiled_banocc_model = compiled_banocc_model,
                              chains = 2,
@@ -323,26 +307,26 @@ b_ec$Estimates.median
 b_nec$Estimates.median
 ```
 
-    ##             f_n_1      f_n_2        f_n_3        f_n_4       f_n_5
-    ## f_n_1  1.00000000 0.05994573 -0.030213477  0.074666252  0.07673775
-    ## f_n_2  0.05994573 1.00000000  0.049885370  0.129226125  0.04311761
-    ## f_n_3 -0.03021348 0.04988537  1.000000000 -0.008231725 -0.01671881
-    ## f_n_4  0.07466625 0.12922612 -0.008231725  1.000000000 -0.06993992
-    ## f_n_5  0.07673775 0.04311761 -0.016718806 -0.069939919  1.00000000
-    ## f_n_6  0.16762643 0.18727364  0.067561993  0.078234331  0.03804677
-    ## f_n_7  0.20364009 0.16643799  0.036574974  0.025390199  0.16355069
-    ## f_n_8  0.32748106 0.12976068  0.020155149  0.035338759  0.15502329
-    ## f_n_9  0.12652931 0.03085420 -0.142167644 -0.102523405 -0.05527105
-    ##            f_n_6      f_n_7       f_n_8       f_n_9
-    ## f_n_1 0.16762643 0.20364009  0.32748106  0.12652931
-    ## f_n_2 0.18727364 0.16643799  0.12976068  0.03085420
-    ## f_n_3 0.06756199 0.03657497  0.02015515 -0.14216764
-    ## f_n_4 0.07823433 0.02539020  0.03533876 -0.10252341
-    ## f_n_5 0.03804677 0.16355069  0.15502329 -0.05527105
-    ## f_n_6 1.00000000 0.25688017  0.38643907  0.14746195
-    ## f_n_7 0.25688017 1.00000000  0.27664247  0.09180796
-    ## f_n_8 0.38643907 0.27664247  1.00000000 -0.08349490
-    ## f_n_9 0.14746195 0.09180796 -0.08349490  1.00000000
+    ##            f_n_1      f_n_2      f_n_3      f_n_4      f_n_5      f_n_6
+    ## f_n_1  1.0000000  0.2404180  0.1974518  0.2572820  0.3010845  0.3814509
+    ## f_n_2  0.2404180  1.0000000  0.1467107  0.2204641  0.2337567  0.2861451
+    ## f_n_3  0.1974518  0.1467107  1.0000000  0.1009279  0.2116781  0.1831806
+    ## f_n_4  0.2572820  0.2204641  0.1009279  1.0000000  0.2107974  0.2476414
+    ## f_n_5  0.3010845  0.2337567  0.2116781  0.2107974  1.0000000  0.2998975
+    ## f_n_6  0.3814509  0.2861451  0.1831806  0.2476414  0.2998975  1.0000000
+    ## f_n_7  0.2758141  0.2733814  0.1603208  0.1715731  0.2574943  0.3044546
+    ## f_n_8  0.4242170  0.3163119  0.1933486  0.3063491  0.3949550  0.4879432
+    ## f_n_9 -0.3635854 -0.4373341 -0.2836953 -0.3167598 -0.4544829 -0.4608199
+    ##            f_n_7      f_n_8      f_n_9
+    ## f_n_1  0.2758141  0.4242170 -0.3635854
+    ## f_n_2  0.2733814  0.3163119 -0.4373341
+    ## f_n_3  0.1603208  0.1933486 -0.2836953
+    ## f_n_4  0.1715731  0.3063491 -0.3167598
+    ## f_n_5  0.2574943  0.3949550 -0.4544829
+    ## f_n_6  0.3044546  0.4879432 -0.4608199
+    ## f_n_7  1.0000000  0.2937206 -0.3809362
+    ## f_n_8  0.2937206  1.0000000 -0.4503258
+    ## f_n_9 -0.3809362 -0.4503258  1.0000000
 
 #### Additional Output
 
@@ -414,7 +398,7 @@ rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"),
 The Rhat values can also be directly accessed using the `summary` function in the `rstan` package. It measures the degree of agreement between all the chains. At convergence, the Rhat statistics should be approximately one for all parameters. For example, the Rhat values for the correlation between feature 1 and all other features (the same as those plotted above), agree with the traceplots that convergence has not yet been reached.
 
 ``` r
-# This returns a named vector withthe Rhat values for all parameters
+# This returns a named vector with the Rhat values for all parameters
 rhat_all <- rstan::summary(b_output$Fit)$summary[, "Rhat"]
 
 # To see the Rhat values for the correlations of feature 1
@@ -422,27 +406,31 @@ rhat_all[paste0("W[1,", 2:9, "]")]
 ```
 
     ##   W[1,2]   W[1,3]   W[1,4]   W[1,5]   W[1,6]   W[1,7]   W[1,8]   W[1,9] 
-    ## 2.383395 1.988170 2.828204 2.203286 2.606121 2.160999 2.781550 2.049964
+    ## 3.493732 1.919974 4.479446 5.009271 4.038380 4.525474 4.979471 5.181735
 
 Choosing Priors
 ---------------
 
 The hyperparameters for the model (see section [The Model](#markdown-header-the-model)) need to be chosen appropriately.
 
-### Log-Basis Correlation Matrix
+### Log-Basis Precision Matrix
 
-The prior on the correlation matrix ***W*** is an LKJ distribution with parameter *η* (see section [The Model](#markdown-header-the-model) and Lewandowski, Kurowicka, and Joe 2009). When *η* = 1, this prior is uniform over the space of positive definite correlation matrices. As *η* increases, the prior probability mass for each correlation becomes more and more concentrated around 0, which can be seen in the figures below.
+The prior on the precision matrix ***O*** is a GLASSO prior from (Wang 2012) with parameter *λ* \[see also section [The Model](#markdown-header-the-model)\]. As *λ* decreases, the degree of shrinkage correspondingly increases.
 
-![eta 1](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/prior_eta_1_n_1000_W.png) ![eta 10](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/prior_eta_10_n_1000_W.png) ![eta 25](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/prior_eta_25_n_1000_W.png)
+![lambda behavior](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/lambda_behavior_figure.png)
 
-### Log-Basis Mean and Standard Deviations
+### Log-Basis Mean
 
-We recommend plotting *both* the explicit priors on the log-basis means and standard deviations as well as the implicit priors on the un-transformed basis means and standard deviations.
+We recommend using an uninformative prior for the log-basis mean: centered at zero and with large variance.
+
+### GLASSO Shrinkage Parameter
+
+We recommend using a prior with large probability mass close to zero; because *λ* has a gamma prior, this means that the shape parameter *a* should be less than one. The scale parameter *b* determines the variability; in cases with either small (order of 10) or very large (*p* &gt; *n*) numbers of features *b* should be large so that the variance of the gamma distribution, *a*/*b*^2, is small. Otherwise, a small value of *b* will make the prior more uninformative.
 
 The Model
 ---------
 
-A pictoral representation of the model is shown below. Briefly, the basis (or unobserved, unrestricted counts) for each sample is assumed to be a lognormal distribution with parameters ***m*** and ***S***. The prior on ***m*** is a normal distribution parametrized by mean ***n*** and variance-covariance matrix ***L***. Since we are interested in the correlation structure, we break ***S*** into a correlation matrix ***W*** and a vector of standard deviations ***s***. The prior on ***W*** is an LKJ distribution (Lewandowski, Kurowicka, and Joe 2009) with shrinkage parameter *η*, while the prior on eash *s*\_*j* is a gamma prior with shape *a*\_*j* and rate *b*\_*j*.
+A pictoral representation of the model is shown below. Briefly, the basis (or unobserved, unrestricted counts) for each sample is assumed to be a lognormal distribution with parameters ***m*** and ***S***. The prior on ***m*** is a normal distribution parametrized by mean ***n*** and variance-covariance matrix ***L***. Since we are using a graphical LASSO prior, we parametrize the model with precision matrix ***O***. The prior on ***O*** is a graphical LASSO prior (Wang 2012) with shrinkage parameter *λ*. To circumvent the necessity of choosing *λ*, a gamma hyperprior is placed on *λ*, with parameters *a* and *b*.
 
 ![plate-diagram](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/Figure3.png)
 
@@ -460,10 +448,10 @@ Gelman, Andrew, and Donald B. Rubin. 1992. “Inference from Iterative Simulatio
 
 Hoffman, Matthew D., and Andrew Gelman. 2014. “The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo.” *J. Mach. Learn. Res.* 15 (1). JMLR.org: 1593–1623. <http://dl.acm.org/citation.cfm?id=2627435.2638586>.
 
-Lewandowski, Daniel, Dorota Kurowicka, and Harry Joe. 2009. “Generating Random Correlation Matrices Based on Vines and Extended Onion Method.” *Journal of Multivariate Analysis* 100 (9): 1989–2001. <http://dx.doi.org/10.1016/j.jmva.2009.04.008>.
-
 Li, Qing, and Nan Lin. 2010. “The Bayesian Elastic Net.” *Bayesian Anal.* 5 (1). International Society for Bayesian Analysis: 151–70. <http://dx.doi.org/10.1214/10-BA506>.
 
 Stan Development Team. 2015a. *Stan Modeling Language Users Guide and Reference Manual, Version 2.10.0*. <http://mc-stan.org/>.
 
 ———. 2015b. “Stan: A C++ Library for Probability and Sampling, Version 2.10.0.” <http://mc-stan.org/>.
+
+Wang, Hao. 2012. “Bayesian Graphical Lasso Models and Efficient Posterior Computation.” *Bayesian Anal.* 7 (4). International Society for Bayesian Analysis: 867–86. doi:[10.1214/12-BA729](https://doi.org/10.1214/12-BA729).

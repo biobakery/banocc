@@ -6,12 +6,11 @@
   and inference.}
 \usage{
 run_banocc(compiled_banocc_model, C, n = rep(0, ncol(C)), L = 10 *
-  diag(ncol(C)), a = rep(1, ncol(C)), b = rep(0.5, ncol(C)), eta = 1,
-  cores = getOption("mc.cores", 1L), chains = 4, iter = 50,
-  warmup = floor(iter/2), thin = 1, init = NULL, control = NULL,
-  sd_mean = NULL, sd_var = NULL, conf_alpha = 0.05,
-  get_min_width = FALSE, calc_snc = FALSE, eval_convergence = TRUE,
-  verbose = FALSE, num_level = 0)
+  diag(ncol(C)), a = 0.5, b = 0.01, cores = getOption("mc.cores", 1L),
+  chains = 4, iter = 50, warmup = floor(iter/2), thin = 1,
+  init = NULL, control = NULL, conf_alpha = 0.05, get_min_width = FALSE,
+  calc_snc = FALSE, eval_convergence = TRUE, verbose = FALSE,
+  num_level = 0)
 }
 \arguments{
 \item{compiled_banocc_model}{The compiled stan model (as with
@@ -28,12 +27,11 @@ positive-definite with dimension PxP where P=number of features/columns
 in \code{C}), or a vector of length p of variances for m. If a vector of
 length less than P is given, it will be recycled.}
 
-\item{a, b}{Vectors of parameters for the gamma prior on the standard
-deviations. They must be of equal length. If a vector of length less
-than P (the number of features/columns in \code{C}) is given, it will
-be recycled.}
+\item{a}{The shape parameter of a gamma distribution (the prior on the
+shrinkage parameter lambda)}
 
-\item{eta}{scale parameter of LKJ distribution; must be >= 1.}
+\item{b}{The scale parameter of a gamma distribution (the prior on the
+shrinkage parameter lambda)}
 
 \item{cores}{Number of cores to use when executing the chains in parallel,
     which defaults to 1 but we recommend setting the \code{mc.cores} option 
@@ -59,16 +57,11 @@ be recycled.}
 \item{init}{The initial values as a list (see
 \code{\link[rstan]{sampling}} in the \code{rstan} package). Default
 value is NULL, which means that initial values are sampled from the
-priors.}
+priors for parameters m and lambda while O is set to the identity matrix.}
 
 \item{control}{A named \code{list} of parameters to control the sampler's
     behavior. See the details in the documentation for the \code{control} argument
     in \code{\link{stan}}.}
-
-\item{sd_mean, sd_var}{Vectors of means and variances for the gamma priors
-on the standard deviations. They must be of equal length. If a vector
-of length less than P (the number of features/columns in \code{C}) is
-given, it will be recycled.}
 
 \item{conf_alpha}{The percentage of the posterior density outside the
 credible interval. That is, a \code{1-conf_alpha} * 100\% credible
@@ -95,7 +88,7 @@ Returns a named list with the following elements:
 \describe{
   \item{\emph{Data}}{The data formatted as a named list that includes the
     input data (\code{C}) and the prior parameters (\code{n}, \code{L},
-    \code{a}, \code{b}, \code{eta})}
+    \code{a}, \code{b})}
 
   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
     \code{\link[rstan]{sampling}}}

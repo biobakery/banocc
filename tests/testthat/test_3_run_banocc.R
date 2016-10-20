@@ -2,84 +2,22 @@ context("Step 3 - running BAnOCC")
 load("testthat_objects/banocc_model_test.RData")
 load("testthat_objects/sample_stan_data.RData")
 
-test_that("get_a_b gives error if a and b not provided", {
-    err_string <- "provide both 'a' and 'b'"
-    expect_error(get_a_b(a=c(1, 2), b=NULL, p=2),  err_string)
-    expect_error(get_a_b(a=NULL, b=c(1, 2), p=2),  err_string)
-    expect_error(get_a_b(a=NULL, b=NULL, p=2),     err_string)
+
+test_that("get_gamma_param gives error if param <= 0", {
+    err_string <- "must be > 0"
+    expect_error(get_gamma_param(0, "a"),  err_string)
+    expect_error(get_gamma_param(-1, "a"), err_string)
 })
 
-test_that("get_a_b gives error if sd_mean and sd_var not both provided", {
-    err_string <- "provide both 'sd_mean' and 'sd_var'"
-    test_get_a_b <- function(x, y){
-        get_a_b(a=NULL, b=NULL, sd_mean=x, sd_var=y, p=2)
-    }
-    expect_error(test_get_a_b(NULL, c(2, 1)), err_string)
-    expect_error(test_get_a_b(c(1, 2), NULL), err_string)
-    expect_error(test_get_a_b(NULL, NULL),    "provide both[a-z ']*OR")
-})
-
-test_that("get_a_b returns a list", {
-    expect_that(get_a_b(a=c(1, 2), b=c(1, 2), p=2), is_a("list"))
-    expect_that(get_a_b(a=NULL, b=NULL, sd_mean=c(1, 2),
-                               sd_var=c(1, 2), p=2), is_a("list"))
-})
-
-test_that("get_a_b return value has names a and b", {
-    test_a_names <- function(x, y, p){
-        sort(names(get_a_b(a=x, b=y, p=p)))
-    }
-    test_sd_names <- function(x, y, p){
-        sort(names(get_a_b(a=NULL, b=NULL, sd_mean=x, sd_var=y,
-                                  p=p)))
-    }
-    expected_names <- c("a", "b")
-    expect_equal(test_a_names(c(1, 2), c(1, 2), 2), expected_names)
-    expect_equal(test_sd_names(c(1, 2), c(1, 2), 2),    expected_names)
-})
-
-test_that("get_a_b returns a and b", {
-    a <- c(1, 2)
-    b  <- c(2, 3)
-    expect_equal(get_a_b(a=a, b=b, p=2)$a, a)
-    expect_equal(get_a_b(a=a, b=b, p=2)$b,  b)
-})
-
-test_that("get_a_b returns correct transformation of sd_mean, sd_var", {
-    gamma_mean <- function(a, b) a/b
-    gamma_var  <- function(a, b) a/(b^2)
-    mean_val <- c(1, 2)
-    var_val  <- c(2, 3)
-    ab <- get_a_b(a=NULL, b=NULL, sd_mean=mean_val,
-                         sd_var=var_val, p=2)
-    expect_equal(gamma_mean(ab$a, ab$b), mean_val)
-    expect_equal(gamma_var(ab$a, ab$b),  var_val)
-})
-
-test_that("get_eta gives error if eta < 1", {
-    err_string <- "must be >= 1"
-    expect_error(get_eta(0),  err_string)
-    expect_error(get_eta(-1), err_string)
-})
-
-test_that("get_eta returns eta=1", {
-    expect_equal(get_eta(1), 1)
-})
-
-test_that("get_eta returns eta if eta > 1", {
-    expect_equal(get_eta(pi), pi)
-    expect_equal(get_eta(2), 2)
+test_that("get_gamma_param returns param if param > 0", {
+    expect_equal(get_gamma_param(pi, "a"), pi)
+    expect_equal(get_gamma_param(2, "a"), 2)
 })
 
 n  <- rep(0, Data$P)
 L  <- 10 * diag(Data$P)
-a  <- rep(1, Data$P)
-b  <- rep(0.5, Data$P)
-sd_mean <- a/b
-sd_var  <- a/b^2
 
-init1    <- list(list(m = n, L=t(chol(L)),
-                     s = sd_mean))
+init1    <- list(list(m = n, O=diag(Data$P), lamda=0.02))
 init2    <- NULL
 init_opt <- list(init1, init2)
 
@@ -110,20 +48,11 @@ all_args <- lapply(seq_len(nrow(opt_idx) * 2), function(i){
                  calc_snc=calc_snc_opt[[idx[4]]],
                  use_matrix=use_matrix[[idx[5]]],
                  eval_convergence=use_matrix[[idx[6]]])
-    if (i %% 2 == 0){
-        args$a <- a
-        args$b  <- b
-    } else {
-        args$sd_mean <- sd_mean
-        args$sd_var  <- sd_var
-    }
     return(args)
 })
 
 sw_run_banocc <- function(conf_alpha, get_min_width, calc_snc,
-                          eval_convergence,
-                          a=NULL, b=NULL, use_matrix=FALSE,
-                          sd_mean=NULL, sd_var=NULL, init=NULL){
+                          eval_convergence, use_matrix=FALSE, init=NULL){
     sink("banocc.out", type="output")
     if (use_matrix){
         data <- as.matrix(Data$C)
@@ -131,10 +60,10 @@ sw_run_banocc <- function(conf_alpha, get_min_width, calc_snc,
         data <- as.data.frame(Data$C)
     }
     rb <- suppressWarnings(run_banocc(
-        compiled_banocc_model=compiled_banocc_model, C=data, a=a, b=b, eta=1,
-        n=n, L=L,
-        chains=1, iter=4, warmup=2, init=init, sd_mean=sd_mean,
-        sd_var=sd_var, conf_alpha=conf_alpha, get_min_width=get_min_width,
+        compiled_banocc_model=compiled_banocc_model, C=data, a=0.5,
+        b=0.01, n=n, L=L,
+        chains=1, iter=4, warmup=2, init=init,
+        conf_alpha=conf_alpha, get_min_width=get_min_width,
         calc_snc=calc_snc, eval_convergence=eval_convergence,
         verbose=FALSE, num_level=0
         ))
@@ -200,7 +129,7 @@ test_that("run_banocc Data elt is list", {
     }
 })
 
-data_names <- c("C", "N", "P", "n", "L", "a", "b", "eta")
+data_names <- c("C", "N", "P", "n", "L", "a", "b")
 test_that("run_banocc Data elt has correct names", {
     skip_on_cran()
     skip_on_bioc()

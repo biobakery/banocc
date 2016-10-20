@@ -31,7 +31,7 @@ library(knitr)
 @ 
 
 <<compile-stan-model, cache=TRUE, echo=FALSE>>=
-rerun <- 0
+rerun <- 1
 compiled_banocc_model <- rstan::stan_model(model_code=banocc::banocc_model)
 save(compiled_banocc_model, file="banocc_model_test.RData")
 @ 
@@ -40,8 +40,7 @@ save(compiled_banocc_model, file="banocc_model_test.RData")
 C <- read.table("sample_data.txt", header=TRUE)
 Data <- list(C=C, N=nrow(C), P=ncol(C),
              n=rep(0, ncol(C)), L=10 * diag(ncol(C)),
-             a=rep(1, ncol(C)), b=rep(0.5, ncol(C)),
-             eta=1)
+             a = 0.5, b=0.01)
 
 save(Data, file="sample_stan_data.RData")
 @ 

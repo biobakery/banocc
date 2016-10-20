@@ -97,54 +97,6 @@ test_that("check_L works overall", {
     expect_equal(test_check_L(l, length(l_long)),  diag(l_long))
 })
 
-test_that("check_a_b fails if a and b have unequal length", {
-    err_string <- "must be of equal length"
-    expect_error(check_a_b(a=1, b=c(1, 2), p=1), err_string)
-    expect_error(check_a_b(a=c(1, 2), b=1, p=1), err_string)
-    expect_error(check_a_b(a=1, b=c(1, 2), p=2), err_string)
-    expect_error(check_a_b(a=c(1, 2), b=1, p=2), err_string)
-})
-
-test_that("check_a_b fails if a or b have negative values", {
-    err_string <- "values must be positive"
-    expect_error(check_a_b(a=c(1, -1), b=1:2, p=2), err_string)
-    expect_error(check_a_b(a=c(-1, 1), b=1:2, p=2), err_string)
-    expect_error(check_a_b(a=1:2, b=c(1, -1), p=2), err_string)
-    expect_error(check_a_b(a=1:2, b=c(-1, 1), p=2), err_string)
-})
-
-test_that("check_a_b fails if a or b have zero values", {
-    err_string <- "values must be positive"
-    expect_error(check_a_b(a=c(0, 1), b=1:2, p=2),  err_string)
-    expect_error(check_a_b(a=c(1, 0), b=1:2, p=2),  err_string)
-    expect_error(check_a_b(a=1:2, b=c(0, 1), p=2),  err_string)
-    expect_error(check_a_b(a=1:2, b=c(1, 0), p=2),  err_string)
-})
-
-test_that("check_sd_mean_var fails if sd_mean, sd_var of unequal length", {
-    err_string <- "must be of equal length"
-    expect_error(check_sd_mean_var(sd_mean=1, sd_var=c(1, 2), p=1), err_string)
-    expect_error(check_sd_mean_var(sd_mean=c(1, 2), sd_var=1, p=1), err_string)
-    expect_error(check_sd_mean_var(sd_mean=1, sd_var=c(1, 2), p=2), err_string)
-    expect_error(check_sd_mean_var(sd_mean=c(1, 2), sd_var=1, p=2), err_string)
-})
-
-test_that("check_sd_mean_var fails if sd_mean or sd_var have negative values", {
-    err_string <- "values must be positive"
-    expect_error(check_sd_mean_var(sd_mean=c(1, -1), sd_var=1:2, p=2), err_string)
-    expect_error(check_sd_mean_var(sd_mean=c(-1, 1), sd_var=1:2, p=2), err_string)
-    expect_error(check_sd_mean_var(sd_mean=1:2, sd_var=c(1, -1), p=2), err_string)
-    expect_error(check_sd_mean_var(sd_mean=1:2, sd_var=c(-1, 1), p=2), err_string)
-})
-
-test_that("check_sd_mean_var fails if sd_mean or sd_var have zero values", {
-    err_string <- "values must be positive"
-    expect_error(check_sd_mean_var(sd_mean=c(0, 1), sd_var=1:2, p=2),  err_string)
-    expect_error(check_sd_mean_var(sd_mean=c(1, 0), sd_var=1:2, p=2),  err_string)
-    expect_error(check_sd_mean_var(sd_mean=1:2, sd_var=c(0, 1), p=2),  err_string)
-    expect_error(check_sd_mean_var(sd_mean=1:2, sd_var=c(1, 0), p=2),  err_string)
-})
-
 test_that("check_C accepts a data frame", {
     expect_is(check_C(Data$C), "matrix")
 })
