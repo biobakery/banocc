@@ -20,25 +20,11 @@
 #'   value is NULL, which means that initial values are sampled from the
 #'   priors for parameters m and lambda while O is set to the identity matrix.
 #' @inheritParams rstan::sampling
-#' @param get_min_width A boolean value: should the minimum CI width that
-#'   includes zero be calculated?
-#' @param conf_alpha The percentage of the posterior density outside the
-#'   credible interval. That is, a \code{1-conf_alpha} * 100\% credible
-#'   interval will be returned.
-#' @param calc_snc Boolean: should the scaled neighborhood criterion be
-#'   calculated?
-#' @param eval_convergence Boolean: if `TRUE`, convergence will be evaluated
-#'   using the Rhat statistic, and the fit output (estimates, credible
-#'   intervals, etc.) will be missing if this statistic does not indicate
-#'   convergence.
 #' @param verbose Print informative statements as the function executes?
 #' @param num_level The number of indentations to add to the output when
 #'   \code{verbose = TRUE}.
 #'
-#' @importFrom rstan extract
 #' @importFrom rstan sampling
-#' @importFrom rstan summary
-#' @importFrom stringr str_match
 #'
 #' @export
 #'
@@ -51,26 +37,14 @@
 #' 
 #'   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
 #'     \code{\link[rstan]{sampling}}}
-#' 
-#'   \item{\emph{CI}}{The \code{1-conf_alpha} * 100\% credible intervals}
-#'
-#'   \item{\emph{Estimates.median}}{The correlation estimates, which are the
-#'     marginal posterior medians}
-#' 
-#'   \item{\emph{Min.width}}{Only present if the \code{get_min_width}
-#'     argument is \code{TRUE}. The minimum CI width that includes zero for
-#'     each correlation.}
-#' 
-#'   \item{\emph{SNC}}{Only present if the \code{calc_snc} argument is
-#'     \code{TRUE}. The scaled neighborhood criterion for each correlation.}
 #' }
 #' 
 #' @examples
 #'   data(compositions_null)
 #'   \dontrun{
 #'     compiled_banocc_model <- rstan::stan_model(model_code=banocc_model)
-#'     b_output <- run_banocc(C=compositions_null,
-#'                            compiled_banocc_model=compiled_banocc_model)
+#'     b_stanfit <- run_banocc(C=compositions_null,
+#'                             compiled_banocc_model=compiled_banocc_model)
 #'   }
 #'
 #' @seealso \code{vignette("banocc-vignette")} for more examples.
@@ -79,9 +53,8 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
                        L = 10*diag(ncol(C)), a=0.5, b=0.01,
                        cores = getOption("mc.cores", 1L),
                        chains = 4, iter = 50, warmup = floor(iter/2),
-                       thin = 1, init = NULL, control=NULL, conf_alpha=0.05,
-                       get_min_width=FALSE, calc_snc=FALSE,
-                       eval_convergence=TRUE, verbose=FALSE, num_level=0){
+                       thin = 1, init = NULL, control=NULL, 
+                       verbose=FALSE, num_level=0){
     cat_v("Begin run_banocc\n", verbose, num_level=num_level)
     C <- check_C(C, verbose=verbose, num_level=num_level+1)
     Data <- list(C=C, N=nrow(C), P=ncol(C))
@@ -128,97 +101,12 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
                            refresh=refresh)
     cat_v("End fitting the model\n", verbose, num_level=num_level+1)
 
-    if (eval_convergence){
-        cat_v("Begin evaluating convergence\n", verbose,
-              num_level=num_level+1)
-        rhat_stat <- rstan::summary(Fit)$summary[, "Rhat"]
-        diag_elts <- grep("W.*\\[([0-9]*),[ ]?\\1\\]", names(rhat_stat))
-        rhat_stat <- rhat_stat[-diag_elts]
-        ## chol_ut_re <- "[Cc]hol\\[([0-9]+),[ ]?([0-9]+)"
-        ## chol_ut_idx <- stringr::str_match(names(rhat_stat),
-        ##                                   chol_ut_re)[, c(2, 3)]
-                                                 
-        ## chol_upper_tri_elts <- apply(chol_ut_idx, 1, function(r){
-        ##     ifelse(all(is.na(r)), FALSE, which.max(as.numeric(r)) == 2)
-        ## })
-        ## rhat_stat <- rhat_stat[-which(chol_upper_tri_elts)]
-        if (any(is.na(rhat_stat)) || max(rhat_stat) > 1.2){
-            fit_converged <- FALSE
-            warning(paste0("Fit has not converged as evaluated by the Rhat ",
-                           "statistic. You might try a larger number of ",
-                           "warmup iterations, different priors, or ",
-                           "different initial values. See vignette for ",
-                           "more on evaluating convergence."))
-        } else {
-            fit_converged <- TRUE
-        }
-        cat_v("End evaluating convergence\n", verbose, num_level=num_level+1)
-    } else {
-        fit_converged <- TRUE
-    }
-
-    post_samples_list <- rstan::extract(Fit)
-    if (fit_converged){
-        CI <- get_credible_intervals(posterior_samples=post_samples_list,
-                                     list=TRUE, parameter.names=c("W"),
-                                     conf=1-conf_alpha, type="marginal.hpd",
-                                     verbose=verbose, num_level=num_level+1)
-        
-    } else {
-        CI <- list(W=list(lower=matrix(NA, ncol=Data$P, nrow=Data$P),
-                       upper=matrix(NA, ncol=Data$P, nrow=Data$P)))
-    }
-    dimnames(CI$W$lower) <- list(colnames(Data$C), colnames(Data$C))
-    dimnames(CI$W$upper) <- list(colnames(Data$C), colnames(Data$C))
-    CI <- CI$W
-
-    if (fit_converged){
-        Estimates <-
-            get_posterior_estimates(posterior_samples=post_samples_list,
-                                    estimate_method="median",
-                                    parameter.names="W")
-    } else {
-        Estimates <- list(W=matrix(NA, ncol=Data$P, nrow=Data$P))
-    }
-    dimnames(Estimates$W) <- list(colnames(Data$C), colnames(Data$C))
-    Estimates <- Estimates$W
-
-    
-    return_object <- list(Data=Data, Fit=Fit, 
-                          CI.hpd=CI, Estimates.median=Estimates)
-
-    if (get_min_width && fit_converged){
-        min_width <- get_min_width(posterior_sample=post_samples_list,
-                                   parameter.names=c("W"),
-                                   null_value=0, type="marginal.hpd",
-                                   precision=0.01, verbose=verbose,
-                                   num_level=num_level + 1)
-    } else if (get_min_width){
-        min_width <- list(W=matrix(NA, ncol=Data$P, nrow=Data$P))
-    }
-
-    if (get_min_width){
-        return_object$Min.width <- min_width$W
-        colnames(return_object$Min.width) <- colnames(Data$C)
-        rownames(return_object$Min.width) <- colnames(Data$C)
-    }
-
-    if (calc_snc && fit_converged){
-        snc <- get_snc(posterior_samples=post_samples_list,
-                       parameter.names=c("W"))
-    } else if (calc_snc){
-        snc <- list(W=matrix(NA, ncol=Data$P, nrow=Data$P))
-    }
-
-    if (calc_snc){
-        return_object$SNC <- snc$W
-        colnames(return_object$SNC) <- colnames(Data$C)
-        rownames(return_object$SNC) <- colnames(Data$C)   
-    }
+    fit_converged <- evaluate_convergence(b_stanfit=Fit, verbose=verbose,
+                                          num_level=num_level + 1)
 
     cat_v("End run_banocc\n", verbose, num_level=num_level)
 
-    return(return_object)
+    return(list(Data=Data, Fit=Fit))
 }
 
 check_n <- function(n, p, verbose=FALSE, num_level=0){

@@ -8,9 +8,7 @@
 run_banocc(compiled_banocc_model, C, n = rep(0, ncol(C)), L = 10 *
   diag(ncol(C)), a = 0.5, b = 0.01, cores = getOption("mc.cores", 1L),
   chains = 4, iter = 50, warmup = floor(iter/2), thin = 1,
-  init = NULL, control = NULL, conf_alpha = 0.05, get_min_width = FALSE,
-  calc_snc = FALSE, eval_convergence = TRUE, verbose = FALSE,
-  num_level = 0)
+  init = NULL, control = NULL, verbose = FALSE, num_level = 0)
 }
 \arguments{
 \item{compiled_banocc_model}{The compiled stan model (as with
@@ -63,21 +61,6 @@ priors for parameters m and lambda while O is set to the identity matrix.}
     behavior. See the details in the documentation for the \code{control} argument
     in \code{\link{stan}}.}
 
-\item{conf_alpha}{The percentage of the posterior density outside the
-credible interval. That is, a \code{1-conf_alpha} * 100\% credible
-interval will be returned.}
-
-\item{get_min_width}{A boolean value: should the minimum CI width that
-includes zero be calculated?}
-
-\item{calc_snc}{Boolean: should the scaled neighborhood criterion be
-calculated?}
-
-\item{eval_convergence}{Boolean: if `TRUE`, convergence will be evaluated
-using the Rhat statistic, and the fit output (estimates, credible
-intervals, etc.) will be missing if this statistic does not indicate
-convergence.}
-
 \item{verbose}{Print informative statements as the function executes?}
 
 \item{num_level}{The number of indentations to add to the output when
@@ -92,18 +75,6 @@ Returns a named list with the following elements:
 
   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
     \code{\link[rstan]{sampling}}}
-
-  \item{\emph{CI}}{The \code{1-conf_alpha} * 100\% credible intervals}
-
-  \item{\emph{Estimates.median}}{The correlation estimates, which are the
-    marginal posterior medians}
-
-  \item{\emph{Min.width}}{Only present if the \code{get_min_width}
-    argument is \code{TRUE}. The minimum CI width that includes zero for
-    each correlation.}
-
-  \item{\emph{SNC}}{Only present if the \code{calc_snc} argument is
-    \code{TRUE}. The scaled neighborhood criterion for each correlation.}
 }
 }
 \description{
@@ -114,8 +85,8 @@ Runs BAnOCC to fit the model and generate appropriate convergence metrics
   data(compositions_null)
   \dontrun{
     compiled_banocc_model <- rstan::stan_model(model_code=banocc_model)
-    b_output <- run_banocc(C=compositions_null,
-                           compiled_banocc_model=compiled_banocc_model)
+    b_stanfit <- run_banocc(C=compositions_null,
+                            compiled_banocc_model=compiled_banocc_model)
   }
 
 }
