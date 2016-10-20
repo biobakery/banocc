@@ -79,8 +79,7 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
                        L = 10*diag(ncol(C)), a=0.5, b=0.01,
                        cores = getOption("mc.cores", 1L),
                        chains = 4, iter = 50, warmup = floor(iter/2),
-                       thin = 1, init = NULL, control=NULL,
-                       sd_mean=NULL, sd_var=NULL, conf_alpha=0.05,
+                       thin = 1, init = NULL, control=NULL, conf_alpha=0.05,
                        get_min_width=FALSE, calc_snc=FALSE,
                        eval_convergence=TRUE, verbose=FALSE, num_level=0){
     cat_v("Begin run_banocc\n", verbose, num_level=num_level)
