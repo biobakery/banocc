@@ -1,5 +1,6 @@
 context("Step 1 - checking input")
 load("testthat_objects/sample_stan_data.RData")
+load("testthat_objects/sample_stan_fit.RData")
 data(compositions_null)
 data(compositions_hard_null)
 data(compositions_pos_spike)
@@ -121,4 +122,51 @@ test_that("check_conf_alpha fails if conf_alpha is NULL or non-numeric", {
     numeric_error <- "conf_alpha must be coercible to numeric type"
     expect_error(check_conf_alpha(NULL), "conf_alpha must not be NULL")
     expect_error(check_conf_alpha("ab"), numeric_error)
+})
+
+
+test_that("get_stanfit returns a given stanfit object", {
+    expect_is(get_stanfit(Fit), "stanfit")
+    expect_equal(get_stanfit(Fit), Fit)
+})
+
+test_that("get_stanfit returns stanfit object from list", {
+    Fit_list <- list(b_fit=Fit, Data=Data)
+    b_fit_list <- list(b_fit=Fit, Data=Data)
+    expect_is(get_stanfit(Fit_list),   "stanfit")
+    expect_is(get_stanfit(b_fit_list), "stanfit")
+    
+    expect_equal(get_stanfit(b_fit_list), Fit)
+    expect_equal(get_stanfit(Fit_list),   Fit)
+})
+
+test_that("get_stanfit gives error if no stanfit object in list", {
+    expect_error(get_stanfit(list(Data=Data)), "No 'stanfit' object found")
+})
+
+test_that("get_stanfit gives error if object not of class stanfit or list", {
+    expect_error(get_stanfit(12), "class 'stanfit' or 'list'")
+})
+
+test_that("get_data returns a list if banoccfit has data element", {
+    Data_list <- list(Fit=Fit, Data=Data)
+    data_list <- list(Fit=Fit, data=Data)
+    
+    expect_is(get_data(Data_list), "list")
+    expect_is(get_data(data_list), "list")
+
+    expect_equal(get_data(Data_list), Data)
+    expect_equal(get_data(data_list), Data)
+})
+
+test_that("get_data gives warning if list has no data element", {
+    expect_warning(get_data(list(b_data=Data)), "no data element was found")
+})
+
+test_that("get_data returns NULL if banoccfit is 'stanfit' object", {
+    expect_is(get_data(Fit), "NULL")
+})
+
+test_that("get_data returns NULL if list has no data element", {
+    expect_is(suppressWarnings(get_data(list(b_data=Data))), "NULL")
 })

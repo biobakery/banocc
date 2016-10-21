@@ -41,7 +41,7 @@
 #'   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
 #'     \code{run_banocc}.}
 #' 
-#'   \item{\emph{Data}}{Only present if the \code{banoccfit} arguemnt is
+#'   \item{\emph{Data}}{Only present if the \code{banoccfit} argument is
 #'     specified as the output of a call to \code{run_banocc}. It will be
 #'     missing if \code{banoccfit} is specified as a \code{stanfit} object.}
 #' }
@@ -63,6 +63,9 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
     cat_v("Begin get_banocc_output\n", verbose, num_level=num_level)
     b_stanfit <- get_stanfit(banoccfit)
     b_data    <- get_data(banoccfit)
+    p <- ifelse(is.null(b_data),
+                attr(b_stanfit, "par_dims")$m,
+                b_data$P)
     conf_alpha <- check_conf_alpha(conf_alpha, verbose,
                                    num_level=num_level+1)
 
@@ -83,8 +86,8 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
                                      verbose=verbose, num_level=num_level+1)
         
     } else {
-        CI <- list(W=list(lower=matrix(NA, ncol=b_data$P, nrow=b_data$P),
-                       upper=matrix(NA, ncol=b_data$P, nrow=b_data$P)))
+        CI <- list(W=list(lower=matrix(NA, ncol=p, nrow=p),
+                       upper=matrix(NA, ncol=p, nrow=p)))
     }
     dimnames(CI$W$lower) <- list(colnames(b_data$C), colnames(b_data$C))
     dimnames(CI$W$upper) <- list(colnames(b_data$C), colnames(b_data$C))
@@ -96,7 +99,7 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
                                     estimate_method="median",
                                     parameter.names="W")
     } else {
-        Estimates <- list(W=matrix(NA, ncol=b_data$P, nrow=b_data$P))
+        Estimates <- list(W=matrix(NA, ncol=p, nrow=p))
     }
     dimnames(Estimates$W) <- list(colnames(b_data$C), colnames(b_data$C))
     Estimates <- Estimates$W
@@ -113,7 +116,7 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
                                    precision=0.01, verbose=verbose,
                                    num_level=num_level + 1)
     } else if (get_min_width){
-        min_width <- list(W=matrix(NA, ncol=b_data$P, nrow=b_data$P))
+        min_width <- list(W=matrix(NA, ncol=p, nrow=p))
     }
 
     if (get_min_width){
@@ -126,7 +129,7 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
         snc <- get_snc(posterior_samples=post_samples_list,
                        parameter.names=c("W"))
     } else if (calc_snc){
-        snc <- list(W=matrix(NA, ncol=b_data$P, nrow=b_data$P))
+        snc <- list(W=matrix(NA, ncol=p, nrow=p))
     }
 
     if (calc_snc){
@@ -162,6 +165,7 @@ get_data <- function(banoccfit){
         } else {
             warning(paste0("'banoccfit' given as a list, but no data ",
                            "element was found to return."))
+            return(NULL)
         }
     } else {
         return(NULL)
