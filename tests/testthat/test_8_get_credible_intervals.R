@@ -82,7 +82,7 @@ test_that("get_credible_intervals elts have correct dims when list=TRUE", {
         lapply(ci, function(k) lapply(k, length))
     }
     expect_equal_dims <- function(t){
-        p.names <- c("lp__", "mu", "Sigma")
+        p.names <- c("lp__", "m", "S")
         expected_dims <- list(list(NULL, NULL),
                               list(NULL, NULL),
                               list(c(Data$P, Data$P), c(Data$P, Data$P)))

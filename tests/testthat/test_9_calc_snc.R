@@ -45,10 +45,10 @@ test_that("get_snc returns a list", {
         eval(bquote(expect_is(get_snc(posterior_samples=posterior_samples,
                                       parameter.names=.(p)), "list")))
     }
-    test_is_list("mu")
-    test_is_list("Sigma")
+    test_is_list("m")
+    test_is_list("S")
     test_is_list("lp__")
-    test_is_list(c("mu", "Sigma", "lp__"))
+    test_is_list(c("m", "S", "lp__"))
 })
 
 test_that("get_snc returns list with parameter names", {
@@ -68,20 +68,20 @@ test_that("get_snc returns list with parameter names", {
 
 test_that("get_snc elt dimensions are correct", {
     snc <- get_snc(posterior_samples=posterior_samples,
-                   parameter.names=c("mu", "Sigma", "lp__"))
-    expect_equal(dim(snc$lp__),    NULL)
+                   parameter.names=c("m", "S", "lp__"))
+    expect_equal(dim(snc$lp__),     NULL)
     expect_equal(length(snc$lp__), 1)
-    expect_equal(dim(snc$mu),      NULL)
-    expect_equal(length(snc$mu),   Data$P)
-    expect_equal(dim(snc$Sigma),   c(Data$P, Data$P))
+    expect_equal(dim(snc$m),       NULL)
+    expect_equal(length(snc$m),    Data$P)
+    expect_equal(dim(snc$S),       c(Data$P, Data$P))
 })
 
 snc <- get_snc(posterior_samples=posterior_samples,
-               parameter.names=c("mu", "Sigma", "lp__"))
+               parameter.names=c("m", "S", "lp__"))
 test_that("get_snc matches eltwise calcn for vectors", {
     for (i in seq_len(Data$P)){
-        eval(bquote(expect_equal(snc$mu[.(i)],
-                                 calc_snc(posterior_samples$mu[, .(i)]))))
+        eval(bquote(expect_equal(snc$m[.(i)],
+                                 calc_snc(posterior_samples$m[, .(i)]))))
     }
 })
 
@@ -89,8 +89,8 @@ test_that("get_snc matches eltwise calcn for matrices", {
     for (i in seq_len(Data$P)){
         for (k in seq_len(Data$P)){
             eval(bquote(
-                expect_equal(snc$Sigma[.(i), .(k)],
-                             calc_snc(posterior_samples$Sigma[, .(i), .(k)]))
+                expect_equal(snc$S[.(i), .(k)],
+                             calc_snc(posterior_samples$S[, .(i), .(k)]))
                 ))
         }
     }

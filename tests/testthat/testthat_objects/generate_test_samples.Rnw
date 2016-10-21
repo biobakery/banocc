@@ -45,12 +45,15 @@ Data <- list(C=C, N=nrow(C), P=ncol(C),
 save(Data, file="sample_stan_data.RData")
 @ 
 
-<<fit-model, cache=TRUE, dependson=c('compile-stan-model'), echo=FALSE>>=
+<<fit-model, cache=TRUE, dependson=c('compile-stan-model', 'generate-data'), echo=FALSE>>=
 library(rstan)
-Fit.all <- banocc::mycapture(rstan::sampling(bayes_model, data=Data, chains=2,
-                       iter=100, warmup=10, thin=2,
-                       init=get_IVs(chains=2, data=Data)))
-Fit <- Fit.all$output
+Fit <- suppressWarnings(rstan::sampling(compiled_banocc_model, data=Data, 
+                                        chains=2, iter=100, warmup=10, thin=2,
+                                        init=lapply(1:2, function(i){
+                                            list(m=rep(0, Data$P),
+                                                 O=diag(Data$P),
+                                                 lambda=0.02)
+                                        })))
 save(Fit, file="sample_stan_fit.RData")
 @ 
 
