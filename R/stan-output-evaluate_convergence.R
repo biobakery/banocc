@@ -7,7 +7,7 @@
 evaluate_convergence <- function(b_stanfit, verbose=FALSE, num_level=0){
     cat_v("Begin evaluating convergence\n", verbose,
           num_level=num_level+1)
-    rhat_stat <- rstan::summary(Fit)$summary[, "Rhat"]
+    rhat_stat <- rstan::summary(b_stanfit)$summary[, "Rhat"]
     diag_elts <- grep("W.*\\[([0-9]*),[ ]?\\1\\]", names(rhat_stat))
     rhat_stat <- rhat_stat[-diag_elts]
     if (any(is.na(rhat_stat)) || max(rhat_stat) > 1.2){

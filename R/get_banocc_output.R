@@ -63,6 +63,9 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
     cat_v("Begin get_banocc_output\n", verbose, num_level=num_level)
     b_stanfit <- get_stanfit(banoccfit)
     b_data    <- get_data(banoccfit)
+    conf_alpha <- check_conf_alpha(conf_alpha, verbose,
+                                   num_level=num_level+1)
+
 
     if (eval_convergence){
         fit_converged <- evaluate_convergence(b_stanfit=b_stanfit,
@@ -80,11 +83,11 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
                                      verbose=verbose, num_level=num_level+1)
         
     } else {
-        CI <- list(W=list(lower=matrix(NA, ncol=Data$P, nrow=Data$P),
-                       upper=matrix(NA, ncol=Data$P, nrow=Data$P)))
+        CI <- list(W=list(lower=matrix(NA, ncol=b_data$P, nrow=b_data$P),
+                       upper=matrix(NA, ncol=b_data$P, nrow=b_data$P)))
     }
-    dimnames(CI$W$lower) <- list(colnames(Data$C), colnames(Data$C))
-    dimnames(CI$W$upper) <- list(colnames(Data$C), colnames(Data$C))
+    dimnames(CI$W$lower) <- list(colnames(b_data$C), colnames(b_data$C))
+    dimnames(CI$W$upper) <- list(colnames(b_data$C), colnames(b_data$C))
     CI <- CI$W
 
     if (fit_converged){
@@ -93,9 +96,9 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
                                     estimate_method="median",
                                     parameter.names="W")
     } else {
-        Estimates <- list(W=matrix(NA, ncol=Data$P, nrow=Data$P))
+        Estimates <- list(W=matrix(NA, ncol=b_data$P, nrow=b_data$P))
     }
-    dimnames(Estimates$W) <- list(colnames(Data$C), colnames(Data$C))
+    dimnames(Estimates$W) <- list(colnames(b_data$C), colnames(b_data$C))
     Estimates <- Estimates$W
 
     
@@ -110,26 +113,26 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
                                    precision=0.01, verbose=verbose,
                                    num_level=num_level + 1)
     } else if (get_min_width){
-        min_width <- list(W=matrix(NA, ncol=Data$P, nrow=Data$P))
+        min_width <- list(W=matrix(NA, ncol=b_data$P, nrow=b_data$P))
     }
 
     if (get_min_width){
         banocc_output$Min.width <- min_width$W
-        colnames(banocc_output$Min.width) <- colnames(Data$C)
-        rownames(banocc_output$Min.width) <- colnames(Data$C)
+        colnames(banocc_output$Min.width) <- colnames(b_data$C)
+        rownames(banocc_output$Min.width) <- colnames(b_data$C)
     }
 
     if (calc_snc && fit_converged){
         snc <- get_snc(posterior_samples=post_samples_list,
                        parameter.names=c("W"))
     } else if (calc_snc){
-        snc <- list(W=matrix(NA, ncol=Data$P, nrow=Data$P))
+        snc <- list(W=matrix(NA, ncol=b_data$P, nrow=b_data$P))
     }
 
     if (calc_snc){
         banocc_output$SNC <- snc$W
-        colnames(banocc_output$SNC) <- colnames(Data$C)
-        rownames(banocc_output$SNC) <- colnames(Data$C)   
+        colnames(banocc_output$SNC) <- colnames(b_data$C)
+        rownames(banocc_output$SNC) <- colnames(b_data$C)   
     }
 
     cat_v("End get_banocc_output\n", verbose, num_level=num_level)
@@ -142,7 +145,7 @@ get_stanfit <- function(banoccfit){
     } else if (class(banoccfit) == "list"){
         banoccfit_class <- unlist(lapply(banoccfit, class))
         if ("stanfit" %in% banoccfit_class){
-            return(banoccfit[[which(banoccfit_class) == "stafit"]])
+            return(banoccfit[[which(banoccfit_class == "stanfit")]])
         } else {
             stop("No 'stanfit' object found in 'banoccfit' list.")
         }
@@ -155,7 +158,7 @@ get_data <- function(banoccfit){
     if (class(banoccfit) == "list"){
         banoccfit_names <- stringr::str_to_lower(names(banoccfit))
         if ("data" %in% banoccfit_names){
-            return(banoccfit[[which(banoccfit_names) == "data"]])
+            return(banoccfit[[which(banoccfit_names == "data")]])
         } else {
             warning(paste0("'banoccfit' given as a list, but no data ",
                            "element was found to return."))
@@ -163,4 +166,17 @@ get_data <- function(banoccfit){
     } else {
         return(NULL)
     }
+}
+
+# Check that conf_alpha is non-NULL and numeric
+check_conf_alpha <- function(conf_alpha, verbose=FALSE, num_level=0){
+    if (is.null(conf_alpha)){
+        stop("conf_alpha must not be NULL")
+    }
+    conf_alpha_num <- suppressWarnings(as.numeric(conf_alpha))
+    if (is.na(conf_alpha_num)){
+        stop(paste0("conf_alpha must be coercible to numeric type. '",
+                    conf_alpha, "' is not."))
+    }
+    return(conf_alpha_num)
 }

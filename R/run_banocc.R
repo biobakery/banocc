@@ -63,8 +63,6 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
     Data$L <- check_L(L, Data$P, verbose,
                       num_level=num_level+1)
 
-    conf_alpha <- check_conf_alpha(conf_alpha, verbose,
-                                   num_level=num_level+1)
     Data$a <- get_gamma_param(param=a, name="a")
     Data$b <- get_gamma_param(param=b, name="b")
 
@@ -216,15 +214,4 @@ check_C <- function(C, zero_adj=0.0001, verbose=FALSE, num_level=0){
     return(C)
 }
 
-# Check that conf_alpha is non-NULL and numeric
-check_conf_alpha <- function(conf_alpha, verbose=FALSE, num_level=0){
-    if (is.null(conf_alpha)){
-        stop("conf_alpha must not be NULL")
-    }
-    conf_alpha_num <- suppressWarnings(as.numeric(conf_alpha))
-    if (is.na(conf_alpha_num)){
-        stop(paste0("conf_alpha must be coercible to numeric type. '",
-                    conf_alpha, "' is not."))
-    }
-    return(conf_alpha_num)
-}
+
