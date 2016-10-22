@@ -20,8 +20,11 @@ banocc_model has the \code{stan} model code to be compiled using
 \section{banocc functions}{
 
 
-run_banocc takes a compiled model, and returns the `stanfit` object
-resulting from a call to \code{rstan::sampling} as well as
-posterior median and credible interval estimates.
+\code{run_banocc} takes a compiled model, and returns the `stanfit` object
+resulting from a call to \code{rstan::sampling}
+
+\code{get_banocc_output} takes a `stanfit` object or the output of
+  \code{run_banocc} and returns a list with the posterior median and
+  credible interval estimates
 }
 
