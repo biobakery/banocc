@@ -84,11 +84,13 @@ library(banocc)
 ```
 
 ### Package Features
-The BAnOCC package contains three things:
+The BAnOCC package contains four things:
 
 * `banocc_model`, which is the BAnOCC model in the  `rstan` format
 * `run_banocc`, a wrapper function for `rstan::sampling` that samples
   from the model and returns a list with various useful elements
+* `get_banocc_output`, which takes as input a `stanfit` object outputted by
+  `run_banocc`, and outputs various statistics from the chains.
 * Several test datasets which are included both as counts and as the
   corresponding compositions:
 
@@ -103,10 +105,12 @@ The BAnOCC package contains three things:
 ### Data and Prior Input 
 
 For a full and complete description of the possible parameters for
-`run_banocc`, their default values, and the output, see
+`run_banocc` and `get_banocc_output`, their default values, and the
+output, see
 
 ```{r run-banocc-help, eval=FALSE} 
 ?run_banocc 
+?get_banocc_output
 ```
 
 #### Required Input
@@ -122,8 +126,8 @@ model every time it is called. To compile, use
 `rstan::stan_model(model_code=banocc::banocc_model)`.
 
 The simplest way to run the model is to load a test dataset, compile
-the model, and sample from it (this gives a warning because the
-default number of iterations is low):
+the model, sample from it (this gives a warning because the
+default number of iterations is low), and get the output:
 
 ```{r rerun, cache=TRUE, echo=FALSE}
 rerun <- 0
@@ -132,48 +136,49 @@ rerun <- 0
 ```{r basic-run-banocc, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 data(compositions_null)
 compiled_banocc_model <- rstan::stan_model(model_code = banocc::banocc_model) 
-b_output     <- banocc::run_banocc(C = compositions_null, compiled_banocc_model=compiled_banocc_model)
+b_fit     <- banocc::run_banocc(C = compositions_null, compiled_banocc_model=compiled_banocc_model)
+b_output <- banocc::get_banocc_output(banoccfit=b_fit)
 ```
 
 
 #### Hyperparameters
 
-The hyperparameter values can be specified as input. Their names
-correspond to the parameters in the plate diagram figure (see section
-[The Model]). For example,
+The hyperparameter values can be specified as input to
+`run_banocc`. Their names correspond to the parameters in the plate
+diagram figure (see section [The Model]). For example,
 
 ```{r input-hyperparameters, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"} 
 p <- ncol(compositions_null)
-b_hp <- banocc::run_banocc(C = compositions_null, 
-                           compiled_banocc_model = compiled_banocc_model,
-                           n = rep(0, p),
-                           L = 10 * diag(p), 
-                           a = 0.5,
-                           b = 0.01)
+b_fit_hp <- banocc::run_banocc(C = compositions_null, 
+                               compiled_banocc_model = compiled_banocc_model,
+                               n = rep(0, p),
+                               L = 10 * diag(p), 
+                               a = 0.5,
+                               b = 0.01)
 ```
 
 ### Sampling Control
 
-There are several options to control the behavior of the HMC
-sampler. This is simply a call to `rstan::sampling`, and so many of
-the parameters are the same. 
+There are several options to control the behavior of the HMC sampler
+within `run_banocc`. This is simply a call to `rstan::sampling`, and
+so many of the parameters are the same.
 
 #### General Sampling Control
 
 The number of chains, iterations, and warmup iterations as well as the
-rate of thinning can be specified using the same parameters as for
-`rstan::sampling` and `rstan::stan`. For example, the following code
-gives a total of three iterations from each of two chains. These
-parameters are used only for brevity and are NOT recommended in
-practice.
+rate of thinning for `run_banocc` can be specified using the same
+parameters as for `rstan::sampling` and `rstan::stan`. For example,
+the following code gives a total of three iterations from each of two
+chains. These parameters are used only for brevity and are NOT
+recommended in practice.
 
 ```{r sampling-sampling, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
-b_sampling <- banocc::run_banocc(C = compositions_null,
-                                 compiled_banocc_model = compiled_banocc_model,
-                                 chains = 2,
-                                 iter = 11,
-                                 warmup = 5,
-                                 thin = 2)
+b_fit_sampling <- banocc::run_banocc(C = compositions_null,
+                                     compiled_banocc_model = compiled_banocc_model,
+                                     chains = 2,
+                                     iter = 11,
+                                     warmup = 5,
+                                     thin = 2)
 ```
 
 #### Number of Cores
@@ -186,10 +191,10 @@ up to when the number of cores and the number of chains are equal.
 
 ```{r sampling-cores, eval=FALSE}
 # This code is not run
-b_cores <- banocc::run_banocc(C = compositions_null,
-                              compiled_banocc_model = compiled_banocc_model,
-                              chains = 2,
-                              cores = 2)
+b_fit_cores <- banocc::run_banocc(C = compositions_null,
+                                  compiled_banocc_model = compiled_banocc_model,
+                                  chains = 2,
+                                  cores = 2)
 ```
 
 #### Initial Values
@@ -207,10 +212,10 @@ init <- list(list(m = rep(0, p),
              list(m = runif(p),
                   O = 10 * diag(p),
                   lambda = runif(1, 0.1, 2)))
-b_init <- banocc::run_banocc(C = compositions_null,
-                             compiled_banocc_model = compiled_banocc_model,
-                             chains = 2,
-                             init = init)
+b_fit_init <- banocc::run_banocc(C = compositions_null,
+                                 compiled_banocc_model = compiled_banocc_model,
+                                 chains = 2,
+                                 init = init)
 ```
 
 More specific control of the sampler's behavior comes from the
@@ -224,7 +229,7 @@ can be found in the help for the `rstan::stan` function:
 ### Output Control
 
 There are several parameters that control the type of output which is
-returned.
+returned by `get_banocc_output`.
 
 #### Credible Interval Width
 
@@ -234,13 +239,11 @@ returned:
 
 ```{r output-ci, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 # Get 90% credible intervals
-b_90 <- banocc::run_banocc(C = compositions_null,
-                           compiled_banocc_model = compiled_banocc_model,
-                           conf_alpha = 0.1)
+b_out_90 <- banocc::get_banocc_output(banoccfit=b_fit,
+                                      conf_alpha = 0.1)
 # Get 99% credible intervals
-b_99 <- banocc::run_banocc(C = compositions_null,
-                           compiled_banocc_model = compiled_banocc_model,
-                           conf_alpha = 0.01)
+b_out_99 <- banocc::get_banocc_output(banoccfit=b_fit,
+                                      conf_alpha = 0.01)
 ```
 
 #### Checking Convergence
@@ -252,23 +255,19 @@ Output] is missing. This behavior can be turned off using the
 
 ```{r eval-convergence, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 # Default is to evaluate convergence
-b_ec <- banocc::run_banocc(C = compositions_null,
-                           compiled_banocc_model = compiled_banocc_model,
-                           chains = 1)
+b_out_ec <- banocc::get_banocc_output(banoccfit=b_fit)
 
 # This can be turned off using `eval_convergence`
-b_nec <- banocc::run_banocc(C = compositions_null,
-                            compiled_banocc_model = compiled_banocc_model,
-                            chains = 1,
-                            eval_convergence = FALSE)
+b_out_nec <- banocc::get_banocc_output(banoccfit=b_fit,
+                                       eval_convergence = FALSE)
 ```
 
 ```{r show-eval-convergence, eval=TRUE}
 # Iterations are too few, so estimates are missing
-b_ec$Estimates.median
+b_out_ec$Estimates.median
 
 # Convergence was not evaluated, so estimates are not missing
-b_nec$Estimates.median
+b_out_nec$Estimates.median
 ```
 
 #### Additional Output
@@ -281,14 +280,12 @@ included by default:
 
 ```{r output-extra, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
 # Get the smallest credible interval width that includes zero
-b_min_width <- banocc::run_banocc(C = compositions_null,
-                                  compiled_banocc_model = compiled_banocc_model,
-                                  get_min_width = TRUE)
+b_out_min_width <- banocc::get_banocc_output(banoccfit=b_fit,
+                                             get_min_width = TRUE)
 
 # Get the scaled neighborhood criterion
-b_snc <- banocc::run_banocc(C = compositions_null,
-                            compiled_banocc_model = compiled_banocc_model,
-                            calc_snc = TRUE)
+b_out_snc <- banocc::get_banocc_output(banoccfit=b_fit,
+                                       calc_snc = TRUE)
 ```
 
 Detailed statements about the function's execution can also be printed
@@ -298,7 +295,8 @@ indentation can be set with `num_level`.
 
 ## Assessing Convergence
 
-There are many ways of assessing convergence, but the two most easily implemented using BAnOCC are:
+There are many ways of assessing convergence, but the two most easily
+implemented using BAnOCC are:
 
 1. Traceplots of parameters, which show visually what values of a
 parameter have been sampled across all iterations. At convergence, the
@@ -321,7 +319,7 @@ convergence.
 
 ```{r traceplot, eval=TRUE, cache=TRUE}
 # The correlations of feature 1 with all other features
-rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"))
+rstan::traceplot(b_fit$Fit, pars=paste0("W[1,", 2:9, "]"))
 ```
 
 We could also see the warmup period samples by using
@@ -331,7 +329,7 @@ sign of convergence.
 
 ```{r traceplot-warmup, eval=TRUE, cache=TRUE}
 # The correlations of feature 1 with all other features, including warmup
-rstan::traceplot(b_output$Fit, pars=paste0("W[1,", 2:9, "]"),
+rstan::traceplot(b_fit$Fit, pars=paste0("W[1,", 2:9, "]"),
                  inc_warmup=TRUE)
 ```
 
@@ -347,7 +345,7 @@ not yet been reached.
 
 ```{r Rhat, eval=TRUE, cache=TRUE}
 # This returns a named vector with the Rhat values for all parameters
-rhat_all <- rstan::summary(b_output$Fit)$summary[, "Rhat"]
+rhat_all <- rstan::summary(b_fit$Fit)$summary[, "Rhat"]
 
 # To see the Rhat values for the correlations of feature 1
 rhat_all[paste0("W[1,", 2:9, "]")]
