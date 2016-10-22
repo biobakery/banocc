@@ -52,7 +52,7 @@ Returns a named list with the following elements:
   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
     \code{run_banocc}.}
 
-  \item{\emph{Data}}{Only present if the \code{banoccfit} arguemnt is
+  \item{\emph{Data}}{Only present if the \code{banoccfit} argument is
     specified as the output of a call to \code{run_banocc}. It will be
     missing if \code{banoccfit} is specified as a \code{stanfit} object.}
 }
