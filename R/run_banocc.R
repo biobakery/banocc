@@ -13,7 +13,7 @@
 #'   length less than P is given, it will be recycled.
 #' @param a The shape parameter of a gamma distribution (the prior on the
 #'   shrinkage parameter lambda)
-#' @param b The scale parameter of a gamma distribution (the prior on the
+#' @param b The rate parameter of a gamma distribution (the prior on the
 #'   shrinkage parameter lambda)
 #' @param init The initial values as a list (see
 #'   \code{\link[rstan]{sampling}} in the \code{rstan} package). Default

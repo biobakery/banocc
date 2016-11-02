@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-10-21
+2016-10-25
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -423,7 +423,7 @@ We recommend using an uninformative prior for the log-basis mean: centered at ze
 
 ### GLASSO Shrinkage Parameter
 
-We recommend using a prior with large probability mass close to zero; because *λ* has a gamma prior, this means that the shape parameter *a* should be less than one. The scale parameter *b* determines the variability; in cases with either small (order of 10) or very large (*p* &gt; *n*) numbers of features *b* should be large so that the variance of the gamma distribution, *a*/*b*^2, is small. Otherwise, a small value of *b* will make the prior more uninformative.
+We recommend using a prior with large probability mass close to zero; because *λ* has a gamma prior, this means that the shape parameter *a* should be less than one. The rate parameter *b* determines the variability; in cases with either small (order of 10) or very large (*p* &gt; *n*) numbers of features *b* should be large so that the variance of the gamma distribution, *a*/*b*^2, is small. Otherwise, a small value of *b* will make the prior more uninformative.
 
 The Model
 ---------

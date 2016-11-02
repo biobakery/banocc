@@ -378,7 +378,7 @@ centered at zero and with large variance.
 
 We recommend using a prior with large probability mass close to zero;
 because $\lambda$ has a gamma prior, this means that the shape
-parameter $a$ should be less than one. The scale parameter $b$
+parameter $a$ should be less than one. The rate parameter $b$
 determines the variability; in cases with either small (order of 10)
 or very large ($p > n$) numbers of features $b$ should be large so
 that the variance of the gamma distribution, $a / b^2$, is
