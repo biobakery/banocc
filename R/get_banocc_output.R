@@ -79,6 +79,13 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
     }
 
     post_samples_list <- rstan::extract(b_stanfit)
+    if (!('W' %in% names(post_samples_list))){
+        post_samples_list$W <-
+            aperm(array(apply(post_samples_list$O, 1, function(Oi){
+                cov2cor(solve(matrix(Oi, ncol=sqrt(length(Oi)))))
+            }), dim=dim(post_samples_list$O)[c(3, 2, 1)]),
+                  perm=c(3, 2, 1))
+    }
     if (fit_converged){
         CI <- get_credible_intervals(posterior_samples=post_samples_list,
                                      list=TRUE, parameter.names=c("W"),

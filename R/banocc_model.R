@@ -19,56 +19,61 @@ banocc_model <- "data {
   vector[P] n;  // the mean prior parameter for m
   cov_matrix[P] L; // the scale prior parameter for m
   real<lower=0> a; // the shape prior parameter for lambda
-  real<lower=0> b; // the scale prior parameter for lambda
+  real<lower=0> b; // the rate prior parameter for lambda
 }
+transformed data{
+  matrix[P,P] L_chol;
+  matrix[P, N] log_C_t;
+  matrix[N, P] one_mat;
+  int<lower=0> P_tri;
 
+  L_chol = cholesky_decompose(L);
+  log_C_t = log(C)';
+  P_tri = P * (P - 1) / 2;
+  one_mat = rep_matrix(1, N, P);
+}
 parameters {
-  vector[P] m; // the lognormal centrality parameter
+  vector[P] m_raw;
   cov_matrix[P] O; // the log-basis precision matrix
-  real<lower=0> lambda; // the glasso prior parameter
+  real<lower=0> lambda;
 }
-
 transformed parameters{
-  cov_matrix[P] S;
-  vector<lower=0>[P] s;
-  corr_matrix[P] W;
+  vector[P] m; // the lognormal centrality parameter
 
-  S = inverse(O);
-  s = diagonal(cholesky_decompose(diag_matrix(diagonal(S))));
-  W = quad_form(S, inverse(diag_matrix(s)));
+  m = n + L_chol * m_raw;
 }
-
 model {
-  matrix[N,P] alpha_star;
+  matrix[P,N] alpha_star;
   real s_sq_star;
   vector[N] m_star;
-  real inc_1;
-  real inc_2;
-  vector[N] inc_3i;
-  vector[N] inc_4i;
+  vector[P] O_diag; // the diagonal values of O
+  vector[P_tri] O_tri; // the upper-triangle values of O
+  vector[4] lik; // the likelihood value has four parts
 
+  m_raw ~ normal(0, 1); // implies: m ~ multi_normal(n, L)
   lambda ~ gamma(a, b);
-  m ~ multi_normal(n, L);
-  for(k in 1:P){
-    O[k,k] ~ exponential(lambda/2);
-    for (i in (k+1):P){
-      O[i, k] ~ double_exponential(0, lambda);
-    }
+
+  O_diag = diagonal(O);
+  O_diag ~ exponential(lambda/2);
+
+  for (k in 1:(P - 1)){
+    vector[P - k] O_tri_row;
+    O_tri_row = sub_col(O, k + 1, k, P - k);
+    O_tri_row ~ double_exponential(0, lambda);
   }
+
+  lik[1] = 0.5 * N * log_determinant(O);
 
   s_sq_star = inv(sum(O));
+  lik[2] = 0.5 * N * log(s_sq_star);
 
-  alpha_star   = rep_matrix(to_row_vector(m), N) - log(C);
-  m_star = rows_dot_product(alpha_star * O, rep_matrix(1, N, P)) * s_sq_star;
+  alpha_star   = rep_matrix(m, N) - log_C_t;
+  lik[3] = -0.5 * trace_quad_form(O, alpha_star);
 
-  inc_1 = 0.5 * N * log(s_sq_star);
-  inc_2 = 0.5 * N * log_determinant(O);
+  m_star = rows_dot_product(alpha_star' * O, one_mat);
+  // This is a more efficient way of calculating
+  //  (1^T * O * alpha_i) * s_sq_star)^2 / s_sq_star
+  lik[4] = 0.5 * dot_self(m_star) * s_sq_star;
 
-  target += inc_1 + inc_2;
-
-  for (i in 1:N){
-    inc_3i[i] =  - 0.5 * quad_form(O, alpha_star[i]' );
-    inc_4i[i] =  0.5 * m_star[i] * m_star[i] / s_sq_star;
-  }
-  target += sum(inc_3i + inc_4i);
+  target += sum(lik);
 }"
