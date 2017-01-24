@@ -192,8 +192,8 @@ check_C <- function(C, zero_adj=0.0001, verbose=FALSE, num_level=0){
         stop("Some values of C are > 1")
     }
     if (any(rowSums(C) - 1 > 1e-8)){
-        stop(paste0("Some row sums of C are not 1; perhaps you transposed ",
-                    "features and samples?"))
+        stop(paste0("Some row sums of C are larger than 1; perhaps you ",
+                    "transposed features and samples?"))
     }
     if (!is.data.frame(C) && !is.matrix(C)){
         stop("C must be a data frame or matrix")
@@ -201,6 +201,10 @@ check_C <- function(C, zero_adj=0.0001, verbose=FALSE, num_level=0){
     C <- as.matrix(C)
     if (!is.numeric(C)){
         stop("C must be numeric")
+    }
+    if (any((1 - rowSums(C)) > 1e-8)){
+        stop(paste0("Some of the subject totals are less than 1. Try ",
+                    "adding an additional column with the remainders."))
     }
     if (any(C == 0)){
         warning(paste0("Some values of C are zero. ",
