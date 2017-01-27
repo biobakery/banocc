@@ -28,7 +28,7 @@ length less than P is given, it will be recycled.}
 \item{a}{The shape parameter of a gamma distribution (the prior on the
 shrinkage parameter lambda)}
 
-\item{b}{The scale parameter of a gamma distribution (the prior on the
+\item{b}{The rate parameter of a gamma distribution (the prior on the
 shrinkage parameter lambda)}
 
 \item{cores}{Number of cores to use when executing the chains in parallel,
