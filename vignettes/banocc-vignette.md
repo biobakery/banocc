@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2016-10-25
+2017-02-06
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -375,8 +375,8 @@ There are many ways of assessing convergence, but the two most easily implemente
 Traceplots can be directly accessed using the `traceplot` function in the `rstan` package, which creates a `ggplot2` object that can be further maniuplated to 'prettify' the plot. The traceplots so generated are for the samples drawn *after* the warmup period. For example, we could plot the traceplots for the correlations of feature 1 with all other features. There is good overlap between the chains, but we need more samples from the posterior to be confident of convergence.
 
 ``` r
-# The correlations of feature 1 with all other features
-rstan::traceplot(b_fit$Fit, pars=paste0("W[1,", 2:9, "]"))
+# The inverse covariances of feature 1 with all other features
+rstan::traceplot(b_fit$Fit, pars=paste0("O[1,", 2:9, "]"))
 ```
 
 ![](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/banocc-vignette_files/figure-markdown_github/traceplot-1.png)
@@ -384,8 +384,8 @@ rstan::traceplot(b_fit$Fit, pars=paste0("W[1,", 2:9, "]"))
 We could also see the warmup period samples by using `inc_warmup=TRUE`. This shows that the chains have moved from very different starting points to a similar distribution, which is a good sign of convergence.
 
 ``` r
-# The correlations of feature 1 with all other features, including warmup
-rstan::traceplot(b_fit$Fit, pars=paste0("W[1,", 2:9, "]"),
+# The inverse covariances of feature 1 with all other features, including warmup
+rstan::traceplot(b_fit$Fit, pars=paste0("O[1,", 2:9, "]"),
                  inc_warmup=TRUE)
 ```
 
@@ -399,12 +399,12 @@ The Rhat values can also be directly accessed using the `summary` function in th
 # This returns a named vector with the Rhat values for all parameters
 rhat_all <- rstan::summary(b_fit$Fit)$summary[, "Rhat"]
 
-# To see the Rhat values for the correlations of feature 1
-rhat_all[paste0("W[1,", 2:9, "]")]
+# To see the Rhat values for the inverse covariances of feature 1
+rhat_all[paste0("O[1,", 2:9, "]")]
 ```
 
-    ##   W[1,2]   W[1,3]   W[1,4]   W[1,5]   W[1,6]   W[1,7]   W[1,8]   W[1,9] 
-    ## 3.339159 3.519457 4.598734 4.054912 7.956419 9.684057 2.434421 6.347805
+    ##   O[1,2]   O[1,3]   O[1,4]   O[1,5]   O[1,6]   O[1,7]   O[1,8]   O[1,9] 
+    ## 1.158720 1.289047 1.533206 1.123910 2.318870 1.710715 1.248662 1.298871
 
 Choosing Priors
 ---------------
