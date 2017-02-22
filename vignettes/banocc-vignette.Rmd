@@ -293,6 +293,33 @@ using the `verbose` argument. The relative indentation of the verbose
 output indicates the nesting level of the function. The starting
 indentation can be set with `num_level`.
 
+#### Precision vs. Correlation Matrix
+
+By default, `get_banocc_output` returns the credible intervals (and
+other statistics) for the log-basis correlation matrix
+**$W$**_=cov2cor(_**$S$**_)_. If desired, these quantities can be
+returned for the precision matrix **$O$** instead using the parameter
+`use_precision`.
+
+```{r output-precision, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
+# Default is to get correlation matrix estimates
+b_out_corr <- banocc::get_banocc_output(banoccfit=b_fit,
+                                        eval_convergence = FALSE)
+
+# Precision matrix can be requested using `use_precision`
+b_out_prec <- banocc::get_banocc_output(banoccfit = b_fit,
+                                        eval_convergence = FALSE,
+                                        use_precision = TRUE)
+```
+
+```{r show-output-precision, eval=TRUE}
+# Default is to get a correlation matrix; all elements are in [-1, 1]
+b_out_corr$Estimates.median
+
+# Precision matrix does not have elements between -1 and 1
+b_out_prec$Estimates.median
+```
+
 ## Assessing Convergence
 
 There are many ways of assessing convergence, but the two most easily
