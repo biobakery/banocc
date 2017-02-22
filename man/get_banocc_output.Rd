@@ -6,8 +6,8 @@
   appropriate convergence metrics and inference}
 \usage{
 get_banocc_output(banoccfit, conf_alpha = 0.05, get_min_width = FALSE,
-  calc_snc = TRUE, eval_convergence = TRUE, verbose = FALSE,
-  num_level = 0)
+  use_precision = FALSE, calc_snc = TRUE, eval_convergence = TRUE,
+  verbose = FALSE, num_level = 0)
 }
 \arguments{
 \item{banoccfit}{Either a \code{stanfit} object (the \code{Fit} element
@@ -20,6 +20,10 @@ interval will be returned.}
 
 \item{get_min_width}{A boolean value: should the minimum CI width that
 includes zero be calculated?}
+
+\item{use_precision}{Boolean: if `TRUE`, the precision matrix rather than
+the correlation matrix will be used for the credible intervals, and the
+calculation of the minimum widths and SNC values.}
 
 \item{calc_snc}{Boolean: should the scaled neighborhood criterion be
 calculated?}
@@ -39,12 +43,12 @@ Returns a named list with the following elements:
 \describe{ 
   \item{\emph{CI}}{The \code{1-conf_alpha} * 100\% credible intervals}
 
-  \item{\emph{Estimates.median}}{The correlation estimates, which are the
-    marginal posterior medians}
+  \item{\emph{Estimates.median}}{The correlation/precision estimates,
+    which are the marginal posterior medians}
 
   \item{\emph{Min.width}}{Only present if the \code{get_min_width}
     argument is \code{TRUE}. The minimum CI width that includes zero for
-    each correlation.}
+    each correlation/precision.}
 
   \item{\emph{SNC}}{Only present if the \code{calc_snc} argument is
     \code{TRUE}. The scaled neighborhood criterion for each correlation.}

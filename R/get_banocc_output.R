@@ -9,6 +9,9 @@
 #' @param conf_alpha The percentage of the posterior density outside the
 #'   credible interval. That is, a \code{1-conf_alpha} * 100\% credible
 #'   interval will be returned.
+#' @param use_precision Boolean: if `TRUE`, the precision matrix rather than
+#'   the correlation matrix will be used for the credible intervals, and the
+#'   calculation of the minimum widths and SNC values.
 #' @param calc_snc Boolean: should the scaled neighborhood criterion be
 #'   calculated?
 #' @param eval_convergence Boolean: if `TRUE`, convergence will be evaluated
@@ -28,12 +31,12 @@
 #' \describe{ 
 #'   \item{\emph{CI}}{The \code{1-conf_alpha} * 100\% credible intervals}
 #'
-#'   \item{\emph{Estimates.median}}{The correlation estimates, which are the
-#'     marginal posterior medians}
+#'   \item{\emph{Estimates.median}}{The correlation/precision estimates,
+#'     which are the marginal posterior medians}
 #' 
 #'   \item{\emph{Min.width}}{Only present if the \code{get_min_width}
 #'     argument is \code{TRUE}. The minimum CI width that includes zero for
-#'     each correlation.}
+#'     each correlation/precision.}
 #' 
 #'   \item{\emph{SNC}}{Only present if the \code{calc_snc} argument is
 #'     \code{TRUE}. The scaled neighborhood criterion for each correlation.}
@@ -57,7 +60,8 @@
 #'
 #' @seealso \code{vignette("banocc-vignette")} for more examples.
 
-get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
+get_banocc_output <- function(banoccfit, conf_alpha=0.05,
+                              get_min_width=FALSE, use_precision=FALSE,
                               calc_snc=TRUE, eval_convergence=TRUE,
                               verbose=FALSE, num_level=0){
     cat_v("Begin get_banocc_output\n", verbose, num_level=num_level)
@@ -79,8 +83,9 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
     }
 
     post_samples_list <- rstan::extract(b_stanfit)
+    param <- ifelse(use_precision, "O", "W")
     if (fit_converged){
-        if (!('W' %in% names(post_samples_list))){
+        if (!('W' %in% names(post_samples_list)) && !use_precision){
             post_samples_list$W <-
                 aperm(array(apply(post_samples_list$O, 1, function(Oi){
                     cov2cor(solve(matrix(Oi, ncol=sqrt(length(Oi)))))
@@ -88,28 +93,33 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
                       perm=c(3, 2, 1))
         }
         CI <- get_credible_intervals(posterior_samples=post_samples_list,
-                                     list=TRUE, parameter.names=c("W"),
+                                     list=TRUE, parameter.names=param,
                                      conf=1-conf_alpha, type="marginal.hpd",
                                      verbose=verbose, num_level=num_level+1)
         
     } else {
-        CI <- list(W=list(lower=matrix(NA, ncol=p, nrow=p),
-                       upper=matrix(NA, ncol=p, nrow=p)))
+        CI <- list(list(lower=matrix(NA, ncol=p, nrow=p),
+                        upper=matrix(NA, ncol=p, nrow=p)))
+        names(CI) <- param
     }
-    dimnames(CI$W$lower) <- list(colnames(b_data$C), colnames(b_data$C))
-    dimnames(CI$W$upper) <- list(colnames(b_data$C), colnames(b_data$C))
-    CI <- CI$W
+    dimnames(CI[[param]]$lower) <- list(colnames(b_data$C),
+                                       colnames(b_data$C))
+    dimnames(CI[[param]]$upper) <- list(colnames(b_data$C),
+                                        colnames(b_data$C))
+    CI <- CI[[param]]
 
     if (fit_converged){
         Estimates <-
             get_posterior_estimates(posterior_samples=post_samples_list,
                                     estimate_method="median",
-                                    parameter.names="W")
+                                    parameter.names=param)
     } else {
-        Estimates <- list(W=matrix(NA, ncol=p, nrow=p))
+        Estimates <- list(matrix(NA, ncol=p, nrow=p))
+        names(Estimates) <- param
     }
-    dimnames(Estimates$W) <- list(colnames(b_data$C), colnames(b_data$C))
-    Estimates <- Estimates$W
+    dimnames(Estimates[[param]]) <- list(colnames(b_data$C),
+                                         colnames(b_data$C))
+    Estimates <- Estimates[[param]]
 
     
     banocc_output <- list(Fit=b_stanfit, 
@@ -118,29 +128,31 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
 
     if (get_min_width && fit_converged){
         min_width <- get_min_width(posterior_sample=post_samples_list,
-                                   parameter.names=c("W"),
+                                   parameter.names=param,
                                    null_value=0, type="marginal.hpd",
                                    precision=0.01, verbose=verbose,
                                    num_level=num_level + 1)
     } else if (get_min_width){
-        min_width <- list(W=matrix(NA, ncol=p, nrow=p))
+        min_width <- list(matrix(NA, ncol=p, nrow=p))
+        names(min_width) <- param
     }
 
     if (get_min_width){
-        banocc_output$Min.width <- min_width$W
+        banocc_output$Min.width <- min_width[[param]]
         colnames(banocc_output$Min.width) <- colnames(b_data$C)
         rownames(banocc_output$Min.width) <- colnames(b_data$C)
     }
 
     if (calc_snc && fit_converged){
         snc <- get_snc(posterior_samples=post_samples_list,
-                       parameter.names=c("W"))
+                       parameter.names=param)
     } else if (calc_snc){
-        snc <- list(W=matrix(NA, ncol=p, nrow=p))
+        snc <- list(matrix(NA, ncol=p, nrow=p))
+        names(snc) <- param
     }
 
     if (calc_snc){
-        banocc_output$SNC <- snc$W
+        banocc_output$SNC <- snc[[param]]
         colnames(banocc_output$SNC) <- colnames(b_data$C)
         rownames(banocc_output$SNC) <- colnames(b_data$C)   
     }
