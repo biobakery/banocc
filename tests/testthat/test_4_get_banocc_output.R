@@ -8,12 +8,14 @@ get_min_width_opt <- list(TRUE, FALSE)
 calc_snc_opt      <- list(TRUE, FALSE)
 eval_convergence  <- list(TRUE, FALSE)
 use_stanfit       <- list(TRUE, FALSE)
+use_precision     <- list(TRUE, FALSE)
 
 opt_idx <- expand.grid(conf_alpha    = seq_along(conf_alpha_opt),
                        get_min_width = seq_along(get_min_width_opt),
                        calc_snc      = seq_along(calc_snc_opt),
                        eval_convergence = seq_along(eval_convergence),
-                       use_stanfit = seq_along(use_stanfit))
+                       use_stanfit = seq_along(use_stanfit),
+                       use_precision = seq_along(use_precision))
 
 all_args <- lapply(seq_len(nrow(opt_idx) * 2), function(i){
     j <- ifelse(i %% 2 == 0, i / 2, (i + 1) / 2)
@@ -21,17 +23,20 @@ all_args <- lapply(seq_len(nrow(opt_idx) * 2), function(i){
              opt_idx$get_min_width[j],
              opt_idx$calc_snc[j],
              opt_idx$eval_convergence[j],
-             opt_idx$use_stanfit[j])
+             opt_idx$use_stanfit[j],
+             opt_idx$use_precision[j])
     args <- list(conf_alpha=conf_alpha_opt[[idx[1]]],
                  get_min_width=get_min_width_opt[[idx[2]]],
                  calc_snc=calc_snc_opt[[idx[3]]],
                  eval_convergence=eval_convergence[[idx[4]]],
-                 use_stanfit=use_stanfit[[idx[5]]])
+                 use_stanfit=use_stanfit[[idx[5]]],
+                 use_precision=use_precision[[idx[6]]])
     return(args)
 })
 
 sw_get_b_output <- function(conf_alpha, get_min_width, calc_snc,
-                            eval_convergence, use_stanfit=FALSE){
+                            use_precision, eval_convergence,
+                            use_stanfit=FALSE){
     if (use_stanfit){
         banoccfit <- Fit
     } else {
@@ -40,7 +45,8 @@ sw_get_b_output <- function(conf_alpha, get_min_width, calc_snc,
     gbo <- suppressWarnings(get_banocc_output(
         banoccfit=banoccfit, conf_alpha=conf_alpha,
         get_min_width=get_min_width, calc_snc=calc_snc,
-        eval_convergence=eval_convergence, verbose=FALSE, num_level=0
+        eval_convergence=eval_convergence,
+        use_precision=use_precision, verbose=FALSE, num_level=0
         ))
     return(gbo)
 }
@@ -139,14 +145,31 @@ test_that("get_banocc_output CI.hpd elt elements have col and row names", {
     }
 })
 
-test_that("get_banocc_output CI.hpd elt elements are between -1 and 1", {
+test_that("get_banocc_output CI.hpd correlation elements are between -1 and 1", {
     for (i in seq_along(gbo)){
-        for (k in seq_along(gbo[[i]]$CI.hpd)){
-            if (!all_args[[i]]$eval_convergence){
-                expect_true(all(gbo[[i]]$CI.hpd[[k]] - 1 <= 1e-12))
-                expect_true(all(gbo[[i]]$CI.hpd[[k]] + 1 >= 1e-12))
-            } else {
-                expect_true(all(is.na(gbo[[i]]$CI.hpd[[k]])))
+        if (!all_args[[i]]$use_precision){
+            for (k in seq_along(gbo[[i]]$CI.hpd)){
+                if (!all_args[[i]]$eval_convergence){
+                    expect_true(all(gbo[[i]]$CI.hpd[[k]] - 1 <= 1e-12))
+                    expect_true(all(gbo[[i]]$CI.hpd[[k]] + 1 >= 1e-12))
+                } else {
+                    expect_true(all(is.na(gbo[[i]]$CI.hpd[[k]])))
+                }
+            }
+        }
+    }
+})
+
+test_that("get_banocc_output CI.hpd precision elements have non-1 diagonals", {
+    for (i in seq_along(gbo)){
+        if (all_args[[i]]$use_precision){
+            for (k in seq_along(gbo[[i]]$CI.hpd)){
+                ci.k <- gbo[[i]]$CI.hpd[[k]]
+                if (!all_args[[i]]$eval_convergence){
+                    expect_true(any(abs(diag(ci.k) - 1) >= 1e-12))
+                } else {
+                    expect_true(all(is.na(ci.k)))
+                }
             }
         }
     }
@@ -169,17 +192,33 @@ test_that("get_banocc_output Estimates.median has col and row names", {
     }
 })
 
-test_that("get_banocc_output Estimates.median elts are between -1 and 1", {
+test_that("get_banocc_output Estimates.median correlation elts are between -1 and 1", {
     for (i in seq_along(gbo)){
-        est.med <- gbo[[i]]$Estimates.median
-        if (!all_args[[i]]$eval_convergence){
-            expect_true(all(est.med + 1 >= 1e-12))
-            expect_true(all(est.med - 1 <= 1e-12))
-        } else {
-            expect_true(all(is.na(est.med)))
+        if (!all_args[[i]]$use_precision){
+            est.med <- gbo[[i]]$Estimates.median
+            if (!all_args[[i]]$eval_convergence){
+                expect_true(all(est.med + 1 >= 1e-12))
+                expect_true(all(est.med - 1 <= 1e-12))
+            } else {
+                expect_true(all(is.na(est.med)))
+            }
         }
     }
 })
+
+test_that("get_banocc_output Estimates.median precision elements have non-1 diagonals", {
+    for (i in seq_along(gbo)){
+        if (all_args[[i]]$use_precision){
+            est.med <- gbo[[i]]$Estimates.median
+            if (!all_args[[i]]$eval_convergence){
+                expect_true(any(abs(diag(est.med) - 1) >= 1e-12))
+            } else {
+                expect_true(all(is.na(est.med)))
+            }
+        }
+    }
+})
+
 
 test_that("get_banocc_output Min.width elt is a pxp matrix", {
     for (i in seq_along(gbo)){
