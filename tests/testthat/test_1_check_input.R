@@ -101,9 +101,17 @@ test_that("check_L works overall", {
 test_that("check_C accepts a data frame", {
     expect_is(check_C(Data$C), "matrix")
 })
+
+test_that("check_C gives error if row sums < 1", {
+    zi <- Data$C
+    zi[sample(nrow(zi), 20), 1] <- 0
+    expect_error(check_C(zi), "Some of the subject totals are less than 1")
+})
+
 test_that("check_C handles zero-inflation", {
     zi <- Data$C
     zi[sample(nrow(zi), 20), 1] <- 0
+    zi$extra <- ifelse(abs(rowSums(zi) - 1) > 1e-7, 1-rowSums(zi), 0)
     expect_warning(check_C(zi), "values of C are zero.")
     expect_is(suppressWarnings(check_C(zi)), "matrix")
 })
