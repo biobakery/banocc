@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2017-02-06
+2017-02-22
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -211,7 +211,7 @@ b_fit_cores <- banocc::run_banocc(C = compositions_null,
 
 #### Initial Values
 
-By default, the initial values for ***m*** and *λ* are sampled from the priors and the initial values for ***O*** are set to the identity matrix of dimension *P*. Setting the initial values for ***O*** to the identity helps ensure a parsimonious model fit. The initial values can also be set to a particular value by using a list.
+By default, the initial values for ***m*** and *λ* are sampled from the priors and the initial values for ***O*** are set to the identity matrix of dimension *P*. Setting the initial values for ***O*** to the identity helps ensure a parsimonious model fit. The initial values can also be set to a particular value by using a list whose length is the number of chains and whose elements are lists of initial values for each parameter:
 
 ``` r
 init <- list(list(m = rep(0, p),
@@ -372,7 +372,7 @@ There are many ways of assessing convergence, but the two most easily implemente
 
 ### Traceplots
 
-Traceplots can be directly accessed using the `traceplot` function in the `rstan` package, which creates a `ggplot2` object that can be further maniuplated to 'prettify' the plot. The traceplots so generated are for the samples drawn *after* the warmup period. For example, we could plot the traceplots for the correlations of feature 1 with all other features. There is good overlap between the chains, but we need more samples from the posterior to be confident of convergence.
+Traceplots can be directly accessed using the `traceplot` function in the `rstan` package, which creates a `ggplot2` object that can be further maniuplated to 'prettify' the plot. The traceplots so generated are for the samples drawn *after* the warmup period. For example, we could plot the traceplots for the inverse covariances of feature 1 with all other features. There is overlap between some of the chains, but not all and so we conclude that we need more samples from the posterior to be confident of convergence.
 
 ``` r
 # The inverse covariances of feature 1 with all other features
@@ -381,7 +381,7 @@ rstan::traceplot(b_fit$Fit, pars=paste0("O[1,", 2:9, "]"))
 
 ![](https://bitbucket.org/biobakery/banocc/raw/master/vignettes/banocc-vignette_files/figure-markdown_github/traceplot-1.png)
 
-We could also see the warmup period samples by using `inc_warmup=TRUE`. This shows that the chains have moved from very different starting points to a similar distribution, which is a good sign of convergence.
+We could also see the warmup period samples by using `inc_warmup=TRUE`. This shows that some of the chains have moved from very different starting points to a similar distribution, which is a good sign of convergence.
 
 ``` r
 # The inverse covariances of feature 1 with all other features, including warmup
