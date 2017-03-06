@@ -14,6 +14,8 @@
 #'   calculation of the minimum widths and SNC values.
 #' @param calc_snc Boolean: should the scaled neighborhood criterion be
 #'   calculated?
+#' @param calc_var Boolean: should the variance of the MCMC chains be
+#'   calculated?
 #' @param eval_convergence Boolean: if `TRUE`, convergence will be evaluated
 #'   using the Rhat statistic, and the fit output (estimates, credible
 #'   intervals, etc.) will be missing if this statistic does not indicate
@@ -39,7 +41,12 @@
 #'     each correlation/precision.}
 #' 
 #'   \item{\emph{SNC}}{Only present if the \code{calc_snc} argument is
-#'     \code{TRUE}. The scaled neighborhood criterion for each correlation.}
+#'     \code{TRUE}. The scaled neighborhood criterion for each
+#'     correlation/precision matrix element.}
+#'
+#'   \item{\emph{MCMC_var}}{Only present if the \code{calc_var}
+#'     argument is \code{TRUE}. The variance of the MCMC chains for each
+#'     correlation/precision matrix element.}
 #'
 #'   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
 #'     \code{run_banocc}.}
@@ -62,7 +69,8 @@
 
 get_banocc_output <- function(banoccfit, conf_alpha=0.05,
                               get_min_width=FALSE, use_precision=FALSE,
-                              calc_snc=TRUE, eval_convergence=TRUE,
+                              calc_snc=TRUE, calc_var=FALSE,
+                              eval_convergence=TRUE,
                               verbose=FALSE, num_level=0){
     cat_v("Begin get_banocc_output\n", verbose, num_level=num_level)
     b_stanfit <- get_stanfit(banoccfit)
@@ -155,6 +163,20 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05,
         banocc_output$SNC <- snc[[param]]
         colnames(banocc_output$SNC) <- colnames(b_data$C)
         rownames(banocc_output$SNC) <- colnames(b_data$C)   
+    }
+
+    if (calc_var && fit_converged){
+        mcmc_var <- get_mcmc_var(posterior_samples=post_samples_list,
+                                 parameter.names=param)
+    } else if (calc_var){
+        mcmc_var <- list(matrix(NA, ncol=p, nrow=p))
+        names(mcmc_var) <- param
+    }
+
+    if (calc_var){
+        banocc_output$MCMC_var <- mcmc_var[[param]]
+        colnames(banocc_output$MCMC_var) <- colnames(b_data$C)
+        rownames(banocc_output$MCMC_var) <- colnames(b_data$C)
     }
 
     cat_v("End get_banocc_output\n", verbose, num_level=num_level)

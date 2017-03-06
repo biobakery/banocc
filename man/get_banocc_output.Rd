@@ -6,8 +6,8 @@
   appropriate convergence metrics and inference}
 \usage{
 get_banocc_output(banoccfit, conf_alpha = 0.05, get_min_width = FALSE,
-  use_precision = FALSE, calc_snc = TRUE, eval_convergence = TRUE,
-  verbose = FALSE, num_level = 0)
+  use_precision = FALSE, calc_snc = TRUE, calc_var = FALSE,
+  eval_convergence = TRUE, verbose = FALSE, num_level = 0)
 }
 \arguments{
 \item{banoccfit}{Either a \code{stanfit} object (the \code{Fit} element
@@ -26,6 +26,9 @@ the correlation matrix will be used for the credible intervals, and the
 calculation of the minimum widths and SNC values.}
 
 \item{calc_snc}{Boolean: should the scaled neighborhood criterion be
+calculated?}
+
+\item{calc_var}{Boolean: should the variance of the MCMC chains be
 calculated?}
 
 \item{eval_convergence}{Boolean: if `TRUE`, convergence will be evaluated
@@ -51,7 +54,12 @@ Returns a named list with the following elements:
     each correlation/precision.}
 
   \item{\emph{SNC}}{Only present if the \code{calc_snc} argument is
-    \code{TRUE}. The scaled neighborhood criterion for each correlation.}
+    \code{TRUE}. The scaled neighborhood criterion for each
+    correlation/precision matrix element.}
+
+  \item{\emph{MCMC_var}}{Only present if the \code{calc_var}
+    argument is \code{TRUE}. The variance of the MCMC chains for each
+    correlation/precision matrix element.}
 
   \item{\emph{Fit}}{The \code{stanfit} object returned by the call to
     \code{run_banocc}.}
