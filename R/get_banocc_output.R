@@ -150,12 +150,12 @@ get_banocc_output <- function(banoccfit, conf_alpha=0.05, get_min_width=FALSE,
 }
 
 get_stanfit <- function(banoccfit){
-    if (class(banoccfit) == "stanfit"){
+    if (methods::is(banoccfit, "stanfit")){
         return(banoccfit)
-    } else if (class(banoccfit) == "list"){
-        banoccfit_class <- unlist(lapply(banoccfit, class))
-        if ("stanfit" %in% banoccfit_class){
-            return(banoccfit[[which(banoccfit_class == "stanfit")]])
+    } else if (methods::is(banoccfit, "list")){
+        banoccfit_class <- unlist(lapply(banoccfit, methods::is, "stanfit"))
+        if (any(banoccfit_class)){
+            return(banoccfit[[which(banoccfit_class)]])
         } else {
             stop("No 'stanfit' object found in 'banoccfit' list.")
         }
@@ -165,7 +165,7 @@ get_stanfit <- function(banoccfit){
 }
 
 get_data <- function(banoccfit){
-    if (class(banoccfit) == "list"){
+    if (methods::is(banoccfit, "list")){
         banoccfit_names <- stringr::str_to_lower(names(banoccfit))
         if ("data" %in% banoccfit_names){
             return(banoccfit[[which(banoccfit_names == "data")]])
