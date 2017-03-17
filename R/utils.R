@@ -8,7 +8,7 @@
 cat_v <- function(s_string, verbose, num_level=0){
    if (num_level > 0) s_string <- paste0(c(rep("  ", num_level), s_string),
                                          collapse="")
-   if(verbose) cat(s_string)
+   if(verbose) message(s_string)
 }
 
 # Check if a square matrix is symmetric
