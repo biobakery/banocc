@@ -5,7 +5,11 @@ Version: 0.99.0
 Date: 2015-04-14
 Authors@R: person("Emma", "Schwager", email = "emh146@mail.harvard.edu",
                   role = c("aut", "cre"))
-Description: BAnOCC is a package designed for compositional data, where each sample sums to one. It infers the approximate covariance of the unconstrained data using a Bayesian model coded with `rstan`. It provides as output the `stanfit` object as well as posterior median and credible interval estimates for each correlation element.
+Description: BAnOCC is a package designed for compositional data,
+    where each sample sums to one. It infers the approximate covariance of
+    the unconstrained data using a Bayesian model coded with `rstan`. It
+    provides as output the `stanfit` object as well as posterior median
+    and credible interval estimates for each correlation element.
 License: MIT + file LICENSE
 Depends: 
     R (>= 3.3),
