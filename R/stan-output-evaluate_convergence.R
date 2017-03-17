@@ -10,11 +10,11 @@ evaluate_convergence <- function(b_stanfit, verbose=FALSE, num_level=0){
     rhat_stat <- rstan::summary(b_stanfit)$summary[, "Rhat"]
     if (any(is.na(rhat_stat)) || max(rhat_stat) > 1.2){
         fit_converged <- FALSE
-        warning(paste0("Fit has not converged as evaluated by the Rhat ",
-                       "statistic. You might try a larger number of ",
-                       "warmup iterations, different priors, or ",
-                       "different initial values. See vignette for ",
-                       "more on evaluating convergence."))
+        warning("Fit has not converged as evaluated by the Rhat ",
+                "statistic. You might try a larger number of ",
+                "warmup iterations, different priors, or ",
+                "different initial values. See vignette for ",
+                "more on evaluating convergence.")
     } else {
         fit_converged <- TRUE
     }

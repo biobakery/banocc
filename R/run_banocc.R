@@ -82,9 +82,9 @@ run_banocc <- function(compiled_banocc_model, C, n = rep(0, ncol(C)),
             num_tests <- num_tests + 1
         }
         if (length(dimnames(test_output)) == 0){
-            stop(paste0("Unable to generate workable starting values from",
-                        " priors after 10 tries. Try specifying the values ",
-                        "by hand."))
+            stop("Unable to generate workable starting values from",
+                 " priors after 10 tries. Try specifying the values ",
+                 "by hand.")
         }
     }
 
@@ -119,10 +119,10 @@ check_n <- function(n, p, verbose=FALSE, num_level=0){
 check_vector <- function(parm.name, parm, p, verbose=TRUE, num_level=0){
     cat_v("Begin check_vector...", verbose, num_level=num_level)
     if (!is.vector(parm) || mode(parm)!="numeric"){
-        stop(paste0("'", parm.name, "' must be a vector"))
+        stop("'", parm.name, "' must be a vector")
     }
     if ((length(parm) < p) && (length(parm) > 1)){
-        warning(paste0("recycling '", parm.name, "'"))
+        warning("recycling '", parm.name, "'")
         parm <- rep(parm, ceiling(p / length(parm)))[1:p]
     } else if (length(parm) == 1){
         parm <- rep(parm, p)
@@ -143,8 +143,8 @@ check_L <- function(L, p, verbose=FALSE, num_level=0){
 
     if (is.matrix(L)){
         if (any(dim(L) != p)){
-            stop(paste0("L must be a square matrix with the same number of",
-                        " columns as C"))
+            stop("L must be a square matrix with the same number of",
+                 " columns as C")
         }
         if (any(eigen(L)$values <= 0)){
             stop("'L' is not positive definite.")
@@ -175,7 +175,7 @@ check_L <- function(L, p, verbose=FALSE, num_level=0){
 
 get_gamma_param <- function(param, name){
     if (param <= 0){
-        stop(paste0("'", name, "' must be > 0"))
+        stop("'", name, "' must be > 0")
     } else {
         return(param)
     }
@@ -192,8 +192,8 @@ check_C <- function(C, zero_adj=0.0001, verbose=FALSE, num_level=0){
         stop("Some values of C are > 1")
     }
     if (any(rowSums(C) - 1 > 1e-8)){
-        stop(paste0("Some row sums of C are larger than 1; perhaps you ",
-                    "transposed features and samples?"))
+        stop("Some row sums of C are larger than 1; perhaps you ",
+             "transposed features and samples?")
     }
     if (!is.data.frame(C) && !is.matrix(C)){
         stop("C must be a data frame or matrix")
@@ -203,13 +203,13 @@ check_C <- function(C, zero_adj=0.0001, verbose=FALSE, num_level=0){
         stop("C must be numeric")
     }
     if (any((1 - rowSums(C)) > 1e-8)){
-        stop(paste0("Some of the subject totals are less than 1. Try ",
-                    "adding an additional column with the remainders."))
+        stop("Some of the subject totals are less than 1. Try ",
+             "adding an additional column with the remainders.")
     }
     if (any(C == 0)){
-        warning(paste0("Some values of C are zero. ",
-                       "Since zero-inflation is not yet implemented, these ",
-                       "will be changed to ", zero_adj, "."))
+        warning("Some values of C are zero. ",
+                "Since zero-inflation is not yet implemented, these ",
+                "will be changed to ", zero_adj, ".")
         C <- adjust_zeros(C, zero_adj=zero_adj, verbose=verbose,
                           num_level=num_level+1)
     }

@@ -19,8 +19,8 @@ make_samples_list <- function(samples, thin=1, concatenate.chains=FALSE,
     cat_v("Begin make_samples_list.\n", verbose, num_level=num_level)
     cat_v("Getting parameter names...", verbose, num_level=num_level+1)
     if (thin >= dim(samples)[1]){
-        warning(paste0("thin is greater than number of samples; only the ",
-                       "first sample from each chain will be used"))
+        warning("thin is greater than number of samples; only the ",
+                "first sample from each chain will be used")
     }
     samples.to.keep <- seq(1, dim(samples)[1], thin)
     samples.thin        <- array(samples[samples.to.keep, , ],

@@ -170,8 +170,8 @@ get_data <- function(banoccfit){
         if ("data" %in% banoccfit_names){
             return(banoccfit[[which(banoccfit_names == "data")]])
         } else {
-            warning(paste0("'banoccfit' given as a list, but no data ",
-                           "element was found to return."))
+            warning("'banoccfit' given as a list, but no data ",
+                    "element was found to return.")
             return(NULL)
         }
     } else {
@@ -186,8 +186,8 @@ check_conf_alpha <- function(conf_alpha, verbose=FALSE, num_level=0){
     }
     conf_alpha_num <- suppressWarnings(as.numeric(conf_alpha))
     if (is.na(conf_alpha_num)){
-        stop(paste0("conf_alpha must be coercible to numeric type. '",
-                    conf_alpha, "' is not."))
+        stop("conf_alpha must be coercible to numeric type. '",
+             conf_alpha, "' is not.")
     }
     return(conf_alpha_num)
 }
