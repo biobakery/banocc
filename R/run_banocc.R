@@ -123,13 +123,13 @@ check_vector <- function(parm.name, parm, p, verbose=TRUE, num_level=0){
     }
     if ((length(parm) < p) && (length(parm) > 1)){
         warning("recycling '", parm.name, "'")
-        parm <- rep(parm, ceiling(p / length(parm)))[1:p]
+        parm <- rep(parm, ceiling(p / length(parm)))[seq_len(p)]
     } else if (length(parm) == 1){
         parm <- rep(parm, p)
     } else if (length(parm) > p){
         warning("length of '", parm.name,
                 "' is > p; only using first p elements")
-        parm <- parm[1:p]
+        parm <- parm[seq_len(p)]
     }
     cat_v("Done.\n", verbose)
     return(parm)
@@ -156,13 +156,13 @@ check_L <- function(L, p, verbose=FALSE, num_level=0){
         if ((length(L) < p) && (length(L) > 1)){
             warning("'L' is being recycled")
             num_rep <- ceiling(p / length(L))
-            L <- diag(rep(L, num_rep)[1:p])
+            L <- diag(rep(L, num_rep)[seq_len(p)])
         } else if (length(L) == 1){
             L <- diag(rep(L, p))
         } else if (length(L) > p){
             warning("'L' has length > p; only first p elements will be ",
                     "used.")
-            L <- diag(L[1:p])
+            L <- diag(L[seq_len(p)])
         } else {
             L <- diag(L)
         }

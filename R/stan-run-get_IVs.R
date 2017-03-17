@@ -22,7 +22,7 @@ get_IVs <- function(chains, data, verbose=FALSE, num_level=0){
     if (chains <= 0){
         stop("'chains' must be > 0")
     }
-    IVs <- lapply(1:chains,
+    IVs <- lapply(seq_len(chains),
                   function(i) {
                       list(m = as.vector(mvtnorm::rmvnorm(1, data$n,
                                data$L)),
