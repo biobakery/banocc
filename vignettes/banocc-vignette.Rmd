@@ -44,7 +44,7 @@ There are three options for installing BAnOCC:
 ### From Within R 
 **This is not yet available**
 ```{r, eval=FALSE, echo=FALSE}
-source("<bioconductor URL>")
+source("https://bioconductor.org/biocLite.R")
 biocLite("BAnOCC")
 ```
 
