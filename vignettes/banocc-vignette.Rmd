@@ -42,8 +42,8 @@ There are three options for installing BAnOCC:
 * Directly from bitbucket
 
 ### From Within R 
-**This is not yet available**
 ```{r, eval=FALSE, echo=FALSE}
+## try http:// if https:// URLs are not supported
 source("https://bioconductor.org/biocLite.R")
 biocLite("BAnOCC")
 ```
@@ -57,7 +57,7 @@ Clone the repository using `git clone`, which downloads the package as
 its own directory called `banocc`.
 
 ```bash 
-git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
+git clone https://bitbucket.org/biobakery/banocc.git
 ```
 
 Then, install BAnOCC's dependencies. If these are already installed on
@@ -67,8 +67,9 @@ your machine, this step can be skipped.
 Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda', 'stringr'))"
 ```
 
-Lastly, install BAnOCC using `R CMD INSTALL`. Note that this _will
-not_ automatically install the dependencies, so they must be installed
+Lastly, install BAnOCC using `R CMD INSTALL`. This command should be
+run in the parent directory of `banocc/`. Note that this _will not_
+automatically install the dependencies, so they must be installed
 first.
 
 ```bash 
@@ -294,6 +295,33 @@ Detailed statements about the function's execution can also be printed
 using the `verbose` argument. The relative indentation of the verbose
 output indicates the nesting level of the function. The starting
 indentation can be set with `num_level`.
+
+#### Precision vs. Correlation Matrix
+
+By default, `get_banocc_output` returns the credible intervals (and
+other statistics) for the log-basis correlation matrix
+**$W$**_=cov2cor(_**$S$**_)_. If desired, these quantities can be
+returned for the precision matrix **$O$** instead using the parameter
+`use_precision`.
+
+```{r output-precision, eval=TRUE, cache=TRUE, dependson=c('rerun'), results="hide"}
+# Default is to get correlation matrix estimates
+b_out_corr <- banocc::get_banocc_output(banoccfit=b_fit,
+                                        eval_convergence = FALSE)
+
+# Precision matrix can be requested using `use_precision`
+b_out_prec <- banocc::get_banocc_output(banoccfit = b_fit,
+                                        eval_convergence = FALSE,
+                                        use_precision = TRUE)
+```
+
+```{r show-output-precision, eval=TRUE}
+# Default is to get a correlation matrix; all elements are in [-1, 1]
+b_out_corr$Estimates.median
+
+# Precision matrix does not have elements between -1 and 1
+b_out_prec$Estimates.median
+```
 
 ## Assessing Convergence
 

@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2017-03-17
+2017-06-12
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -22,6 +22,7 @@ Emma Schwager
         -   [Credible Interval Width](#markdown-header-credible-interval-width)
         -   [Checking Convergence](#markdown-header-checking-convergence)
         -   [Additional Output](#markdown-header-additional-output)
+        -   [Precision vs. Correlation Matrix](#precision-vs.-correlation-matrix)
 -   [Assessing Convergence](#markdown-header-assessing-convergence)
     -   [Traceplots](#markdown-header-traceplots)
     -   [Rhat Statistics](#markdown-header-rhat-statistics)
@@ -50,8 +51,6 @@ There are three options for installing BAnOCC:
 
 ### From Within R
 
-**This is not yet available**
-
 ### From Bitbucket (Compressed File)
 
 **This is not yet available**
@@ -61,7 +60,7 @@ There are three options for installing BAnOCC:
 Clone the repository using `git clone`, which downloads the package as its own directory called `banocc`.
 
 ``` bash
-git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
+git clone https://bitbucket.org/biobakery/banocc.git
 ```
 
 Then, install BAnOCC's dependencies. If these are already installed on your machine, this step can be skipped.
@@ -70,7 +69,7 @@ Then, install BAnOCC's dependencies. If these are already installed on your mach
 Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda', 'stringr'))"
 ```
 
-Lastly, install BAnOCC using `R CMD INSTALL`. Note that this *will not* automatically install the dependencies, so they must be installed first.
+Lastly, install BAnOCC using `R CMD INSTALL`. This command should be run in the parent directory of `banocc/`. Note that this *will not* automatically install the dependencies, so they must be installed first.
 
 ``` bash
 R CMD INSTALL banocc
@@ -360,6 +359,73 @@ b_out_snc <- banocc::get_banocc_output(banoccfit=b_fit,
     ## values. See vignette for more on evaluating convergence.
 
 Detailed statements about the function's execution can also be printed using the `verbose` argument. The relative indentation of the verbose output indicates the nesting level of the function. The starting indentation can be set with `num_level`.
+
+#### Precision vs. Correlation Matrix
+
+By default, `get_banocc_output` returns the credible intervals (and other statistics) for the log-basis correlation matrix ***W****=cov2cor(****S****)*. If desired, these quantities can be returned for the precision matrix ***O*** instead using the parameter `use_precision`.
+
+``` r
+# Default is to get correlation matrix estimates
+b_out_corr <- banocc::get_banocc_output(banoccfit=b_fit,
+                                        eval_convergence = FALSE)
+
+# Precision matrix can be requested using `use_precision`
+b_out_prec <- banocc::get_banocc_output(banoccfit = b_fit,
+                                        eval_convergence = FALSE,
+                                        use_precision = TRUE)
+```
+
+``` r
+# Default is to get a correlation matrix; all elements are in [-1, 1]
+b_out_corr$Estimates.median
+```
+
+    ##              f_n_1        f_n_2        f_n_3         f_n_4         f_n_5
+    ## f_n_1  1.000000000  0.005778292 -0.005878040  0.0209918922 -0.0141688728
+    ## f_n_2  0.005778292  1.000000000 -0.012096410 -0.0075709769 -0.0318923466
+    ## f_n_3 -0.005878040 -0.012096410  1.000000000  0.0110158291  0.0617083436
+    ## f_n_4  0.020991892 -0.007570977  0.011015829  1.0000000000  0.0008895833
+    ## f_n_5 -0.014168873 -0.031892347  0.061708344  0.0008895833  1.0000000000
+    ## f_n_6  0.014051295  0.007280415 -0.024489072 -0.0474267965 -0.0373383768
+    ## f_n_7  0.015760539  0.062922510  0.008133471 -0.0228150721  0.0134262713
+    ## f_n_8 -0.008771902 -0.033842840  0.010381142  0.0320710228  0.0558558465
+    ## f_n_9 -0.004914613 -0.007190443  0.035180568  0.0807729153  0.0156290456
+    ##              f_n_6        f_n_7        f_n_8        f_n_9
+    ## f_n_1  0.014051295  0.015760539 -0.008771902 -0.004914613
+    ## f_n_2  0.007280415  0.062922510 -0.033842840 -0.007190443
+    ## f_n_3 -0.024489072  0.008133471  0.010381142  0.035180568
+    ## f_n_4 -0.047426797 -0.022815072  0.032071023  0.080772915
+    ## f_n_5 -0.037338377  0.013426271  0.055855846  0.015629046
+    ## f_n_6  1.000000000  0.025286239 -0.003227252 -0.010360006
+    ## f_n_7  0.025286239  1.000000000 -0.044861433 -0.002230442
+    ## f_n_8 -0.003227252 -0.044861433  1.000000000  0.040401809
+    ## f_n_9 -0.010360006 -0.002230442  0.040401809  1.000000000
+
+``` r
+# Precision matrix does not have elements between -1 and 1
+b_out_prec$Estimates.median
+```
+
+    ##              f_n_1         f_n_2         f_n_3        f_n_4        f_n_5
+    ## f_n_1  1.274700711  0.0033504775  0.0048841304 -0.019331331  0.024204143
+    ## f_n_2  0.003350478  0.7807550422  0.0073609599  0.007620607  0.028614949
+    ## f_n_3  0.004884130  0.0073609599  0.3697507868  0.016171575 -0.019489388
+    ## f_n_4 -0.019331331  0.0076206070  0.0161715746  0.844101249 -0.006263174
+    ## f_n_5  0.024204143  0.0286149489 -0.0194893876 -0.006263174  0.887165540
+    ## f_n_6 -0.009290895 -0.0008821612  0.0180200891  0.054808742  0.053398037
+    ## f_n_7 -0.011288415 -0.0235272366  0.0003228915  0.015802776 -0.006350651
+    ## f_n_8 -0.008992838  0.0189317658  0.0037975000 -0.021008441 -0.065155112
+    ## f_n_9  0.027965219  0.0208599727 -0.0021198530 -0.086741656 -0.010176099
+    ##               f_n_6         f_n_7        f_n_8        f_n_9
+    ## f_n_1 -0.0092908953 -0.0112884151 -0.008992838  0.027965219
+    ## f_n_2 -0.0008821612 -0.0235272366  0.018931766  0.020859973
+    ## f_n_3  0.0180200891  0.0003228915  0.003797500 -0.002119853
+    ## f_n_4  0.0548087420  0.0158027762 -0.021008441 -0.086741656
+    ## f_n_5  0.0533980367 -0.0063506514 -0.065155112 -0.010176099
+    ## f_n_6  1.9864519671 -0.0319344078 -0.050159863  0.019949999
+    ## f_n_7 -0.0319344078  0.8311282505  0.031273783  0.014865392
+    ## f_n_8 -0.0501598630  0.0312737832  3.121509416 -0.073527104
+    ## f_n_9  0.0199499991  0.0148653920 -0.073527104  1.503978121
 
 Assessing Convergence
 ---------------------
