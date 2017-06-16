@@ -1,7 +1,7 @@
 Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
-2017-02-22
+2017-06-12
 
 -   [Introduction](#markdown-header-introduction)
 -   [How To Install](#markdown-header-how-to-install)
@@ -51,8 +51,6 @@ There are three options for installing BAnOCC:
 
 ### From Within R
 
-**This is not yet available**
-
 ### From Bitbucket (Compressed File)
 
 **This is not yet available**
@@ -62,7 +60,7 @@ There are three options for installing BAnOCC:
 Clone the repository using `git clone`, which downloads the package as its own directory called `banocc`.
 
 ``` bash
-git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
+git clone https://bitbucket.org/biobakery/banocc.git
 ```
 
 Then, install BAnOCC's dependencies. If these are already installed on your machine, this step can be skipped.
@@ -71,7 +69,7 @@ Then, install BAnOCC's dependencies. If these are already installed on your mach
 Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda', 'stringr'))"
 ```
 
-Lastly, install BAnOCC using `R CMD INSTALL`. Note that this *will not* automatically install the dependencies, so they must be installed first.
+Lastly, install BAnOCC using `R CMD INSTALL`. This command should be run in the parent directory of `banocc/`. Note that this *will not* automatically install the dependencies, so they must be installed first.
 
 ``` bash
 R CMD INSTALL banocc

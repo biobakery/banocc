@@ -42,9 +42,9 @@ There are three options for installing BAnOCC:
 * Directly from bitbucket
 
 ### From Within R 
-**This is not yet available**
 ```{r, eval=FALSE, echo=FALSE}
-source("<bioconductor URL>")
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
 biocLite("BAnOCC")
 ```
 
@@ -57,7 +57,7 @@ Clone the repository using `git clone`, which downloads the package as
 its own directory called `banocc`.
 
 ```bash 
-git clone https://<your-user-name>@bitbucket.org/biobakery/banocc.git
+git clone https://bitbucket.org/biobakery/banocc.git
 ```
 
 Then, install BAnOCC's dependencies. If these are already installed on
@@ -67,8 +67,9 @@ your machine, this step can be skipped.
 Rscript -e "install.packages(c('rstan', 'mvtnorm', 'coda', 'stringr'))"
 ```
 
-Lastly, install BAnOCC using `R CMD INSTALL`. Note that this _will
-not_ automatically install the dependencies, so they must be installed
+Lastly, install BAnOCC using `R CMD INSTALL`. This command should be
+run in the parent directory of `banocc/`. Note that this _will not_
+automatically install the dependencies, so they must be installed
 first.
 
 ```bash 

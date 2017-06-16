@@ -27,7 +27,7 @@ body {
 
 <h1 id="introduction-to-banocc-bayesian-analaysis-of-compositional-covariance">Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)</h1>
 <p>Emma Schwager<br />
-2017-02-22</p>
+2017-06-12</p>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#how-to-install">How To Install</a>
@@ -84,15 +84,14 @@ body {
 <li>Directly from bitbucket</li>
 </ul>
 <h3 id="from-within-r">From Within R</h3>
-<p><strong>This is not yet available</strong></p>
 <h3 id="from-bitbucket-compressed-file">From Bitbucket (Compressed File)</h3>
 <p><strong>This is not yet available</strong></p>
 <h3 id="from-bitbucket-directly">From Bitbucket (Directly)</h3>
 <p>Clone the repository using <code>git clone</code>, which downloads the package as its own directory called <code>banocc</code>.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone https://<span class="kw">&lt;</span>your-user-name<span class="kw">&gt;</span>@bitbucket.org/biobakery/banocc.git</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone https://bitbucket.org/biobakery/banocc.git</code></pre></div>
 <p>Then, install BAnOCC's dependencies. If these are already installed on your machine, this step can be skipped.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">Rscript</span> -e <span class="st">&quot;install.packages(c('rstan', 'mvtnorm', 'coda', 'stringr'))&quot;</span></code></pre></div>
-<p>Lastly, install BAnOCC using <code>R CMD INSTALL</code>. Note that this <em>will not</em> automatically install the dependencies, so they must be installed first.</p>
+<p>Lastly, install BAnOCC using <code>R CMD INSTALL</code>. This command should be run in the parent directory of <code>banocc/</code>. Note that this <em>will not</em> automatically install the dependencies, so they must be installed first.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">R</span> CMD INSTALL banocc</code></pre></div>
 <h2 id="how-to-run">How To Run</h2>
 <h3 id="loading">Loading</h3>
