@@ -2,6 +2,27 @@ Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)
 ================
 Emma Schwager
 2017-06-12
+----
+
+
+**If you use BAnOCC in your work, please cite the BAnOCC paper:**  
+
+Emma Schwager<sup>1,2</sup>, Himel Mallick<sup>1,2</sup>, Steffen Ventz<sup>3,4</sup>, Curtis Huttenhower<sup>1,2</sup>
+
+[A Bayesian method for detecting pairwise associations in compositional data](https://pubmed.ncbi.nlm.nih.gov/29140991/)
+
+```
+1 Department of Biostatistics, Harvard T.H. Chan School of Public Health, Boston, Massachusetts, United States of America.
+2 Broad Institute of MIT and Harvard, Cambridge, Massachusetts, United States of America.
+3 Department of Computer Science and Statistics, University of Rhode Island, Kingstown, Rhode Island, United States of America.
+4 Department of Biostatistics and Computational Biology, Dana-Farber Cancer Institute, Boston, Massachusetts, United States of America.
+
+```
+**And feel free to link to BAnOCC in your Methods:**
+
+[http://huttenhower.sph.harvard.edu/BAnOCC](http://huttenhower.sph.harvard.edu/BAnOCC)
+
+----
 
 - [Introduction to BAnOCC (Bayesian Analaysis Of Compositional Covariance)](#introduction-to-banocc-bayesian-analaysis-of-compositional-covariance)
   - [Introduction](#introduction)
